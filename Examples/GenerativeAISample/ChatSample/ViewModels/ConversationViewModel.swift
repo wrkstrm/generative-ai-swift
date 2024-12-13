@@ -19,14 +19,14 @@ import UIKit
 @MainActor
 class ConversationViewModel: ObservableObject {
   /// This array holds both the user's and the system's chat messages
-  @Published var messages = [ChatMessage]()
+  @Published var messages: [ChatMessage] = []
 
   /// Indicates we're waiting for the model to finish
   @Published var busy = false
 
   @Published var error: Error?
   var hasError: Bool {
-    return error != nil
+    error != nil
   }
 
   private var model: GenerativeModel

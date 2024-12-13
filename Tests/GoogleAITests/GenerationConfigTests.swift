@@ -34,11 +34,14 @@ final class GenerationConfigTests: XCTestCase {
     let jsonData = try encoder.encode(generationConfig)
 
     let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(json, """
-    {
+    XCTAssertEqual(
+      json,
+      """
+      {
 
-    }
-    """)
+      }
+      """
+    )
   }
 
   func testEncodeGenerationConfig_allOptions() throws {
@@ -67,28 +70,31 @@ final class GenerationConfigTests: XCTestCase {
     let jsonData = try encoder.encode(generationConfig)
 
     let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(json, """
-    {
-      "candidateCount" : \(candidateCount),
-      "maxOutputTokens" : \(maxOutputTokens),
-      "responseMIMEType" : "\(responseMIMEType)",
-      "responseSchema" : {
-        "properties" : {
-          "\(fieldName)" : {
-            "type" : "\(fieldType.rawValue)"
-          }
+    XCTAssertEqual(
+      json,
+      """
+      {
+        "candidateCount" : \(candidateCount),
+        "maxOutputTokens" : \(maxOutputTokens),
+        "responseMIMEType" : "\(responseMIMEType)",
+        "responseSchema" : {
+          "properties" : {
+            "\(fieldName)" : {
+              "type" : "\(fieldType.rawValue)"
+            }
+          },
+          "type" : "\(schemaType.rawValue)"
         },
-        "type" : "\(schemaType.rawValue)"
-      },
-      "stopSequences" : [
-        "END",
-        "DONE"
-      ],
-      "temperature" : \(temperature),
-      "topK" : \(topK),
-      "topP" : \(topP)
-    }
-    """)
+        "stopSequences" : [
+          "END",
+          "DONE"
+        ],
+        "temperature" : \(temperature),
+        "topK" : \(topK),
+        "topP" : \(topP)
+      }
+      """
+    )
   }
 
   func testEncodeGenerationConfig_responseMIMEType() throws {
@@ -98,11 +104,14 @@ final class GenerationConfigTests: XCTestCase {
     let jsonData = try encoder.encode(generationConfig)
 
     let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(json, """
-    {
-      "responseMIMEType" : "\(mimeType)"
-    }
-    """)
+    XCTAssertEqual(
+      json,
+      """
+      {
+        "responseMIMEType" : "\(mimeType)"
+      }
+      """
+    )
   }
 
   func testEncodeGenerationConfig_responseMIMETypeWithSchema() throws {
@@ -115,16 +124,19 @@ final class GenerationConfigTests: XCTestCase {
     let jsonData = try encoder.encode(generationConfig)
 
     let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(json, """
-    {
-      "responseMIMEType" : "\(mimeType)",
-      "responseSchema" : {
-        "items" : {
-          "type" : "\(arrayItemType.rawValue)"
-        },
-        "type" : "\(schemaType.rawValue)"
+    XCTAssertEqual(
+      json,
+      """
+      {
+        "responseMIMEType" : "\(mimeType)",
+        "responseSchema" : {
+          "items" : {
+            "type" : "\(arrayItemType.rawValue)"
+          },
+          "type" : "\(schemaType.rawValue)"
+        }
       }
-    }
-    """)
+      """
+    )
   }
 }

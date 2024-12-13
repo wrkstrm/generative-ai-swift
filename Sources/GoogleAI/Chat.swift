@@ -36,8 +36,9 @@ public class Chat {
   /// - Returns: The model's response if no error occurred.
   /// - Throws: A ``GenerateContentError`` if an error occurred.
   public func sendMessage(_ parts: any ThrowingPartsRepresentable...) async throws
-    -> GenerateContentResponse {
-    return try await sendMessage([ModelContent(parts: parts)])
+    -> GenerateContentResponse
+  {
+    try await sendMessage([ModelContent(parts: parts)])
   }
 
   /// Sends a message using the existing history of this chat as context. If successful, the message
@@ -46,28 +47,30 @@ public class Chat {
   /// - Returns: The model's response if no error occurred.
   /// - Throws: A ``GenerateContentError`` if an error occurred.
   public func sendMessage(_ content: @autoclosure () throws -> [ModelContent]) async throws
-    -> GenerateContentResponse {
+    -> GenerateContentResponse
+  {
     // Ensure that the new content has the role set.
     let newContent: [ModelContent]
     do {
       newContent = try content().map(populateContentRole(_:))
     } catch let underlying {
-      if let contentError = underlying as? ImageConversionError {
-        throw GenerateContentError.promptImageContentError(underlying: contentError)
-      } else {
+      guard let contentError = underlying as? ImageConversionError else {
         throw GenerateContentError.internalError(underlying: underlying)
       }
+      throw GenerateContentError.promptImageContentError(underlying: contentError)
     }
 
     // Send the history alongside the new message as context.
     let request = history + newContent
     let result = try await model.generateContent(request)
     guard let reply = result.candidates.first?.content else {
-      let error = NSError(domain: "com.google.generative-ai",
-                          code: -1,
-                          userInfo: [
-                            NSLocalizedDescriptionKey: "No candidates with content available.",
-                          ])
+      let error = NSError(
+        domain: "com.google.generative-ai",
+        code: -1,
+        userInfo: [
+          NSLocalizedDescriptionKey: "No candidates with content available."
+        ]
+      )
       throw GenerateContentError.internalError(underlying: error)
     }
 
@@ -86,8 +89,9 @@ public class Chat {
   /// - Returns: A stream containing the model's response or an error if an error occurred.
   @available(macOS 12.0, *)
   public func sendMessageStream(_ parts: any ThrowingPartsRepresentable...)
-    -> AsyncThrowingStream<GenerateContentResponse, Error> {
-    return try sendMessageStream([ModelContent(parts: parts)])
+    -> AsyncThrowingStream<GenerateContentResponse, Error>
+  {
+    try sendMessageStream([ModelContent(parts: parts)])
   }
 
   /// Sends a message using the existing history of this chat as context. If successful, the message
@@ -96,18 +100,19 @@ public class Chat {
   /// - Returns: A stream containing the model's response or an error if an error occurred.
   @available(macOS 12.0, *)
   public func sendMessageStream(_ content: @autoclosure () throws -> [ModelContent])
-    -> AsyncThrowingStream<GenerateContentResponse, Error> {
+    -> AsyncThrowingStream<GenerateContentResponse, Error>
+  {
     let resolvedContent: [ModelContent]
     do {
       resolvedContent = try content()
     } catch let underlying {
       return AsyncThrowingStream { continuation in
-        let error: Error
-        if let contentError = underlying as? ImageConversionError {
-          error = GenerateContentError.promptImageContentError(underlying: contentError)
-        } else {
-          error = GenerateContentError.internalError(underlying: underlying)
-        }
+        let error: Error =
+          if let contentError = underlying as? ImageConversionError {
+            GenerateContentError.promptImageContentError(underlying: contentError)
+          } else {
+            GenerateContentError.internalError(underlying: underlying)
+          }
         continuation.finish(throwing: error)
       }
     }
@@ -157,19 +162,19 @@ public class Chat {
       // Loop through all the parts, aggregating the text and adding the images.
       for part in aggregate.parts {
         switch part {
-        case let .text(str):
-          combinedText += str
+          case let .text(str):
+            combinedText += str
 
-        case .data, .fileData, .functionCall, .functionResponse, .executableCode,
-             .codeExecutionResult:
-          // Don't combine it, just add to the content. If there's any text pending, add that as
-          // a part.
-          if !combinedText.isEmpty {
-            parts.append(.text(combinedText))
-            combinedText = ""
-          }
+          case .data, .fileData, .functionCall, .functionResponse, .executableCode,
+            .codeExecutionResult:
+            // Don't combine it, just add to the content. If there's any text pending, add that as
+            // a part.
+            if !combinedText.isEmpty {
+              parts.append(.text(combinedText))
+              combinedText = ""
+            }
 
-          parts.append(part)
+            parts.append(part)
         }
       }
     }
@@ -184,9 +189,9 @@ public class Chat {
   /// Populates the `role` field with `user` if it doesn't exist. Required in chat sessions.
   private func populateContentRole(_ content: ModelContent) -> ModelContent {
     if content.role != nil {
-      return content
+      content
     } else {
-      return ModelContent(role: "user", parts: content.parts)
+      ModelContent(role: "user", parts: content.parts)
     }
   }
 }

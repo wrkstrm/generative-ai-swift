@@ -87,10 +87,12 @@ public struct GenerationConfig {
   ///   - stopSequences: See ``stopSequences``.
   ///   - responseMIMEType: See ``responseMIMEType``.
   ///   - responseSchema: See ``responseSchema``.
-  public init(temperature: Float? = nil, topP: Float? = nil, topK: Int? = nil,
-              candidateCount: Int? = nil, maxOutputTokens: Int? = nil,
-              stopSequences: [String]? = nil, responseMIMEType: String? = nil,
-              responseSchema: Schema? = nil) {
+  public init(
+    temperature: Float? = nil, topP: Float? = nil, topK: Int? = nil,
+    candidateCount: Int? = nil, maxOutputTokens: Int? = nil,
+    stopSequences: [String]? = nil, responseMIMEType: String? = nil,
+    responseSchema: Schema? = nil
+  ) {
     // Explicit init because otherwise if we re-arrange the above variables it changes the API
     // surface.
     self.temperature = temperature

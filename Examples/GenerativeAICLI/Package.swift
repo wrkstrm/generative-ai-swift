@@ -32,6 +32,6 @@ let package = Package(
         .product(name: "GoogleGenerativeAI", package: "GoogleGenerativeAI"),
       ],
       path: "Sources"
-    ),
+    )
   ]
 )

@@ -45,10 +45,10 @@ struct GenerateContent: AsyncParsableCommand {
   ) var debugLogEnabled = false
 
   mutating func validate() throws {
-    if textPrompt == nil && imageURL == nil {
+    if textPrompt == nil, imageURL == nil {
       throw ValidationError(
-        "Missing expected argument(s) '--text-prompt <text-prompt>' and/or" +
-          " '--image-path <image-path>'."
+        "Missing expected argument(s) '--text-prompt <text-prompt>' and/or"
+          + " '--image-path <image-path>'."
       )
     }
   }
@@ -57,21 +57,21 @@ struct GenerateContent: AsyncParsableCommand {
     do {
       let model = GenerativeModel(name: modelNameOrDefault(), apiKey: apiKey)
 
-      var parts = [ModelContent.Part]()
+      var parts: [ModelContent.Part] = []
 
-      if let textPrompt = textPrompt {
+      if let textPrompt {
         parts.append(.text(textPrompt))
       }
 
-      if let imageURL = imageURL {
+      if let imageURL {
         let mimeType: String
         switch imageURL.pathExtension {
-        case "jpg", "jpeg":
-          mimeType = "image/jpeg"
-        case "png":
-          mimeType = "image/png"
-        default:
-          throw CLIError.unsupportedImageType
+          case "jpg", "jpeg":
+            mimeType = "image/jpeg"
+          case "png":
+            mimeType = "image/png"
+          default:
+            throw CLIError.unsupportedImageType
         }
         let imageData = try Data(contentsOf: imageURL)
         parts.append(.data(mimetype: mimeType, imageData))
@@ -100,9 +100,9 @@ struct GenerateContent: AsyncParsableCommand {
 
   func modelNameOrDefault() -> String {
     if let modelName {
-      return modelName
+      modelName
     } else {
-      return "gemini-1.5-flash-latest"
+      "gemini-1.5-flash-latest"
     }
   }
 }
@@ -111,8 +111,8 @@ enum CLIError: Error {
   case unsupportedImageType
 }
 
-private extension URL {
-  static func filePath(_ filePath: String) throws -> URL {
-    return URL(fileURLWithPath: filePath)
+extension URL {
+  fileprivate static func filePath(_ filePath: String) throws -> URL {
+    URL(fileURLWithPath: filePath)
   }
 }

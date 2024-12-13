@@ -53,6 +53,6 @@ final class GenerationConfigSnippets: XCTestCase {
     // [END configure_model_parameters]
 
     // Added to silence the compiler warning about unused variable.
-    let _ = String(describing: generativeModel)
+    _ = String(describing: generativeModel)
   }
 }

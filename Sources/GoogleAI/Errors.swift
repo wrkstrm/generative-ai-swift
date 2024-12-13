@@ -21,7 +21,7 @@ struct RPCError: Error {
   let details: [ErrorDetails]
 
   private var errorInfo: ErrorDetails? {
-    return details.first { $0.isErrorInfo() }
+    details.first { $0.isErrorInfo() }
   }
 
   init(httpResponseCode: Int, message: String, status: RPCStatus, details: [ErrorDetails]) {
@@ -32,11 +32,11 @@ struct RPCError: Error {
   }
 
   func isInvalidAPIKeyError() -> Bool {
-    return errorInfo?.reason == "API_KEY_INVALID"
+    errorInfo?.reason == "API_KEY_INVALID"
   }
 
   func isUnsupportedUserLocationError() -> Bool {
-    return message == RPCErrorMessage.unsupportedUserLocation.rawValue
+    message == RPCErrorMessage.unsupportedUserLocation.rawValue
   }
 }
 
@@ -86,7 +86,7 @@ struct ErrorDetails {
   let domain: String?
 
   func isErrorInfo() -> Bool {
-    return type == ErrorDetails.errorInfoType
+    type == ErrorDetails.errorInfoType
   }
 }
 

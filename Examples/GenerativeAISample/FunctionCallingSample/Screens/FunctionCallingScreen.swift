@@ -44,27 +44,30 @@ struct FunctionCallingScreen: View {
           }
         }
         .listStyle(.plain)
-        .onChange(of: viewModel.messages, perform: { newValue in
-          if viewModel.hasError {
-            // Wait for a short moment to make sure we can actually scroll to the bottom.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-              withAnimation {
-                scrollViewProxy.scrollTo("errorView", anchor: .bottom)
+        .onChange(
+          of: viewModel.messages,
+          perform: { _ in
+            if viewModel.hasError {
+              // Wait for a short moment to make sure we can actually scroll to the bottom.
+              DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                withAnimation {
+                  scrollViewProxy.scrollTo("errorView", anchor: .bottom)
+                }
+                focusedField = .message
               }
-              focusedField = .message
-            }
-          } else {
-            guard let lastMessage = viewModel.messages.last else { return }
+            } else {
+              guard let lastMessage = viewModel.messages.last else { return }
 
-            // Wait for a short moment to make sure we can actually scroll to the bottom.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-              withAnimation {
-                scrollViewProxy.scrollTo(lastMessage.id, anchor: .bottom)
+              // Wait for a short moment to make sure we can actually scroll to the bottom.
+              DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                withAnimation {
+                  scrollViewProxy.scrollTo(lastMessage.id, anchor: .bottom)
+                }
+                focusedField = .message
               }
-              focusedField = .message
             }
           }
-        })
+        )
         .onTapGesture {
           focusedField = nil
         }

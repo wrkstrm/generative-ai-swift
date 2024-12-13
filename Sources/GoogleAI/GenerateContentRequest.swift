@@ -47,10 +47,9 @@ extension GenerateContentRequest: GenerativeAIRequest {
 
   var url: URL {
     let modelURL = "\(GenerativeAISwift.baseURL)/\(options.apiVersion)/\(model)"
-    if isStreaming {
-      return URL(string: "\(modelURL):streamGenerateContent?alt=sse")!
-    } else {
+    guard isStreaming else {
       return URL(string: "\(modelURL):generateContent")!
     }
+    return URL(string: "\(modelURL):streamGenerateContent?alt=sse")!
   }
 }

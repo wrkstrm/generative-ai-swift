@@ -40,21 +40,24 @@ final class CodeExecutionTests: XCTestCase {
     let jsonData = try encoder.encode(CodeExecution())
 
     let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(json, """
-    {
+    XCTAssertEqual(
+      json,
+      """
+      {
 
-    }
-    """)
+      }
+      """
+    )
   }
 
   func testDecodeExecutableCode() throws {
     let expectedExecutableCode = ExecutableCode(language: languageValue, code: codeValue)
     let json = """
-    {
-      "\(languageKey)": "\(languageValue)",
-      "\(codeKey)": "\(codeValue)"
-    }
-    """
+      {
+        "\(languageKey)": "\(languageValue)",
+        "\(codeKey)": "\(codeValue)"
+      }
+      """
     let jsonData = try XCTUnwrap(json.data(using: .utf8))
 
     let executableCode = try XCTUnwrap(decoder.decode(ExecutableCode.self, from: jsonData))
@@ -68,12 +71,15 @@ final class CodeExecutionTests: XCTestCase {
     let jsonData = try encoder.encode(executableCode)
 
     let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(json, """
-    {
-      "\(codeKey)" : "\(codeValue)",
-      "\(languageKey)" : "\(languageValue)"
-    }
-    """)
+    XCTAssertEqual(
+      json,
+      """
+      {
+        "\(codeKey)" : "\(codeValue)",
+        "\(languageKey)" : "\(languageValue)"
+      }
+      """
+    )
   }
 
   func testDecodeCodeExecutionResultOutcome_ok() throws {
@@ -106,17 +112,18 @@ final class CodeExecutionTests: XCTestCase {
   func testDecodeCodeExecutionResult() throws {
     let expectedCodeExecutionResult = CodeExecutionResult(outcome: .ok, output: "Hello, world!")
     let json = """
-    {
-      "\(outcomeKey)": "\(outcomeValue)",
-      "\(outputKey)": "\(outputValue)"
-    }
-    """
+      {
+        "\(outcomeKey)": "\(outcomeValue)",
+        "\(outputKey)": "\(outputValue)"
+      }
+      """
     let jsonData = try XCTUnwrap(json.data(using: .utf8))
 
-    let codeExecutionResult = try XCTUnwrap(decoder.decode(
-      CodeExecutionResult.self,
-      from: jsonData
-    ))
+    let codeExecutionResult = try XCTUnwrap(
+      decoder.decode(
+        CodeExecutionResult.self,
+        from: jsonData
+      ))
 
     XCTAssertEqual(codeExecutionResult, expectedCodeExecutionResult)
   }
@@ -124,16 +131,17 @@ final class CodeExecutionTests: XCTestCase {
   func testDecodeCodeExecutionResult_missingOutput() throws {
     let expectedCodeExecutionResult = CodeExecutionResult(outcome: .deadlineExceeded, output: "")
     let json = """
-    {
-      "\(outcomeKey)": "OUTCOME_DEADLINE_EXCEEDED"
-    }
-    """
+      {
+        "\(outcomeKey)": "OUTCOME_DEADLINE_EXCEEDED"
+      }
+      """
     let jsonData = try XCTUnwrap(json.data(using: .utf8))
 
-    let codeExecutionResult = try XCTUnwrap(decoder.decode(
-      CodeExecutionResult.self,
-      from: jsonData
-    ))
+    let codeExecutionResult = try XCTUnwrap(
+      decoder.decode(
+        CodeExecutionResult.self,
+        from: jsonData
+      ))
 
     XCTAssertEqual(codeExecutionResult, expectedCodeExecutionResult)
   }
@@ -144,11 +152,14 @@ final class CodeExecutionTests: XCTestCase {
     let jsonData = try encoder.encode(codeExecutionResult)
 
     let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(json, """
-    {
-      "\(outcomeKey)" : "\(outcomeValue)",
-      "\(outputKey)" : "\(outputValue)"
-    }
-    """)
+    XCTAssertEqual(
+      json,
+      """
+      {
+        "\(outcomeKey)" : "\(outcomeValue)",
+        "\(outputKey)" : "\(outputValue)"
+      }
+      """
+    )
   }
 }

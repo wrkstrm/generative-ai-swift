@@ -17,27 +17,32 @@ import XCTest
 
 @available(iOS 15.0, macOS 12.0, macCatalyst 15.0, *)
 class MockURLProtocol: URLProtocol {
-  static var requestHandler: ((URLRequest) throws -> (
-    URLResponse,
-    AsyncLineSequence<URL.AsyncBytes>?
-  ))?
+  static var requestHandler:
+    (
+      (URLRequest) throws -> (
+        URLResponse,
+        AsyncLineSequence<URL.AsyncBytes>?
+      )
+    )?
 
-  override class func canInit(with request: URLRequest) -> Bool { return true }
+  override class func canInit(with _: URLRequest) -> Bool { true }
 
-  override class func canonicalRequest(for request: URLRequest) -> URLRequest { return request }
+  override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
   override func startLoading() {
     guard let requestHandler = MockURLProtocol.requestHandler else {
       fatalError("`requestHandler` is nil.")
     }
-    guard let client = client else {
+    guard let client else {
       fatalError("`client` is nil.")
     }
 
     Task {
-      let (response, stream) = try requestHandler(self.request)
+      guard let (response, stream) = try? requestHandler(self.request) else {
+        fatalError("`requestHandler` returned nil.")
+      }
       client.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-      if let stream = stream {
+      if let stream {
         do {
           for try await line in stream {
             guard let data = line.data(using: .utf8) else {

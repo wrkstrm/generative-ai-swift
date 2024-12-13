@@ -19,12 +19,12 @@ import SwiftUI
 extension SafetySetting.HarmCategory: CustomStringConvertible {
   public var description: String {
     switch self {
-    case .dangerousContent: "Dangerous content"
-    case .harassment: "Harassment"
-    case .hateSpeech: "Hate speech"
-    case .sexuallyExplicit: "Sexually explicit"
-    case .unknown: "Unknown"
-    case .unspecified: "Unspecified"
+      case .dangerousContent: "Dangerous content"
+      case .harassment: "Harassment"
+      case .hateSpeech: "Hate speech"
+      case .sexuallyExplicit: "Sexually explicit"
+      case .unknown: "Unknown"
+      case .unspecified: "Unspecified"
     }
   }
 }
@@ -32,12 +32,12 @@ extension SafetySetting.HarmCategory: CustomStringConvertible {
 extension SafetyRating.HarmProbability: CustomStringConvertible {
   public var description: String {
     switch self {
-    case .high: "High"
-    case .low: "Low"
-    case .medium: "Medium"
-    case .negligible: "Negligible"
-    case .unknown: "Unknown"
-    case .unspecified: "Unspecified"
+      case .high: "High"
+      case .low: "Low"
+      case .medium: "Medium"
+      case .negligible: "Negligible"
+      case .unknown: "Unknown"
+      case .unspecified: "Unspecified"
     }
   }
 }
@@ -92,95 +92,97 @@ struct ErrorDetailsView: View {
     NavigationView {
       Form {
         switch error {
-        case let GenerateContentError.internalError(underlying: underlyingError):
-          Section("Error Type") {
-            Text("Internal error")
-          }
-
-          Section("Details") {
-            SubtitleFormRow(title: "Error description",
-                            value: underlyingError.localizedDescription)
-          }
-
-        case let GenerateContentError.promptBlocked(response: generateContentResponse):
-          Section("Error Type") {
-            Text("Your prompt was blocked")
-          }
-
-          Section("Details") {
-            if let reason = generateContentResponse.promptFeedback?.blockReason {
-              SubtitleFormRow(title: "Reason for blocking", value: reason.rawValue)
+          case let GenerateContentError.internalError(underlying: underlyingError):
+            Section("Error Type") {
+              Text("Internal error")
             }
 
-            if let text = generateContentResponse.text {
-              SubtitleMarkdownFormRow(title: "Last chunk for the response", value: text)
+            Section("Details") {
+              SubtitleFormRow(
+                title: "Error description",
+                value: underlyingError.localizedDescription
+              )
             }
-          }
 
-          if let ratings = generateContentResponse.candidates.first?.safetyRatings {
-            SafetyRatingsSection(ratings: ratings)
-          }
-
-        case let GenerateContentError.responseStoppedEarly(
-          reason: finishReason,
-          response: generateContentResponse
-        ):
-
-          Section("Error Type") {
-            Text("Response stopped early")
-          }
-
-          Section("Details") {
-            SubtitleFormRow(title: "Reason for finishing early", value: finishReason.rawValue)
-
-            if let text = generateContentResponse.text {
-              SubtitleMarkdownFormRow(title: "Last chunk for the response", value: text)
+          case let GenerateContentError.promptBlocked(response: generateContentResponse):
+            Section("Error Type") {
+              Text("Your prompt was blocked")
             }
-          }
 
-          if let ratings = generateContentResponse.candidates.first?.safetyRatings {
-            SafetyRatingsSection(ratings: ratings)
-          }
+            Section("Details") {
+              if let reason = generateContentResponse.promptFeedback?.blockReason {
+                SubtitleFormRow(title: "Reason for blocking", value: reason.rawValue)
+              }
 
-        case GenerateContentError.invalidAPIKey:
-          Section("Error Type") {
-            Text("Invalid API Key")
-          }
+              if let text = generateContentResponse.text {
+                SubtitleMarkdownFormRow(title: "Last chunk for the response", value: text)
+              }
+            }
 
-          Section("Details") {
-            SubtitleFormRow(title: "Error description", value: error.localizedDescription)
-            SubtitleMarkdownFormRow(
-              title: "Help",
-              value: """
-              Please provide a valid value for `API_KEY` in the `GenerativeAI-Info.plist` file.
-              """
-            )
-          }
+            if let ratings = generateContentResponse.candidates.first?.safetyRatings {
+              SafetyRatingsSection(ratings: ratings)
+            }
 
-        case GenerateContentError.unsupportedUserLocation:
-          Section("Error Type") {
-            Text("Unsupported User Location")
-          }
+          case let GenerateContentError.responseStoppedEarly(
+            reason: finishReason,
+            response: generateContentResponse
+          ):
 
-          Section("Details") {
-            SubtitleFormRow(title: "Error description", value: error.localizedDescription)
-            SubtitleMarkdownFormRow(
-              title: "Help",
-              value: """
-              The API is unsupported in your location (country / territory); please see the list of
-              [available regions](https://ai.google.dev/available_regions#available_regions).
-              """
-            )
-          }
+            Section("Error Type") {
+              Text("Response stopped early")
+            }
 
-        default:
-          Section("Error Type") {
-            Text("Some other error")
-          }
+            Section("Details") {
+              SubtitleFormRow(title: "Reason for finishing early", value: finishReason.rawValue)
 
-          Section("Details") {
-            SubtitleFormRow(title: "Error description", value: error.localizedDescription)
-          }
+              if let text = generateContentResponse.text {
+                SubtitleMarkdownFormRow(title: "Last chunk for the response", value: text)
+              }
+            }
+
+            if let ratings = generateContentResponse.candidates.first?.safetyRatings {
+              SafetyRatingsSection(ratings: ratings)
+            }
+
+          case GenerateContentError.invalidAPIKey:
+            Section("Error Type") {
+              Text("Invalid API Key")
+            }
+
+            Section("Details") {
+              SubtitleFormRow(title: "Error description", value: error.localizedDescription)
+              SubtitleMarkdownFormRow(
+                title: "Help",
+                value: """
+                  Please provide a valid value for `API_KEY` in the `GenerativeAI-Info.plist` file.
+                  """
+              )
+            }
+
+          case GenerateContentError.unsupportedUserLocation:
+            Section("Error Type") {
+              Text("Unsupported User Location")
+            }
+
+            Section("Details") {
+              SubtitleFormRow(title: "Error description", value: error.localizedDescription)
+              SubtitleMarkdownFormRow(
+                title: "Help",
+                value: """
+                  The API is unsupported in your location (country / territory); please see the list
+                  of [available regions](https://ai.google.dev/available_regions#available_regions).
+                  """
+              )
+            }
+
+          default:
+            Section("Error Type") {
+              Text("Some other error")
+            }
+
+            Section("Details") {
+              SubtitleFormRow(title: "Error description", value: error.localizedDescription)
+            }
         }
       }
       .navigationTitle("Error details")
@@ -192,23 +194,31 @@ struct ErrorDetailsView: View {
 #Preview("Response Stopped Early") {
   let error = GenerateContentError.responseStoppedEarly(
     reason: .maxTokens,
-    response: GenerateContentResponse(candidates: [
-      CandidateResponse(content: ModelContent(role: "model", [
-        """
-        A _hypothetical_ model response.
-        Cillum ex aliqua amet aliquip labore amet eiusmod consectetur reprehenderit sit commodo.
-        """,
-      ]),
-      safetyRatings: [
-        SafetyRating(category: .dangerousContent, probability: .high),
-        SafetyRating(category: .harassment, probability: .low),
-        SafetyRating(category: .hateSpeech, probability: .low),
-        SafetyRating(category: .sexuallyExplicit, probability: .low),
+    response: GenerateContentResponse(
+      candidates: [
+        CandidateResponse(
+          content: ModelContent(
+            role: "model",
+            [
+              """
+              A _hypothetical_ model response.
+              Cillum ex aliqua amet aliquip labore amet,
+              eiusmod consectetur reprehenderit sit commodo.
+              """
+            ]
+          ),
+          safetyRatings: [
+            SafetyRating(category: .dangerousContent, probability: .high),
+            SafetyRating(category: .harassment, probability: .low),
+            SafetyRating(category: .hateSpeech, probability: .low),
+            SafetyRating(category: .sexuallyExplicit, probability: .low),
+          ],
+          finishReason: FinishReason.maxTokens,
+          citationMetadata: nil
+        )
       ],
-      finishReason: FinishReason.maxTokens,
-      citationMetadata: nil),
-    ],
-    promptFeedback: nil)
+      promptFeedback: nil
+    )
   )
 
   return ErrorDetailsView(error: error)
@@ -216,23 +226,31 @@ struct ErrorDetailsView: View {
 
 #Preview("Prompt Blocked") {
   let error = GenerateContentError.promptBlocked(
-    response: GenerateContentResponse(candidates: [
-      CandidateResponse(content: ModelContent(role: "model", [
-        """
-        A _hypothetical_ model response.
-        Cillum ex aliqua amet aliquip labore amet eiusmod consectetur reprehenderit sit commodo.
-        """,
-      ]),
-      safetyRatings: [
-        SafetyRating(category: .dangerousContent, probability: .high),
-        SafetyRating(category: .harassment, probability: .low),
-        SafetyRating(category: .hateSpeech, probability: .low),
-        SafetyRating(category: .sexuallyExplicit, probability: .low),
+    response: GenerateContentResponse(
+      candidates: [
+        CandidateResponse(
+          content: ModelContent(
+            role: "model",
+            [
+              """
+              A _hypothetical_ model response.
+              Cillum ex aliqua amet aliquip labore amet,
+              eiusmod consectetur reprehenderit sit commodo.
+              """
+            ]
+          ),
+          safetyRatings: [
+            SafetyRating(category: .dangerousContent, probability: .high),
+            SafetyRating(category: .harassment, probability: .low),
+            SafetyRating(category: .hateSpeech, probability: .low),
+            SafetyRating(category: .sexuallyExplicit, probability: .low),
+          ],
+          finishReason: FinishReason.other,
+          citationMetadata: nil
+        )
       ],
-      finishReason: FinishReason.other,
-      citationMetadata: nil),
-    ],
-    promptFeedback: nil)
+      promptFeedback: nil
+    )
   )
 
   return ErrorDetailsView(error: error)

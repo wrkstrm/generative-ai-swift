@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import UniformTypeIdentifiers
+
 #if canImport(UIKit)
-  import UIKit // For UIImage extensions.
+import UIKit  // For UIImage extensions.
 #elseif canImport(AppKit)
-  import AppKit // For NSImage extensions.
+import AppKit  // For NSImage extensions.
 #endif
 
 private let imageCompressionQuality: CGFloat = 0.8
@@ -37,33 +38,33 @@ public enum ImageConversionError: Error {
 }
 
 #if canImport(UIKit)
-  /// Enables images to be representable as ``ThrowingPartsRepresentable``.
-  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-  extension UIImage: ThrowingPartsRepresentable {
-    public func tryPartsValue() throws -> [ModelContent.Part] {
-      guard let data = jpegData(compressionQuality: imageCompressionQuality) else {
-        throw ImageConversionError.couldNotConvertToJPEG(self)
-      }
-      return [ModelContent.Part.data(mimetype: "image/jpeg", data)]
+/// Enables images to be representable as ``ThrowingPartsRepresentable``.
+@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
+extension UIImage: ThrowingPartsRepresentable {
+  public func tryPartsValue() throws -> [ModelContent.Part] {
+    guard let data = jpegData(compressionQuality: imageCompressionQuality) else {
+      throw ImageConversionError.couldNotConvertToJPEG(self)
     }
+    return [ModelContent.Part.data(mimetype: "image/jpeg", data)]
   }
+}
 
 #elseif canImport(AppKit)
-  /// Enables images to be representable as ``ThrowingPartsRepresentable``.
-  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-  extension NSImage: ThrowingPartsRepresentable {
-    public func tryPartsValue() throws -> [ModelContent.Part] {
-      guard let cgImage = cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-        throw ImageConversionError.invalidUnderlyingImage
-      }
-      let bmp = NSBitmapImageRep(cgImage: cgImage)
-      guard let data = bmp.representation(using: .jpeg, properties: [.compressionFactor: 0.8])
-      else {
-        throw ImageConversionError.couldNotConvertToJPEG(bmp)
-      }
-      return [ModelContent.Part.data(mimetype: "image/jpeg", data)]
+/// Enables images to be representable as ``ThrowingPartsRepresentable``.
+@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
+extension NSImage: ThrowingPartsRepresentable {
+  public func tryPartsValue() throws -> [ModelContent.Part] {
+    guard let cgImage = cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+      throw ImageConversionError.invalidUnderlyingImage
     }
+    let bmp = NSBitmapImageRep(cgImage: cgImage)
+    guard let data = bmp.representation(using: .jpeg, properties: [.compressionFactor: 0.8])
+    else {
+      throw ImageConversionError.couldNotConvertToJPEG(bmp)
+    }
+    return [ModelContent.Part.data(mimetype: "image/jpeg", data)]
   }
+}
 #endif
 
 /// Enables `CGImages` to be representable as model content.
@@ -71,15 +72,20 @@ public enum ImageConversionError: Error {
 extension CGImage: ThrowingPartsRepresentable {
   public func tryPartsValue() throws -> [ModelContent.Part] {
     let output = NSMutableData()
-    guard let imageDestination = CGImageDestinationCreateWithData(
-      output, UTType.jpeg.identifier as CFString, 1, nil
-    ) else {
+    guard
+      let imageDestination = CGImageDestinationCreateWithData(
+        output, UTType.jpeg.identifier as CFString, 1, nil
+      )
+    else {
       throw ImageConversionError.couldNotAllocateDestination
     }
     CGImageDestinationAddImage(imageDestination, self, nil)
-    CGImageDestinationSetProperties(imageDestination, [
-      kCGImageDestinationLossyCompressionQuality: imageCompressionQuality,
-    ] as CFDictionary)
+    CGImageDestinationSetProperties(
+      imageDestination,
+      [
+        kCGImageDestinationLossyCompressionQuality: imageCompressionQuality
+      ] as CFDictionary
+    )
     if CGImageDestinationFinalize(imageDestination) {
       return [.data(mimetype: "image/jpeg", output as Data)]
     }
@@ -99,7 +105,7 @@ extension CIImage: ThrowingPartsRepresentable {
         // [kCGImageDestinationLossyCompressionQuality: imageCompressionQuality]
         context.jpegRepresentation(of: self, colorSpace: $0, options: [:])
       }
-    if let jpegData = jpegData {
+    if let jpegData {
       return [.data(mimetype: "image/jpeg", jpegData)]
     }
     throw ImageConversionError.couldNotConvertToJPEG(self)

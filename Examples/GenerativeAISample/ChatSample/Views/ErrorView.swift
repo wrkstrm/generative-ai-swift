@@ -36,23 +36,31 @@ struct ErrorView: View {
 #Preview {
   NavigationView {
     let errorPromptBlocked = GenerateContentError.promptBlocked(
-      response: GenerateContentResponse(candidates: [
-        CandidateResponse(content: ModelContent(role: "model", [
-          """
-            A _hypothetical_ model response.
-            Cillum ex aliqua amet aliquip labore amet eiusmod consectetur reprehenderit sit commodo.
-          """,
-        ]),
-        safetyRatings: [
-          SafetyRating(category: .dangerousContent, probability: .high),
-          SafetyRating(category: .harassment, probability: .low),
-          SafetyRating(category: .hateSpeech, probability: .low),
-          SafetyRating(category: .sexuallyExplicit, probability: .low),
+      response: GenerateContentResponse(
+        candidates: [
+          CandidateResponse(
+            content: ModelContent(
+              role: "model",
+              [
+                """
+                  A _hypothetical_ model response.
+                  Cillum ex aliqua amet aliquip labore amet,
+                eiusmod consectetur reprehenderit sit commodo.
+                """
+              ]
+            ),
+            safetyRatings: [
+              SafetyRating(category: .dangerousContent, probability: .high),
+              SafetyRating(category: .harassment, probability: .low),
+              SafetyRating(category: .hateSpeech, probability: .low),
+              SafetyRating(category: .sexuallyExplicit, probability: .low),
+            ],
+            finishReason: FinishReason.other,
+            citationMetadata: nil
+          )
         ],
-        finishReason: FinishReason.other,
-        citationMetadata: nil),
-      ],
-      promptFeedback: nil)
+        promptFeedback: nil
+      )
     )
     List {
       MessageView(message: ChatMessage.samples[0])

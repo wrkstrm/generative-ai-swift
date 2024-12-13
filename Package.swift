@@ -1,5 +1,5 @@
-// swift-tools-version: 5.7.1
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// swift-tools-version: 5.9
+import PackageDescription
 
 // Copyright 2023 Google LLC
 //
@@ -15,12 +15,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import PackageDescription
-
 let package = Package(
   name: "generative-ai-swift",
   platforms: [
-    .iOS(.v11),
+    .iOS(.v12),
     .macOS(.v10_13),
     .macCatalyst(.v13),
   ],
@@ -28,7 +26,7 @@ let package = Package(
     .library(
       name: "GoogleGenerativeAI",
       targets: ["GoogleGenerativeAI"]
-    ),
+    )
   ],
   targets: [
     .target(

@@ -43,9 +43,9 @@ final class CodeExecutionSnippets: XCTestCase {
       )
 
     let prompt = """
-    What is the sum of the first 50 prime numbers?
-    Generate and run code for the calculation, and make sure you get all 50.
-    """
+      What is the sum of the first 50 prime numbers?
+      Generate and run code for the calculation, and make sure you get all 50.
+      """
     let response = try await generativeModel.generateContent(prompt)
     if let text = response.text {
       print(text)
@@ -68,9 +68,9 @@ final class CodeExecutionSnippets: XCTestCase {
     let chat = generativeModel.startChat()
 
     let prompt = """
-    What is the sum of the first 50 prime numbers?
-    Generate and run code for the calculation, and make sure you get all 50.
-    """
+      What is the sum of the first 50 prime numbers?
+      Generate and run code for the calculation, and make sure you get all 50.
+      """
     let response = try await chat.sendMessage(prompt)
     if let text = response.text {
       print(text)

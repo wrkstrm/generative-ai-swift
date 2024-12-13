@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@testable import GoogleGenerativeAI
+// swiftlint:disable file_length
 import XCTest
 
+@testable import GoogleGenerativeAI
+
 @available(iOS 15.0, macOS 12.0, macCatalyst 15.0, *)
-final class GenerativeModelTests: XCTestCase {
+final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_body_length
   let testPrompt = "What sorts of questions can I ask you?"
   let safetyRatingsNegligible: [SafetyRating] = [
     .init(category: .sexuallyExplicit, probability: .negligible),
@@ -295,9 +297,9 @@ final class GenerativeModelTests: XCTestCase {
         withExtension: "json"
       )
     let expectedText1 = """
-    To print strings in Python, you use the `print()` function. \
-    Here's how you can print \"Hello, world!\":\n\n
-    """
+      To print strings in Python, you use the `print()` function. \
+      Here's how you can print \"Hello, world!\":\n\n
+      """
     let expectedText2 = "The code successfully prints the string \"Hello, world!\". \n"
     let expectedLanguage = "PYTHON"
     let expectedCode = "\nprint(\"Hello, world!\")\n"
@@ -330,16 +332,19 @@ final class GenerativeModelTests: XCTestCase {
       return
     }
     XCTAssertEqual(text2, expectedText2)
-    XCTAssertEqual(try XCTUnwrap(response.text), """
-    \(expectedText1)
-    ```\(expectedLanguage.lowercased())
-    \(expectedCode)
-    ```
-    ```
-    \(expectedOutput)
-    ```
-    \(expectedText2)
-    """)
+    XCTAssertEqual(
+      try XCTUnwrap(response.text),
+      """
+      \(expectedText1)
+      ```\(expectedLanguage.lowercased())
+      \(expectedCode)
+      ```
+      ```
+      \(expectedOutput)
+      ```
+      \(expectedText2)
+      """
+    )
   }
 
   func testGenerateContent_usageMetadata() async throws {
@@ -387,14 +392,18 @@ final class GenerativeModelTests: XCTestCase {
     do {
       _ = try await model.generateContent(testPrompt)
       XCTFail("Should throw GenerateContentError.internalError; no error thrown.")
-    } catch let GenerateContentError
-      .internalError(underlying: invalidCandidateError as InvalidCandidateError) {
+    } catch let
+      GenerateContentError
+      .internalError(underlying: invalidCandidateError as InvalidCandidateError)
+    {
       guard case let .emptyContent(decodingError) = invalidCandidateError else {
         XCTFail("Not an InvalidCandidateError.emptyContent error: \(invalidCandidateError)")
         return
       }
-      _ = try XCTUnwrap(decodingError as? DecodingError,
-                        "Not a DecodingError: \(decodingError)")
+      _ = try XCTUnwrap(
+        decodingError as? DecodingError,
+        "Not a DecodingError: \(decodingError)"
+      )
     } catch {
       XCTFail("Should throw GenerateContentError.internalError; error thrown: \(error)")
     }
@@ -666,7 +675,7 @@ final class GenerativeModelTests: XCTestCase {
   }
 
   func testGenerateContent_requestOptions_defaultTimeout() async throws {
-    let expectedTimeout = 300.0 // Default in timeout in RequestOptions()
+    let expectedTimeout = 300.0  // Default in timeout in RequestOptions()
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-basic-reply-short",
@@ -827,7 +836,8 @@ final class GenerativeModelTests: XCTestCase {
     for try await content in stream {
       XCTAssertNotNil(content.text)
       if let ratings = content.candidates.first?.safetyRatings,
-         ratings.contains(where: { $0.category == .unknown }) {
+        ratings.contains(where: { $0.category == .unknown })
+      {
         hadUnknown = true
       }
     }
@@ -854,22 +864,26 @@ final class GenerativeModelTests: XCTestCase {
     }
 
     XCTAssertEqual(citations.count, 8)
-    XCTAssertTrue(citations
-      .contains(where: {
-        $0.startIndex == 0 && $0.endIndex == 128 && !$0.uri.isEmpty && $0.license == nil
-      }))
-    XCTAssertTrue(citations
-      .contains(where: {
-        $0.startIndex == 130 && $0.endIndex == 265 && !$0.uri.isEmpty && $0.license == nil
-      }))
-    XCTAssertTrue(citations
-      .contains(where: {
-        $0.startIndex == 272 && $0.endIndex == 431 && !$0.uri.isEmpty && $0.license == nil
-      }))
-    XCTAssertTrue(citations
-      .contains(where: {
-        $0.startIndex == 444 && $0.endIndex == 630 && !$0.uri.isEmpty && $0.license == "mit"
-      }))
+    XCTAssertTrue(
+      citations
+        .contains(where: {
+          $0.startIndex == 0 && $0.endIndex == 128 && !$0.uri.isEmpty && $0.license == nil
+        }))
+    XCTAssertTrue(
+      citations
+        .contains(where: {
+          $0.startIndex == 130 && $0.endIndex == 265 && !$0.uri.isEmpty && $0.license == nil
+        }))
+    XCTAssertTrue(
+      citations
+        .contains(where: {
+          $0.startIndex == 272 && $0.endIndex == 431 && !$0.uri.isEmpty && $0.license == nil
+        }))
+    XCTAssertTrue(
+      citations
+        .contains(where: {
+          $0.startIndex == 444 && $0.endIndex == 630 && !$0.uri.isEmpty && $0.license == "mit"
+        }))
   }
 
   func testGenerateContentStream_success_codeExecution() async throws {
@@ -893,36 +907,42 @@ final class GenerativeModelTests: XCTestCase {
     let expectedCode = "\nprint(\"Hello, world!\")\n"
     let expectedOutput = "Hello, world!\n"
 
-    var textValues = [String]()
+    var textValues: [String] = []
     let stream = model.generateContentStream(testPrompt)
     for try await content in stream {
       let candidate = try XCTUnwrap(content.candidates.first)
       let part = try XCTUnwrap(candidate.content.parts.first)
       switch part {
-      case let .text(textPart):
-        XCTAssertTrue(expectedTexts.contains(textPart))
-      case let .executableCode(executableCode):
-        XCTAssertEqual(executableCode.language, expectedLanguage)
-        XCTAssertEqual(executableCode.code, expectedCode)
-      case let .codeExecutionResult(codeExecutionResult):
-        XCTAssertEqual(codeExecutionResult.outcome, .ok)
-        XCTAssertEqual(codeExecutionResult.output, expectedOutput)
-      default:
-        XCTFail("Unexpected part type: \(part)")
+        case let .text(textPart):
+          XCTAssertTrue(expectedTexts.contains(textPart))
+
+        case let .executableCode(executableCode):
+          XCTAssertEqual(executableCode.language, expectedLanguage)
+          XCTAssertEqual(executableCode.code, expectedCode)
+
+        case let .codeExecutionResult(codeExecutionResult):
+          XCTAssertEqual(codeExecutionResult.outcome, .ok)
+          XCTAssertEqual(codeExecutionResult.output, expectedOutput)
+
+        default:
+          XCTFail("Unexpected part type: \(part)")
       }
       try textValues.append(XCTUnwrap(content.text))
     }
 
-    XCTAssertEqual(textValues.joined(separator: "\n"), """
-    \(expectedTexts1.joined(separator: "\n"))
-    ```\(expectedLanguage.lowercased())
-    \(expectedCode)
-    ```
-    ```
-    \(expectedOutput)
-    ```
-    \(expectedTexts2.joined(separator: "\n"))
-    """)
+    XCTAssertEqual(
+      textValues.joined(separator: "\n"),
+      """
+      \(expectedTexts1.joined(separator: "\n"))
+      ```\(expectedLanguage.lowercased())
+      \(expectedCode)
+      ```
+      ```
+      \(expectedOutput)
+      ```
+      \(expectedTexts2.joined(separator: "\n"))
+      """
+    )
   }
 
   func testGenerateContentStream_usageMetadata() async throws {
@@ -931,7 +951,7 @@ final class GenerativeModelTests: XCTestCase {
         forResource: "streaming-success-basic-reply-short",
         withExtension: "txt"
       )
-    var responses = [GenerateContentResponse]()
+    var responses: [GenerateContentResponse] = []
 
     let stream = model.generateContentStream(testPrompt)
     for try await response in stream {
@@ -1089,7 +1109,7 @@ final class GenerativeModelTests: XCTestCase {
   }
 
   func testGenerateContentStream_requestOptions_defaultTimeout() async throws {
-    let expectedTimeout = 300.0 // Default in timeout in RequestOptions()
+    let expectedTimeout = 300.0  // Default in timeout in RequestOptions()
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-success-basic-reply-short",
@@ -1202,11 +1222,13 @@ final class GenerativeModelTests: XCTestCase {
 
   // MARK: - Helpers
 
-  private func nonHTTPRequestHandler() throws -> ((URLRequest) -> (
-    URLResponse,
-    AsyncLineSequence<URL.AsyncBytes>?
-  )) {
-    return { request in
+  private func nonHTTPRequestHandler() throws -> (
+    (URLRequest) -> (
+      URLResponse,
+      AsyncLineSequence<URL.AsyncBytes>?
+    )
+  ) {
+    { request in
       // This is *not* an HTTPURLResponse
       let response = URLResponse(
         url: request.url!,
@@ -1218,41 +1240,48 @@ final class GenerativeModelTests: XCTestCase {
     }
   }
 
-  private func httpRequestHandler(forResource name: String,
-                                  withExtension ext: String,
-                                  statusCode: Int = 200,
-                                  timeout: TimeInterval = RequestOptions()
-                                    .timeout) throws -> ((URLRequest) throws -> (
-    URLResponse,
-    AsyncLineSequence<URL.AsyncBytes>?
-  )) {
+  private func httpRequestHandler(
+    forResource name: String,
+    withExtension ext: String,
+    statusCode: Int = 200,
+    timeout: TimeInterval = RequestOptions()
+      .timeout
+  ) throws -> (
+    (URLRequest) throws -> (
+      URLResponse,
+      AsyncLineSequence<URL.AsyncBytes>?
+    )
+  ) {
     let fileURL = try XCTUnwrap(Bundle.module.url(forResource: name, withExtension: ext))
     return { request in
       let requestURL = try XCTUnwrap(request.url)
       XCTAssertEqual(requestURL.path.occurrenceCount(of: "models/"), 1)
       XCTAssertEqual(request.timeoutInterval, timeout)
-      let response = try XCTUnwrap(HTTPURLResponse(
-        url: requestURL,
-        statusCode: statusCode,
-        httpVersion: nil,
-        headerFields: nil
-      ))
+      let response = try XCTUnwrap(
+        HTTPURLResponse(
+          url: requestURL,
+          statusCode: statusCode,
+          httpVersion: nil,
+          headerFields: nil
+        ))
       return (response, fileURL.lines)
     }
   }
 }
 
-private extension String {
+extension String {
   /// Returns the number of occurrences of `substring` in the `String`.
-  func occurrenceCount(of substring: String) -> Int {
-    return components(separatedBy: substring).count - 1
+  fileprivate func occurrenceCount(of substring: String) -> Int {
+    components(separatedBy: substring).count - 1
   }
 }
 
-private extension URLRequest {
+extension URLRequest {
   /// Returns the default `timeoutInterval` for a `URLRequest`.
-  static func defaultTimeoutInterval() -> TimeInterval {
+  fileprivate static func defaultTimeoutInterval() -> TimeInterval {
     let placeholderURL = URL(string: "https://example.com")!
     return URLRequest(url: placeholderURL).timeoutInterval
   }
 }
+
+// swiftlint:enable file_length

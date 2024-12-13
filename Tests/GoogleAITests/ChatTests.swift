@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import Foundation
-@testable import GoogleGenerativeAI
 import XCTest
+
+@testable import GoogleGenerativeAI
 
 @available(iOS 15.0, macOS 12.0, macCatalyst 15.0, *)
 final class ChatTests: XCTestCase {
@@ -31,10 +32,11 @@ final class ChatTests: XCTestCase {
   }
 
   func testMergingText() async throws {
-    let fileURL = try XCTUnwrap(Bundle.module.url(
-      forResource: "streaming-success-basic-reply-long",
-      withExtension: "txt"
-    ))
+    let fileURL = try XCTUnwrap(
+      Bundle.module.url(
+        forResource: "streaming-success-basic-reply-long",
+        withExtension: "txt"
+      ))
 
     MockURLProtocol.requestHandler = { request in
       let response = HTTPURLResponse(

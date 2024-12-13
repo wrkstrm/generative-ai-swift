@@ -19,18 +19,18 @@ import UIKit
 @MainActor
 class FunctionCallingViewModel: ObservableObject {
   /// This array holds both the user's and the system's chat messages
-  @Published var messages = [ChatMessage]()
+  @Published var messages: [ChatMessage] = []
 
   /// Indicates we're waiting for the model to finish
   @Published var busy = false
 
   @Published var error: Error?
   var hasError: Bool {
-    return error != nil
+    error != nil
   }
 
   /// Function calls pending processing
-  private var functionCalls = [FunctionCall]()
+  private var functionCalls: [FunctionCall] = []
 
   private var model: GenerativeModel
   private var chat: Chat
@@ -41,27 +41,29 @@ class FunctionCallingViewModel: ObservableObject {
     model = GenerativeModel(
       name: "gemini-1.5-flash-latest",
       apiKey: APIKey.default,
-      tools: [Tool(functionDeclarations: [
-        FunctionDeclaration(
-          name: "get_exchange_rate",
-          description: "Get the exchange rate for currencies between countries",
-          parameters: [
-            "currency_from": Schema(
-              type: .string,
-              format: "enum",
-              description: "The currency to convert from in ISO 4217 format",
-              enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"]
-            ),
-            "currency_to": Schema(
-              type: .string,
-              format: "enum",
-              description: "The currency to convert to in ISO 4217 format",
-              enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"]
-            ),
-          ],
-          requiredParameters: ["currency_from", "currency_to"]
-        ),
-      ])]
+      tools: [
+        Tool(functionDeclarations: [
+          FunctionDeclaration(
+            name: "get_exchange_rate",
+            description: "Get the exchange rate for currencies between countries",
+            parameters: [
+              "currency_from": Schema(
+                type: .string,
+                format: "enum",
+                description: "The currency to convert from in ISO 4217 format",
+                enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"]
+              ),
+              "currency_to": Schema(
+                type: .string,
+                format: "enum",
+                description: "The currency to convert to in ISO 4217 format",
+                enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"]
+              ),
+            ],
+            requiredParameters: ["currency_from", "currency_to"]
+          )
+        ])
+      ]
     )
     chat = model.startChat()
   }
@@ -150,31 +152,35 @@ class FunctionCallingViewModel: ObservableObject {
 
     for part in candidate.content.parts {
       switch part {
-      case let .text(text):
-        // replace pending message with backend response
-        messages[messages.count - 1].message += text
-        messages[messages.count - 1].pending = false
-      case let .functionCall(functionCall):
-        messages.insert(functionCall.chatMessage(), at: messages.count - 1)
-        functionCalls.append(functionCall)
-      case .data, .fileData, .functionResponse, .executableCode, .codeExecutionResult:
-        fatalError("Unsupported response content.")
+        case let .text(text):
+          // replace pending message with backend response
+          messages[messages.count - 1].message += text
+          messages[messages.count - 1].pending = false
+
+        case let .functionCall(functionCall):
+          messages.insert(functionCall.chatMessage(), at: messages.count - 1)
+          functionCalls.append(functionCall)
+
+        case .data, .fileData, .functionResponse, .executableCode, .codeExecutionResult:
+          fatalError("Unsupported response content.")
       }
     }
   }
 
   func processFunctionCalls() async throws -> [FunctionResponse] {
-    var functionResponses = [FunctionResponse]()
+    var functionResponses: [FunctionResponse] = []
     for functionCall in functionCalls {
       switch functionCall.name {
-      case "get_exchange_rate":
-        let exchangeRates = getExchangeRate(args: functionCall.args)
-        functionResponses.append(FunctionResponse(
-          name: "get_exchange_rate",
-          response: exchangeRates
-        ))
-      default:
-        fatalError("Unknown function named \"\(functionCall.name)\".")
+        case "get_exchange_rate":
+          let exchangeRates = getExchangeRate(args: functionCall.args)
+          functionResponses.append(
+            FunctionResponse(
+              name: "get_exchange_rate",
+              response: exchangeRates
+            ))
+
+        default:
+          fatalError("Unknown function named \"\(functionCall.name)\".")
       }
     }
     functionCalls = []
@@ -214,8 +220,8 @@ class FunctionCallingViewModel: ObservableObject {
   }
 }
 
-private extension FunctionCall {
-  func chatMessage() -> ChatMessage {
+extension FunctionCall {
+  fileprivate func chatMessage() -> ChatMessage {
     let encoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted
 
@@ -234,8 +240,8 @@ private extension FunctionCall {
   }
 }
 
-private extension FunctionResponse {
-  func chatMessage() -> ChatMessage {
+extension FunctionResponse {
+  fileprivate func chatMessage() -> ChatMessage {
     let encoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted
 
@@ -254,12 +260,13 @@ private extension FunctionResponse {
   }
 }
 
-private extension [FunctionResponse] {
-  func modelContent() -> [ModelContent] {
-    return self.map { ModelContent(
-      role: "function",
-      parts: [ModelContent.Part.functionResponse($0)]
-    )
+extension [FunctionResponse] {
+  fileprivate func modelContent() -> [ModelContent] {
+    self.map {
+      ModelContent(
+        role: "function",
+        parts: [ModelContent.Part.functionResponse($0)]
+      )
     }
   }
 }

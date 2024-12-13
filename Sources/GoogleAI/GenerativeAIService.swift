@@ -30,7 +30,7 @@ struct GenerativeAIService {
     let urlRequest = try urlRequest(request: request)
 
     #if DEBUG
-      printCURLCommand(from: urlRequest)
+    printCURLCommand(from: urlRequest)
     #endif
 
     let data: Data
@@ -54,8 +54,9 @@ struct GenerativeAIService {
 
   @available(macOS 12.0, *)
   func loadRequestStream<T: GenerativeAIRequest>(request: T)
-    -> AsyncThrowingStream<T.Response, Error> {
-    return AsyncThrowingStream { continuation in
+    -> AsyncThrowingStream<T.Response, Error>
+  {
+    AsyncThrowingStream { continuation in
       Task {
         let urlRequest: URLRequest
         do {
@@ -66,7 +67,7 @@ struct GenerativeAIService {
         }
 
         #if DEBUG
-          printCURLCommand(from: urlRequest)
+        printCURLCommand(from: urlRequest)
         #endif
 
         let stream: URLSession.AsyncBytes
@@ -103,7 +104,7 @@ struct GenerativeAIService {
         }
 
         // Received lines that are not server-sent events (SSE); these are not prefixed with "data:"
-        var extraLines: String = ""
+        var extraLines = ""
 
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -134,7 +135,7 @@ struct GenerativeAIService {
           }
         }
 
-        if extraLines.count > 0 {
+        if !extraLines.isEmpty {
           continuation.finish(throwing: parseError(responseBody: extraLines))
           return
         }
@@ -146,12 +147,14 @@ struct GenerativeAIService {
 
   // MARK: - Private Helpers
 
-  private func urlRequest<T: GenerativeAIRequest>(request: T) throws -> URLRequest {
+  private func urlRequest(request: some GenerativeAIRequest) throws -> URLRequest {
     var urlRequest = URLRequest(url: request.url)
     urlRequest.httpMethod = "POST"
     urlRequest.setValue(apiKey, forHTTPHeaderField: "x-goog-api-key")
-    urlRequest.setValue("genai-swift/\(GenerativeAISwift.version)",
-                        forHTTPHeaderField: "x-goog-api-client")
+    urlRequest.setValue(
+      "genai-swift/\(GenerativeAISwift.version)",
+      forHTTPHeaderField: "x-goog-api-client"
+    )
     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
     let encoder = JSONEncoder()
     encoder.keyEncodingStrategy = .convertToSnakeCase
@@ -222,33 +225,35 @@ struct GenerativeAIService {
   }
 
   #if DEBUG
-    private func cURLCommand(from request: URLRequest) -> String {
-      var returnValue = "curl "
-      if let allHeaders = request.allHTTPHeaderFields {
-        for (key, value) in allHeaders {
-          returnValue += "-H '\(key): \(value)' "
-        }
+  private func cURLCommand(from request: URLRequest) -> String {
+    var returnValue = "curl "
+    if let allHeaders = request.allHTTPHeaderFields {
+      for (key, value) in allHeaders {
+        returnValue += "-H '\(key): \(value)' "
       }
-
-      guard let url = request.url else { return "" }
-      returnValue += "'\(url.absoluteString)' "
-
-      guard let body = request.httpBody,
-            let jsonStr = String(bytes: body, encoding: .utf8) else { return "" }
-      let escapedJSON = jsonStr.replacingOccurrences(of: "'", with: "'\\''")
-      returnValue += "-d '\(escapedJSON)'"
-
-      return returnValue
     }
 
-    private func printCURLCommand(from request: URLRequest) {
-      let command = cURLCommand(from: request)
-      Logging.verbose.debug("""
+    guard let url = request.url else { return "" }
+    returnValue += "'\(url.absoluteString)' "
+
+    guard let body = request.httpBody,
+      let jsonStr = String(bytes: body, encoding: .utf8)
+    else { return "" }
+    let escapedJSON = jsonStr.replacingOccurrences(of: "'", with: "'\\''")
+    returnValue += "-d '\(escapedJSON)'"
+
+    return returnValue
+  }
+
+  private func printCURLCommand(from request: URLRequest) {
+    let command = cURLCommand(from: request)
+    Logging.verbose.debug(
+      """
       [GoogleGenerativeAI] Creating request with the equivalent cURL command:
       ----- cURL command -----
       \(command, privacy: .private)
       ------------------------
       """)
-    }
-  #endif // DEBUG
+  }
+  #endif  // DEBUG
 }

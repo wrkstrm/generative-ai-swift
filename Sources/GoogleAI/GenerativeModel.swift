@@ -59,14 +59,16 @@ public final class GenerativeModel {
   ///     `ModelContent(role: "system", parts: "You are a cat. Your name is Neko.")`.
   ///   - toolConfig: Tool configuration for any `Tool` specified in the request.
   ///   - requestOptions Configuration parameters for sending requests to the backend.
-  public convenience init(name: String,
-                          apiKey: String,
-                          generationConfig: GenerationConfig? = nil,
-                          safetySettings: [SafetySetting]? = nil,
-                          tools: [Tool]? = nil,
-                          toolConfig: ToolConfig? = nil,
-                          systemInstruction: ModelContent? = nil,
-                          requestOptions: RequestOptions = RequestOptions()) {
+  public convenience init(
+    name: String,
+    apiKey: String,
+    generationConfig: GenerationConfig? = nil,
+    safetySettings: [SafetySetting]? = nil,
+    tools: [Tool]? = nil,
+    toolConfig: ToolConfig? = nil,
+    systemInstruction: ModelContent? = nil,
+    requestOptions: RequestOptions = RequestOptions()
+  ) {
     self.init(
       name: name,
       apiKey: apiKey,
@@ -93,14 +95,16 @@ public final class GenerativeModel {
   ///     only text content is supported, e.g., "You are a cat. Your name is Neko."
   ///   - toolConfig: Tool configuration for any `Tool` specified in the request.
   ///   - requestOptions Configuration parameters for sending requests to the backend.
-  public convenience init(name: String,
-                          apiKey: String,
-                          generationConfig: GenerationConfig? = nil,
-                          safetySettings: [SafetySetting]? = nil,
-                          tools: [Tool]? = nil,
-                          toolConfig: ToolConfig? = nil,
-                          systemInstruction: String...,
-                          requestOptions: RequestOptions = RequestOptions()) {
+  public convenience init(
+    name: String,
+    apiKey: String,
+    generationConfig: GenerationConfig? = nil,
+    safetySettings: [SafetySetting]? = nil,
+    tools: [Tool]? = nil,
+    toolConfig: ToolConfig? = nil,
+    systemInstruction: String...,
+    requestOptions: RequestOptions = RequestOptions()
+  ) {
     self.init(
       name: name,
       apiKey: apiKey,
@@ -118,15 +122,17 @@ public final class GenerativeModel {
   }
 
   /// The designated initializer for this class.
-  init(name: String,
-       apiKey: String,
-       generationConfig: GenerationConfig? = nil,
-       safetySettings: [SafetySetting]? = nil,
-       tools: [Tool]? = nil,
-       toolConfig: ToolConfig? = nil,
-       systemInstruction: ModelContent? = nil,
-       requestOptions: RequestOptions = RequestOptions(),
-       urlSession: URLSession) {
+  init(
+    name: String,
+    apiKey: String,
+    generationConfig: GenerationConfig? = nil,
+    safetySettings: [SafetySetting]? = nil,
+    tools: [Tool]? = nil,
+    toolConfig: ToolConfig? = nil,
+    systemInstruction: ModelContent? = nil,
+    requestOptions: RequestOptions = RequestOptions(),
+    urlSession: URLSession
+  ) {
     modelResourceName = GenerativeModel.modelResourceName(name: name)
     generativeAIService = GenerativeAIService(apiKey: apiKey, urlSession: urlSession)
     self.generationConfig = generationConfig
@@ -136,13 +142,12 @@ public final class GenerativeModel {
     self.systemInstruction = systemInstruction
     self.requestOptions = requestOptions
 
-    Logging.default.info("""
-    [GoogleGenerativeAI] Model \(
-      name,
-      privacy: .public
-    ) initialized. To enable additional logging, add \
-    `\(Logging.enableArgumentKey, privacy: .public)` as a launch argument in Xcode.
-    """)
+    Logging.default.info(
+      """
+      [GoogleGenerativeAI] Model \(name, privacy: .public) initialized.
+      To enable additional logging, add \
+      `\(Logging.enableArgumentKey, privacy: .public)` as a launch argument in Xcode.
+      """)
     Logging.verbose.debug("[GoogleGenerativeAI] Verbose logging enabled.")
   }
 
@@ -151,9 +156,13 @@ public final class GenerativeModel {
   ///
   /// Since ``ModelContent/Part``s do not specify a role, this method is intended for generating
   /// content from
-  /// [zero-shot](https://developers.google.com/machine-learning/glossary/generative#zero-shot-prompting)
+  /// [zero-shot](
+  /// https://developers.google.com/machine-learning/glossary/generative#zero-shot-prompting
+  /// )
   /// or "direct" prompts. For
-  /// [few-shot](https://developers.google.com/machine-learning/glossary/generative#few-shot-prompting)
+  /// [few-shot](
+  /// https://developers.google.com/machine-learning/glossary/generative#few-shot-prompting
+  /// )
   /// prompts, see `generateContent(_ content: @autoclosure () throws -> [ModelContent])`.
   ///
   /// - Parameter content: The input(s) given to the model as a prompt (see
@@ -162,8 +171,9 @@ public final class GenerativeModel {
   /// - Returns: The content generated by the model.
   /// - Throws: A ``GenerateContentError`` if the request failed.
   public func generateContent(_ parts: any ThrowingPartsRepresentable...)
-    async throws -> GenerateContentResponse {
-    return try await generateContent([ModelContent(parts: parts)])
+    async throws -> GenerateContentResponse
+  {
+    try await generateContent([ModelContent(parts: parts)])
   }
 
   /// Generates new content from input content given to the model as a prompt.
@@ -172,18 +182,21 @@ public final class GenerativeModel {
   /// - Returns: The generated content response from the model.
   /// - Throws: A ``GenerateContentError`` if the request failed.
   public func generateContent(_ content: @autoclosure () throws -> [ModelContent]) async throws
-    -> GenerateContentResponse {
+    -> GenerateContentResponse
+  {
     let response: GenerateContentResponse
     do {
-      let generateContentRequest = try GenerateContentRequest(model: modelResourceName,
-                                                              contents: content(),
-                                                              generationConfig: generationConfig,
-                                                              safetySettings: safetySettings,
-                                                              tools: tools,
-                                                              toolConfig: toolConfig,
-                                                              systemInstruction: systemInstruction,
-                                                              isStreaming: false,
-                                                              options: requestOptions)
+      let generateContentRequest = try GenerateContentRequest(
+        model: modelResourceName,
+        contents: content(),
+        generationConfig: generationConfig,
+        safetySettings: safetySettings,
+        tools: tools,
+        toolConfig: toolConfig,
+        systemInstruction: systemInstruction,
+        isStreaming: false,
+        options: requestOptions
+      )
       response = try await generativeAIService.loadRequest(request: generateContentRequest)
     } catch {
       if let imageError = error as? ImageConversionError {
@@ -210,9 +223,13 @@ public final class GenerativeModel {
   ///
   /// Since ``ModelContent/Part``s do not specify a role, this method is intended for generating
   /// content from
-  /// [zero-shot](https://developers.google.com/machine-learning/glossary/generative#zero-shot-prompting)
+  /// [zero-shot](
+  /// https://developers.google.com/machine-learning/glossary/generative#zero-shot-prompting
+  /// )
   /// or "direct" prompts. For
-  /// [few-shot](https://developers.google.com/machine-learning/glossary/generative#few-shot-prompting)
+  /// [few-shot](
+  /// https://developers.google.com/machine-learning/glossary/generative#few-shot-prompting
+  /// )
   /// prompts, see `generateContent(_ content: @autoclosure () throws -> [ModelContent])`.
   ///
   /// - Parameter content: The input(s) given to the model as a prompt (see
@@ -222,8 +239,9 @@ public final class GenerativeModel {
   ///     error if an error occurred.
   @available(macOS 12.0, *)
   public func generateContentStream(_ parts: any ThrowingPartsRepresentable...)
-    -> AsyncThrowingStream<GenerateContentResponse, Error> {
-    return try generateContentStream([ModelContent(parts: parts)])
+    -> AsyncThrowingStream<GenerateContentResponse, Error>
+  {
+    try generateContentStream([ModelContent(parts: parts)])
   }
 
   /// Generates new content from input content given to the model as a prompt.
@@ -233,31 +251,34 @@ public final class GenerativeModel {
   ///     error if an error occurred.
   @available(macOS 12.0, *)
   public func generateContentStream(_ content: @autoclosure () throws -> [ModelContent])
-    -> AsyncThrowingStream<GenerateContentResponse, Error> {
+    -> AsyncThrowingStream<GenerateContentResponse, Error>
+  {
     let evaluatedContent: [ModelContent]
     do {
       evaluatedContent = try content()
     } catch let underlying {
       return AsyncThrowingStream { continuation in
-        let error: Error
-        if let contentError = underlying as? ImageConversionError {
-          error = GenerateContentError.promptImageContentError(underlying: contentError)
-        } else {
-          error = GenerateContentError.internalError(underlying: underlying)
-        }
+        let error: Error =
+          if let contentError = underlying as? ImageConversionError {
+            GenerateContentError.promptImageContentError(underlying: contentError)
+          } else {
+            GenerateContentError.internalError(underlying: underlying)
+          }
         continuation.finish(throwing: error)
       }
     }
 
-    let generateContentRequest = GenerateContentRequest(model: modelResourceName,
-                                                        contents: evaluatedContent,
-                                                        generationConfig: generationConfig,
-                                                        safetySettings: safetySettings,
-                                                        tools: tools,
-                                                        toolConfig: toolConfig,
-                                                        systemInstruction: systemInstruction,
-                                                        isStreaming: true,
-                                                        options: requestOptions)
+    let generateContentRequest = GenerateContentRequest(
+      model: modelResourceName,
+      contents: evaluatedContent,
+      generationConfig: generationConfig,
+      safetySettings: safetySettings,
+      tools: tools,
+      toolConfig: toolConfig,
+      systemInstruction: systemInstruction,
+      isStreaming: true,
+      options: requestOptions
+    )
 
     var responseIterator = generativeAIService.loadRequestStream(request: generateContentRequest)
       .makeAsyncIterator()
@@ -270,7 +291,7 @@ public final class GenerativeModel {
       }
 
       // The responseIterator will return `nil` when it's done.
-      guard let response = response else {
+      guard let response else {
         // This is the end of the stream! Signal it by sending `nil`.
         return nil
       }
@@ -281,27 +302,30 @@ public final class GenerativeModel {
       }
 
       // If the stream ended early unexpectedly, throw an error.
-      if let finishReason = response.candidates.first?.finishReason, finishReason != .stop {
-        throw GenerateContentError.responseStoppedEarly(reason: finishReason, response: response)
-      } else {
+      guard let finishReason = response.candidates.first?.finishReason, finishReason != .stop else {
         // Response was valid content, pass it along and continue.
         return response
       }
+      throw GenerateContentError.responseStoppedEarly(reason: finishReason, response: response)
     }
   }
 
   /// Creates a new chat conversation using this model with the provided history.
   public func startChat(history: [ModelContent] = []) -> Chat {
-    return Chat(model: self, history: history)
+    Chat(model: self, history: history)
   }
 
   /// Runs the model's tokenizer on String and/or image inputs that are representable as one or more
   /// ``ModelContent/Part``s.
   ///
   /// Since ``ModelContent/Part``s do not specify a role, this method is intended for tokenizing
-  /// [zero-shot](https://developers.google.com/machine-learning/glossary/generative#zero-shot-prompting)
+  /// [zero-shot](
+  /// https://developers.google.com/machine-learning/glossary/generative#zero-shot-prompting
+  /// )
   /// or "direct" prompts. For
-  /// [few-shot](https://developers.google.com/machine-learning/glossary/generative#few-shot-prompting)
+  /// [few-shot](
+  /// https://developers.google.com/machine-learning/glossary/generative#few-shot-prompting
+  /// )
   /// input, see `countTokens(_ content: @autoclosure () throws -> [ModelContent])`.
   ///
   /// - Parameter content: The input(s) given to the model as a prompt (see
@@ -311,8 +335,9 @@ public final class GenerativeModel {
   /// ``CountTokensResponse/totalTokens``.
   /// - Throws: A ``CountTokensError`` if the tokenization request failed.
   public func countTokens(_ parts: any ThrowingPartsRepresentable...) async throws
-    -> CountTokensResponse {
-    return try await countTokens([ModelContent(parts: parts)])
+    -> CountTokensResponse
+  {
+    try await countTokens([ModelContent(parts: parts)])
   }
 
   /// Runs the model's tokenizer on the input content and returns the token count.
@@ -323,17 +348,20 @@ public final class GenerativeModel {
   /// - Throws: A ``CountTokensError`` if the tokenization request failed or the input content was
   /// invalid.
   public func countTokens(_ content: @autoclosure () throws -> [ModelContent]) async throws
-    -> CountTokensResponse {
+    -> CountTokensResponse
+  {
     do {
-      let generateContentRequest = try GenerateContentRequest(model: modelResourceName,
-                                                              contents: content(),
-                                                              generationConfig: generationConfig,
-                                                              safetySettings: safetySettings,
-                                                              tools: tools,
-                                                              toolConfig: toolConfig,
-                                                              systemInstruction: systemInstruction,
-                                                              isStreaming: false,
-                                                              options: requestOptions)
+      let generateContentRequest = try GenerateContentRequest(
+        model: modelResourceName,
+        contents: content(),
+        generationConfig: generationConfig,
+        safetySettings: safetySettings,
+        tools: tools,
+        toolConfig: toolConfig,
+        systemInstruction: systemInstruction,
+        isStreaming: false,
+        options: requestOptions
+      )
       let countTokensRequest = CountTokensRequest(
         model: modelResourceName,
         generateContentRequest: generateContentRequest,
@@ -348,9 +376,9 @@ public final class GenerativeModel {
   /// Returns a model resource name of the form "models/model-name" based on `name`.
   private static func modelResourceName(name: String) -> String {
     if name.contains("/") {
-      return name
+      name
     } else {
-      return modelResourcePrefix + name
+      modelResourcePrefix + name
     }
   }
 

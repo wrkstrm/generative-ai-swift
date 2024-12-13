@@ -14,7 +14,7 @@
 import Foundation
 
 #if !os(macOS) && !os(iOS)
-  #warning("Only iOS, macOS, and Catalyst targets are currently fully supported.")
+#warning("Only iOS, macOS, and Catalyst targets are currently fully supported.")
 #endif
 
 /// Constants associated with the GenerativeAISwift SDK.

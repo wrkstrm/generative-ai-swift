@@ -44,7 +44,7 @@ final class SafetySettingsSnippets: XCTestCase {
     // [END safety_settings]
 
     // Added to silence the compiler warning about unused variable.
-    let _ = String(describing: generativeModel)
+    _ = String(describing: generativeModel)
   }
 
   func testSafetySettingsMulti() {
@@ -67,6 +67,6 @@ final class SafetySettingsSnippets: XCTestCase {
     // [END safety_settings_multi]
 
     // Added to silence the compiler warning about unused variable.
-    let _ = String(describing: generativeModel)
+    _ = String(describing: generativeModel)
   }
 }

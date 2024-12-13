@@ -30,10 +30,10 @@ class PhotoReasoningViewModel: ObservableObject {
   var userInput: String = ""
 
   @Published
-  var selectedItems = [PhotosPickerItem]()
+  var selectedItems: [PhotosPickerItem] = []
 
   @Published
-  var outputText: String? = nil
+  var outputText: String?
 
   @Published
   var errorMessage: String?
@@ -62,7 +62,7 @@ class PhotoReasoningViewModel: ObservableObject {
 
       let prompt = "Look at the image(s), and then answer the following question: \(userInput)"
 
-      var images = [any ThrowingPartsRepresentable]()
+      var images: [any ThrowingPartsRepresentable] = []
       for item in selectedItems {
         if let data = try? await item.loadTransferable(type: Data.self) {
           guard let image = UIImage(data: data) else {
@@ -72,9 +72,13 @@ class PhotoReasoningViewModel: ObservableObject {
           if image.size.fits(largestDimension: PhotoReasoningViewModel.largestImageDimension) {
             images.append(image)
           } else {
-            guard let resizedImage = image
-              .preparingThumbnail(of: image.size
-                .aspectFit(largestDimension: PhotoReasoningViewModel.largestImageDimension)) else {
+            guard
+              let resizedImage =
+                image
+                .preparingThumbnail(
+                  of: image.size
+                    .aspectFit(largestDimension: PhotoReasoningViewModel.largestImageDimension))
+            else {
               logger.error("Failed to resize image: \(image)")
               continue
             }
@@ -101,19 +105,18 @@ class PhotoReasoningViewModel: ObservableObject {
   }
 }
 
-private extension CGSize {
-  func fits(largestDimension length: CGFloat) -> Bool {
-    return width <= length && height <= length
+extension CGSize {
+  fileprivate func fits(largestDimension length: CGFloat) -> Bool {
+    width <= length && height <= length
   }
 
-  func aspectFit(largestDimension length: CGFloat) -> CGSize {
+  fileprivate func aspectFit(largestDimension length: CGFloat) -> CGSize {
     let aspectRatio = width / height
-    if width > height {
-      let width = min(self.width, length)
-      return CGSize(width: width, height: round(width / aspectRatio))
-    } else {
-      let height = min(self.height, length)
+    guard width > height else {
+      let height = min(height, length)
       return CGSize(width: round(height * aspectRatio), height: height)
     }
+    let width = min(width, length)
+    return CGSize(width: width, height: round(width / aspectRatio))
   }
 }

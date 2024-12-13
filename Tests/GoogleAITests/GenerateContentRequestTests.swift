@@ -38,17 +38,19 @@ final class GenerateContentRequestTests: XCTestCase {
       model: modelName,
       contents: content,
       generationConfig: GenerationConfig(temperature: 0.5),
-      safetySettings: [SafetySetting(
-        harmCategory: .dangerousContent,
-        threshold: .blockLowAndAbove
-      )],
+      safetySettings: [
+        SafetySetting(
+          harmCategory: .dangerousContent,
+          threshold: .blockLowAndAbove
+        )
+      ],
       tools: [
         Tool(functionDeclarations: [
           FunctionDeclaration(
             name: "test-function-name",
             description: "test-function-description",
             parameters: nil
-          ),
+          )
         ]),
         Tool(codeExecution: CodeExecution()),
       ],
@@ -61,61 +63,64 @@ final class GenerateContentRequestTests: XCTestCase {
     let jsonData = try encoder.encode(request)
 
     let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(json, """
-    {
-      "contents" : [
-        {
-          "parts" : [
-            {
-              "text" : "\(prompt)"
-            }
-          ],
-          "role" : "\(role)"
-        }
-      ],
-      "generationConfig" : {
-        "temperature" : 0.5
-      },
-      "model" : "\(modelName)",
-      "safetySettings" : [
-        {
-          "category" : "HARM_CATEGORY_DANGEROUS_CONTENT",
-          "threshold" : "BLOCK_LOW_AND_ABOVE"
-        }
-      ],
-      "systemInstruction" : {
-        "parts" : [
+    XCTAssertEqual(
+      json,
+      """
+      {
+        "contents" : [
           {
-            "text" : "test-system-instruction"
+            "parts" : [
+              {
+                "text" : "\(prompt)"
+              }
+            ],
+            "role" : "\(role)"
           }
         ],
-        "role" : "system"
-      },
-      "toolConfig" : {
-        "functionCallingConfig" : {
-          "mode" : "AUTO"
-        }
-      },
-      "tools" : [
-        {
-          "functionDeclarations" : [
-            {
-              "description" : "test-function-description",
-              "name" : "test-function-name",
-              "parameters" : {
-                "type" : "OBJECT"
-              }
-            }
-          ]
+        "generationConfig" : {
+          "temperature" : 0.5
         },
-        {
-          "codeExecution" : {
-
+        "model" : "\(modelName)",
+        "safetySettings" : [
+          {
+            "category" : "HARM_CATEGORY_DANGEROUS_CONTENT",
+            "threshold" : "BLOCK_LOW_AND_ABOVE"
           }
-        }
-      ]
-    }
-    """)
+        ],
+        "systemInstruction" : {
+          "parts" : [
+            {
+              "text" : "test-system-instruction"
+            }
+          ],
+          "role" : "system"
+        },
+        "toolConfig" : {
+          "functionCallingConfig" : {
+            "mode" : "AUTO"
+          }
+        },
+        "tools" : [
+          {
+            "functionDeclarations" : [
+              {
+                "description" : "test-function-description",
+                "name" : "test-function-name",
+                "parameters" : {
+                  "type" : "OBJECT"
+                }
+              }
+            ]
+          },
+          {
+            "codeExecution" : {
+
+            }
+          }
+        ]
+      }
+      """
+    )
   }
 
   func testEncodeRequest_optionalFieldsOmitted() throws {
@@ -135,20 +140,23 @@ final class GenerateContentRequestTests: XCTestCase {
     let jsonData = try encoder.encode(request)
 
     let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(json, """
-    {
-      "contents" : [
-        {
-          "parts" : [
-            {
-              "text" : "\(prompt)"
-            }
-          ],
-          "role" : "\(role)"
-        }
-      ],
-      "model" : "\(modelName)"
-    }
-    """)
+    XCTAssertEqual(
+      json,
+      """
+      {
+        "contents" : [
+          {
+            "parts" : [
+              {
+                "text" : "\(prompt)"
+              }
+            ],
+            "role" : "\(role)"
+          }
+        ],
+        "model" : "\(modelName)"
+      }
+      """
+    )
   }
 }

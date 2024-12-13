@@ -68,12 +68,6 @@ public struct SafetyFeedback {
 
   /// Safety settings applied to the request.
   public let setting: SafetySetting
-
-  /// Internal initializer.
-  init(rating: SafetyRating, setting: SafetySetting) {
-    self.rating = rating
-    self.setting = setting
-  }
 }
 
 /// A type used to specify a threshold for harmful content, beyond which the model will return a

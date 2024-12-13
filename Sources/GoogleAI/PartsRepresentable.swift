@@ -30,9 +30,9 @@ public protocol PartsRepresentable: ThrowingPartsRepresentable {
 }
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-public extension PartsRepresentable {
-  func tryPartsValue() throws -> [ModelContent.Part] {
-    return partsValue
+extension PartsRepresentable {
+  public func tryPartsValue() throws -> [ModelContent.Part] {
+    partsValue
   }
 }
 
@@ -41,7 +41,7 @@ public extension PartsRepresentable {
 extension ModelContent.Part: ThrowingPartsRepresentable {
   public typealias ErrorType = Never
   public func tryPartsValue() throws -> [ModelContent.Part] {
-    return [self]
+    [self]
   }
 }
 
@@ -50,7 +50,7 @@ extension ModelContent.Part: ThrowingPartsRepresentable {
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 extension [ThrowingPartsRepresentable]: ThrowingPartsRepresentable {
   public func tryPartsValue() throws -> [ModelContent.Part] {
-    return try compactMap { element in
+    try compactMap { element in
       try element.tryPartsValue()
     }
     .flatMap { $0 }
@@ -61,6 +61,6 @@ extension [ThrowingPartsRepresentable]: ThrowingPartsRepresentable {
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 extension String: PartsRepresentable {
   public var partsValue: [ModelContent.Part] {
-    return [.text(self)]
+    [.text(self)]
   }
 }

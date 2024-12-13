@@ -36,13 +36,16 @@ final class ModelContentTests: XCTestCase {
     let jsonData = try encoder.encode(fileDataPart)
 
     let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(json, """
-    {
-      "fileData" : {
-        "file_uri" : "\(fileURI)",
-        "mime_type" : "\(mimeType)"
+    XCTAssertEqual(
+      json,
+      """
+      {
+        "fileData" : {
+          "file_uri" : "\(fileURI)",
+          "mime_type" : "\(mimeType)"
+        }
       }
-    }
-    """)
+      """
+    )
   }
 }

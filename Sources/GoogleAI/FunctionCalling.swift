@@ -79,11 +79,13 @@ public class Schema {
   ///   - items: Schema of the elements of type ``DataType/array``.
   ///   - properties: Properties of type ``DataType/object``.
   ///   - requiredProperties: Required properties of type ``DataType/object``.
-  public init(type: DataType, format: String? = nil, description: String? = nil,
-              nullable: Bool? = nil,
-              enumValues: [String]? = nil, items: Schema? = nil,
-              properties: [String: Schema]? = nil,
-              requiredProperties: [String]? = nil) {
+  public init(
+    type: DataType, format: String? = nil, description: String? = nil,
+    nullable: Bool? = nil,
+    enumValues: [String]? = nil, items: Schema? = nil,
+    properties: [String: Schema]? = nil,
+    requiredProperties: [String]? = nil
+  ) {
     self.type = type
     self.format = format
     self.description = description
@@ -141,8 +143,10 @@ public struct FunctionDeclaration {
   ///   - parameters: Describes the parameters to this function; the keys are parameter names and
   ///   the values are ``Schema`` objects describing them.
   ///   - requiredParameters: A list of required parameters by name.
-  public init(name: String, description: String, parameters: [String: Schema]?,
-              requiredParameters: [String]? = nil) {
+  public init(
+    name: String, description: String, parameters: [String: Schema]?,
+    requiredParameters: [String]? = nil
+  ) {
     self.name = name
     self.description = description
     self.parameters = Schema(
@@ -176,8 +180,10 @@ public struct Tool {
   ///   ``FunctionResponse`` in ``ModelContent/Part/functionResponse(_:)`` with the
   ///   ``ModelContent/role`` "function", providing generation context for the next model turn.
   ///   - codeExecution: Enables the model to execute code as part of generation, if provided.
-  public init(functionDeclarations: [FunctionDeclaration]? = nil,
-              codeExecution: CodeExecution? = nil) {
+  public init(
+    functionDeclarations: [FunctionDeclaration]? = nil,
+    codeExecution: CodeExecution? = nil
+  ) {
     self.functionDeclarations = functionDeclarations
     self.codeExecution = codeExecution
   }

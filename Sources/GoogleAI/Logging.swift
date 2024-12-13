@@ -16,7 +16,7 @@ import Foundation
 import OSLog
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-struct Logging {
+enum Logging {
   /// Subsystem that should be used for all Loggers.
   static let subsystem = "com.google.generative-ai"
 
@@ -26,31 +26,25 @@ struct Logging {
   /// The argument required to enable additional logging.
   static let enableArgumentKey = "-GoogleGenerativeAIDebugLogEnabled"
 
-  // No initializer available.
-  @available(*, unavailable)
-  private init() {}
-
   /// The default logger that is visible for all users. Note: we shouldn't be using anything lower
   /// than `.notice`.
   static var `default` = Logger(subsystem: subsystem, category: defaultCategory)
 
   /// A non default
-  static var network: Logger = {
+  static var network: Logger =
     if ProcessInfo.processInfo.arguments.contains(enableArgumentKey) {
-      return Logger(subsystem: subsystem, category: "NetworkResponse")
+      .init(subsystem: subsystem, category: "NetworkResponse")
     } else {
       // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
-      return Logger(.disabled)
+      .init(.disabled)
     }
-  }()
 
   ///
-  static var verbose: Logger = {
+  static var verbose: Logger =
     if ProcessInfo.processInfo.arguments.contains(enableArgumentKey) {
-      return Logger(subsystem: subsystem, category: defaultCategory)
+      .init(subsystem: subsystem, category: defaultCategory)
     } else {
       // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
-      return Logger(.disabled)
+      .init(.disabled)
     }
-  }()
 }

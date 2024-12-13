@@ -58,7 +58,7 @@ class SummarizeViewModel: ObservableObject {
           return
         }
 
-        outputText = outputText + line
+        outputText += line
       }
     } catch {
       logger.error("\(error.localizedDescription)")

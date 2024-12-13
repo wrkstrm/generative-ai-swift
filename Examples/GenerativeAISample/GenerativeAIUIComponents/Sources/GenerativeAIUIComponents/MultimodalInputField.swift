@@ -26,8 +26,8 @@ extension EnvironmentValues {
   }
 }
 
-public extension View {
-  func onSubmit(submitHandler: @escaping () -> Void) -> some View {
+extension View {
+  public func onSubmit(submitHandler: @escaping () -> Void) -> some View {
     environment(\.submitHandler, submitHandler)
   }
 }
@@ -38,7 +38,7 @@ public struct MultimodalInputField: View {
 
   @Environment(\.submitHandler) var submitHandler
 
-  @State private var selectedImages = [Image]()
+  @State private var selectedImages: [Image] = []
 
   @State private var isChooseAttachmentTypePickerShowing = false
   @State private var isAttachmentPickerShowing = false
@@ -57,8 +57,10 @@ public struct MultimodalInputField: View {
     }
   }
 
-  public init(text: Binding<String>,
-              selection: Binding<[PhotosPickerItem]>) {
+  public init(
+    text: Binding<String>,
+    selection: Binding<[PhotosPickerItem]>
+  ) {
     _text = text
     _selection = selection
   }
@@ -80,10 +82,10 @@ public struct MultimodalInputField: View {
           .padding(.vertical, 4)
           .onSubmit(submit)
 
-          if selectedImages.count > 0 {
+          if !selectedImages.isEmpty {
             ScrollView(.horizontal) {
               LazyHStack {
-                ForEach(0 ..< selectedImages.count, id: \.self) { i in
+                ForEach(0..<selectedImages.count, id: \.self) { i in
                   HStack {
                     selectedImages[i]
                       .resizable()
@@ -144,9 +146,9 @@ public struct MultimodalInputField: View {
 #Preview {
   struct Wrapper: View {
     @State var userInput: String = ""
-    @State var selectedItems = [PhotosPickerItem]()
+    @State var selectedItems: [PhotosPickerItem] = []
 
-    @State private var selectedImages = [Image]()
+    @State private var selectedImages: [Image] = []
 
     var body: some View {
       MultimodalInputField(text: $userInput, selection: $selectedItems)
@@ -166,7 +168,7 @@ public struct MultimodalInputField: View {
         }
 
       List {
-        ForEach(0 ..< $selectedImages.count, id: \.self) { i in
+        ForEach(0..<$selectedImages.count, id: \.self) { i in
           HStack {
             selectedImages[i]
               .resizable()

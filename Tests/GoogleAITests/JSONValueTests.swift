@@ -68,11 +68,11 @@ final class JSONValueTests: XCTestCase {
       stringKey: .string(stringValue),
     ]
     let json = """
-    {
-      "\(numberKey)": \(numberValue),
-      "\(stringKey)": "\(stringValue)"
-    }
-    """
+      {
+        "\(numberKey)": \(numberValue),
+        "\(stringKey)": "\(stringValue)"
+      }
+      """
     let jsonData = try XCTUnwrap(json.data(using: .utf8))
 
     let jsonObject = try XCTUnwrap(decoder.decode(JSONValue.self, from: jsonData))

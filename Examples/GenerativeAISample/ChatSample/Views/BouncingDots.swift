@@ -34,8 +34,8 @@ struct BouncingDots: View {
         .frame(width: 10, height: 10)
         .offset(y: dot1YOffset)
         .onAppear {
-          withAnimation(self.animation.delay(0.0)) {
-            self.dot1YOffset = -5
+          withAnimation(animation.delay(0.0)) {
+            dot1YOffset = -5
           }
         }
       Circle()
@@ -43,8 +43,8 @@ struct BouncingDots: View {
         .frame(width: 10, height: 10)
         .offset(y: dot2YOffset)
         .onAppear {
-          withAnimation(self.animation.delay(0.2)) {
-            self.dot2YOffset = -5
+          withAnimation(animation.delay(0.2)) {
+            dot2YOffset = -5
           }
         }
       Circle()
@@ -52,17 +52,17 @@ struct BouncingDots: View {
         .frame(width: 10, height: 10)
         .offset(y: dot3YOffset)
         .onAppear {
-          withAnimation(self.animation.delay(0.4)) {
-            self.dot3YOffset = -5
+          withAnimation(animation.delay(0.4)) {
+            dot3YOffset = -5
           }
         }
     }
     .onAppear {
       let baseOffset: CGFloat = -2
 
-      self.dot1YOffset = baseOffset
-      self.dot2YOffset = baseOffset
-      self.dot3YOffset = baseOffset
+      dot1YOffset = baseOffset
+      dot2YOffset = baseOffset
+      dot3YOffset = baseOffset
     }
   }
 }

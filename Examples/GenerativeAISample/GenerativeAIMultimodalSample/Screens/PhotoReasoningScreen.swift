@@ -35,7 +35,7 @@ struct PhotoReasoningScreen: View {
           onSendTapped()
         }
 
-      ScrollViewReader { scrollViewProxy in
+      ScrollViewReader { _ in
         List {
           if let outputText = viewModel.outputText {
             HStack(alignment: .top) {

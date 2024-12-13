@@ -38,7 +38,7 @@ final class ControlledGenerationSnippets: XCTestCase {
       items: Schema(
         type: .object,
         properties: [
-          "recipeName": Schema(type: .string, description: "Name of the recipe", nullable: false),
+          "recipeName": Schema(type: .string, description: "Name of the recipe", nullable: false)
         ],
         requiredProperties: ["recipeName"]
       )
@@ -75,11 +75,11 @@ final class ControlledGenerationSnippets: XCTestCase {
     )
 
     let prompt = """
-    List a few popular cookie recipes using this JSON schema:
+      List a few popular cookie recipes using this JSON schema:
 
-    Recipe = {'recipeName': string}
-    Return: Array<Recipe>
-    """
+      Recipe = {'recipeName': string}
+      Return: Array<Recipe>
+      """
     let response = try await generativeModel.generateContent(prompt)
     if let text = response.text {
       print(text)

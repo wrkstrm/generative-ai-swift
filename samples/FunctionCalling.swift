@@ -34,7 +34,7 @@ final class FunctionCallingSnippets: XCTestCase {
     // [START function_calling]
     // Calls a hypothetical API to control a light bulb and returns the values that were set.
     func controlLight(brightness: Double, colorTemperature: String) -> JSONObject {
-      return ["brightness": .number(brightness), "colorTemperature": .string(colorTemperature)]
+      ["brightness": .number(brightness), "colorTemperature": .string(colorTemperature)]
     }
 
     let generativeModel =
@@ -44,26 +44,28 @@ final class FunctionCallingSnippets: XCTestCase {
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
         apiKey: APIKey.default,
-        tools: [Tool(functionDeclarations: [
-          FunctionDeclaration(
-            name: "controlLight",
-            description: "Set the brightness and color temperature of a room light.",
-            parameters: [
-              "brightness": Schema(
-                type: .number,
-                format: "double",
-                description: "Light level from 0 to 100. Zero is off and 100 is full brightness."
-              ),
-              "colorTemperature": Schema(
-                type: .string,
-                format: "enum",
-                description: "Color temperature of the light fixture.",
-                enumValues: ["daylight", "cool", "warm"]
-              ),
-            ],
-            requiredParameters: ["brightness", "colorTemperature"]
-          ),
-        ])]
+        tools: [
+          Tool(functionDeclarations: [
+            FunctionDeclaration(
+              name: "controlLight",
+              description: "Set the brightness and color temperature of a room light.",
+              parameters: [
+                "brightness": Schema(
+                  type: .number,
+                  format: "double",
+                  description: "Light level from 0 to 100. Zero is off and 100 is full brightness."
+                ),
+                "colorTemperature": Schema(
+                  type: .string,
+                  format: "enum",
+                  description: "Color temperature of the light fixture.",
+                  enumValues: ["daylight", "cool", "warm"]
+                ),
+              ],
+              requiredParameters: ["brightness", "colorTemperature"]
+            )
+          ])
+        ]
       )
 
     let chat = generativeModel.startChat()
@@ -96,10 +98,12 @@ final class FunctionCallingSnippets: XCTestCase {
 
     // Send the API response back to the model so it can generate a text response that can be
     // displayed to the user.
-    let response2 = try await chat.sendMessage([ModelContent(
-      role: "function",
-      parts: [.functionResponse(FunctionResponse(name: "controlLight", response: apiResponse))]
-    )])
+    let response2 = try await chat.sendMessage([
+      ModelContent(
+        role: "function",
+        parts: [.functionResponse(FunctionResponse(name: "controlLight", response: apiResponse))]
+      )
+    ])
 
     if let text = response2.text {
       print(text)

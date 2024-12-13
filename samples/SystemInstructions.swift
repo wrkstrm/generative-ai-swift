@@ -44,6 +44,6 @@ final class SystemInstructionsSnippets: XCTestCase {
     // [END system_instruction]
 
     // Added to silence the compiler warning about unused variable.
-    let _ = String(describing: generativeModel)
+    _ = String(describing: generativeModel)
   }
 }

@@ -47,26 +47,27 @@ public struct GenerateContentResponse {
     }
     let textValues: [String] = candidate.content.parts.compactMap { part in
       switch part {
-      case let .text(text):
-        return text
-      case let .executableCode(executableCode):
-        let codeBlockLanguage: String
-        if executableCode.language == "LANGUAGE_UNSPECIFIED" {
-          codeBlockLanguage = ""
-        } else {
-          codeBlockLanguage = executableCode.language.lowercased()
-        }
-        return "```\(codeBlockLanguage)\n\(executableCode.code)\n```"
-      case let .codeExecutionResult(codeExecutionResult):
-        if codeExecutionResult.output.isEmpty {
+        case let .text(text):
+          return text
+
+        case let .executableCode(executableCode):
+          let codeBlockLanguage: String =
+            if executableCode.language == "LANGUAGE_UNSPECIFIED" {
+              ""
+            } else {
+              executableCode.language.lowercased()
+            }
+          return "```\(codeBlockLanguage)\n\(executableCode.code)\n```"
+        case let .codeExecutionResult(codeExecutionResult):
+          if codeExecutionResult.output.isEmpty {
+            return nil
+          }
+          return "```\n\(codeExecutionResult.output)\n```"
+        case .data, .fileData, .functionCall, .functionResponse:
           return nil
-        }
-        return "```\n\(codeExecutionResult.output)\n```"
-      case .data, .fileData, .functionCall, .functionResponse:
-        return nil
       }
     }
-    guard textValues.count > 0 else {
+    guard !textValues.isEmpty else {
       Logging.default.error("Could not get a text part from the first candidate.")
       return nil
     }
@@ -87,8 +88,10 @@ public struct GenerateContentResponse {
   }
 
   /// Initializer for SwiftUI previews or tests.
-  public init(candidates: [CandidateResponse], promptFeedback: PromptFeedback? = nil,
-              usageMetadata: UsageMetadata? = nil) {
+  public init(
+    candidates: [CandidateResponse], promptFeedback: PromptFeedback? = nil,
+    usageMetadata: UsageMetadata? = nil
+  ) {
     self.candidates = candidates
     self.promptFeedback = promptFeedback
     self.usageMetadata = usageMetadata
@@ -113,8 +116,10 @@ public struct CandidateResponse {
   public let citationMetadata: CitationMetadata?
 
   /// Initializer for SwiftUI previews or tests.
-  public init(content: ModelContent, safetyRatings: [SafetyRating], finishReason: FinishReason?,
-              citationMetadata: CitationMetadata?) {
+  public init(
+    content: ModelContent, safetyRatings: [SafetyRating], finishReason: FinishReason?,
+    citationMetadata: CitationMetadata?
+  ) {
     self.content = content
     self.safetyRatings = safetyRatings
     self.finishReason = finishReason
@@ -214,12 +219,15 @@ extension GenerateContentResponse: Decodable {
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
 
-    guard container.contains(CodingKeys.candidates) || container
-      .contains(CodingKeys.promptFeedback) else {
+    guard
+      container.contains(CodingKeys.candidates)
+        || container
+          .contains(CodingKeys.promptFeedback)
+    else {
       let context = DecodingError.Context(
         codingPath: [],
-        debugDescription: "Failed to decode GenerateContentResponse;" +
-          " missing keys 'candidates' and 'promptFeedback'."
+        debugDescription: "Failed to decode GenerateContentResponse;"
+          + " missing keys 'candidates' and 'promptFeedback'."
       )
       throw DecodingError.dataCorrupted(context)
     }
@@ -248,7 +256,8 @@ extension GenerateContentResponse.UsageMetadata: Decodable {
   public init(from decoder: any Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     promptTokenCount = try container.decodeIfPresent(Int.self, forKey: .promptTokenCount) ?? 0
-    candidatesTokenCount = try container
+    candidatesTokenCount =
+      try container
       .decodeIfPresent(Int.self, forKey: .candidatesTokenCount) ?? 0
     totalTokenCount = try container.decodeIfPresent(Int.self, forKey: .totalTokenCount) ?? 0
   }
@@ -275,12 +284,12 @@ extension CandidateResponse: Decodable {
       }
     } catch {
       // Check if `content` can be decoded as an empty dictionary to detect the `"content": {}` bug.
-      if let content = try? container.decode([String: String].self, forKey: .content),
-         content.isEmpty {
-        throw InvalidCandidateError.emptyContent(underlyingError: error)
-      } else {
+      guard let content = try? container.decode([String: String].self, forKey: .content),
+        content.isEmpty
+      else {
         throw InvalidCandidateError.malformedContent(underlyingError: error)
       }
+      throw InvalidCandidateError.emptyContent(underlyingError: error)
     }
 
     if let safetyRatings = try container.decodeIfPresent(
@@ -319,7 +328,8 @@ extension Citation: Decodable {
     endIndex = try container.decode(Int.self, forKey: .endIndex)
     uri = try container.decode(String.self, forKey: .uri)
     if let license = try container.decodeIfPresent(String.self, forKey: .license),
-       !license.isEmpty {
+      !license.isEmpty
+    {
       self.license = license
     } else {
       license = nil
