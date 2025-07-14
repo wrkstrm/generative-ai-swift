@@ -92,7 +92,7 @@ struct ErrorDetailsView: View {
     NavigationView {
       Form {
         switch error {
-          case let GenerateContentError.internalError(underlying: underlyingError):
+          case GenerateContentError.internalError(underlying: let underlyingError):
             Section("Error Type") {
               Text("Internal error")
             }
@@ -104,7 +104,7 @@ struct ErrorDetailsView: View {
               )
             }
 
-          case let GenerateContentError.promptBlocked(response: generateContentResponse):
+          case GenerateContentError.promptBlocked(response: let generateContentResponse):
             Section("Error Type") {
               Text("Your prompt was blocked")
             }
@@ -123,9 +123,9 @@ struct ErrorDetailsView: View {
               SafetyRatingsSection(ratings: ratings)
             }
 
-          case let GenerateContentError.responseStoppedEarly(
-            reason: finishReason,
-            response: generateContentResponse
+          case GenerateContentError.responseStoppedEarly(
+            reason: let finishReason,
+            response: let generateContentResponse
           ):
 
             Section("Error Type") {

@@ -62,7 +62,7 @@ final class PartsRepresentableTests: XCTestCase {
         return
       }
       switch imageError {
-        case let .couldNotConvertToJPEG(source):
+        case .couldNotConvertToJPEG(let source):
           // String(describing:) works around a type error.
           XCTAssertEqual(String(describing: source), String(describing: image))
           return
@@ -86,7 +86,7 @@ final class PartsRepresentableTests: XCTestCase {
         return
       }
       switch imageError {
-        case let .couldNotConvertToJPEG(source):
+        case .couldNotConvertToJPEG(let source):
           // String(describing:) works around a type error.
           XCTAssertEqual(String(describing: source), String(describing: image))
           return

@@ -152,12 +152,12 @@ class FunctionCallingViewModel: ObservableObject {
 
     for part in candidate.content.parts {
       switch part {
-        case let .text(text):
+        case .text(let text):
           // replace pending message with backend response
           messages[messages.count - 1].message += text
           messages[messages.count - 1].pending = false
 
-        case let .functionCall(functionCall):
+        case .functionCall(let functionCall):
           messages.insert(functionCall.chatMessage(), at: messages.count - 1)
           functionCalls.append(functionCall)
 
@@ -192,10 +192,10 @@ class FunctionCallingViewModel: ObservableObject {
 
   func getExchangeRate(args: JSONObject) -> JSONObject {
     // 1. Validate and extract the parameters provided by the model (from a `FunctionCall`)
-    guard case let .string(from) = args["currency_from"] else {
+    guard case .string(let from) = args["currency_from"] else {
       fatalError("Missing `currency_from` parameter.")
     }
-    guard case let .string(to) = args["currency_to"] else {
+    guard case .string(let to) = args["currency_to"] else {
       fatalError("Missing `currency_to` parameter.")
     }
 

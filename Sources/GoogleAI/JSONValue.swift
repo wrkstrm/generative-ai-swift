@@ -75,7 +75,7 @@ extension JSONValue: Encodable {
       case .null:
         try container.encodeNil()
 
-      case let .number(numberValue):
+      case .number(let numberValue):
         // Convert to `Decimal` before encoding for consistent floating-point serialization across
         // platforms. E.g., `Double` serializes 3.14159 as 3.1415899999999999 in some cases and
         // 3.14159 in others. See
@@ -83,16 +83,16 @@ extension JSONValue: Encodable {
         // for more details.
         try container.encode(Decimal(numberValue))
 
-      case let .string(stringValue):
+      case .string(let stringValue):
         try container.encode(stringValue)
 
-      case let .bool(boolValue):
+      case .bool(let boolValue):
         try container.encode(boolValue)
 
-      case let .object(objectValue):
+      case .object(let objectValue):
         try container.encode(objectValue)
 
-      case let .array(arrayValue):
+      case .array(let arrayValue):
         try container.encode(arrayValue)
     }
   }

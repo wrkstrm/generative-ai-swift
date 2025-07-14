@@ -47,10 +47,10 @@ public struct GenerateContentResponse {
     }
     let textValues: [String] = candidate.content.parts.compactMap { part in
       switch part {
-        case let .text(text):
+        case .text(let text):
           return text
 
-        case let .executableCode(executableCode):
+        case .executableCode(let executableCode):
           let codeBlockLanguage: String =
             if executableCode.language == "LANGUAGE_UNSPECIFIED" {
               ""
@@ -58,7 +58,7 @@ public struct GenerateContentResponse {
               executableCode.language.lowercased()
             }
           return "```\(codeBlockLanguage)\n\(executableCode.code)\n```"
-        case let .codeExecutionResult(codeExecutionResult):
+        case .codeExecutionResult(let codeExecutionResult):
           if codeExecutionResult.output.isEmpty {
             return nil
           }
@@ -80,7 +80,7 @@ public struct GenerateContentResponse {
       return []
     }
     return candidate.content.parts.compactMap { part in
-      guard case let .functionCall(functionCall) = part else {
+      guard case .functionCall(let functionCall) = part else {
         return nil
       }
       return functionCall

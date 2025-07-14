@@ -85,10 +85,10 @@ final class FunctionCallingSnippets: XCTestCase {
       fatalError("Unexpected function called: \(functionCall.name)")
     }
     // Verify that the names and types of the parameters match the declaration
-    guard case let .number(brightness) = functionCall.args["brightness"] else {
+    guard case .number(let brightness) = functionCall.args["brightness"] else {
       fatalError("Missing argument: brightness")
     }
-    guard case let .string(colorTemperature) = functionCall.args["colorTemperature"] else {
+    guard case .string(let colorTemperature) = functionCall.args["colorTemperature"] else {
       fatalError("Missing argument: colorTemperature")
     }
 

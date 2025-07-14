@@ -72,7 +72,7 @@ public struct ModelContent: Equatable {
     /// Returns the text contents of this ``Part``, if it contains text.
     public var text: String? {
       switch self {
-        case let .text(contents): contents
+        case .text(let contents): contents
         default: nil
       }
     }
@@ -152,10 +152,10 @@ extension ModelContent.Part: Codable {
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     switch self {
-      case let .text(a0):
+      case .text(let a0):
         try container.encode(a0, forKey: .text)
 
-      case let .data(mimetype, bytes):
+      case .data(let mimetype, let bytes):
         var inlineDataContainer = container.nestedContainer(
           keyedBy: InlineDataKeys.self,
           forKey: .inlineData
@@ -163,7 +163,7 @@ extension ModelContent.Part: Codable {
         try inlineDataContainer.encode(mimetype, forKey: .mimeType)
         try inlineDataContainer.encode(bytes, forKey: .bytes)
 
-      case let .fileData(mimetype: mimetype, url):
+      case .fileData(mimetype: let mimetype, let url):
         var fileDataContainer = container.nestedContainer(
           keyedBy: FileDataKeys.self,
           forKey: .fileData
@@ -171,16 +171,16 @@ extension ModelContent.Part: Codable {
         try fileDataContainer.encode(mimetype, forKey: .mimeType)
         try fileDataContainer.encode(url, forKey: .url)
 
-      case let .functionCall(functionCall):
+      case .functionCall(let functionCall):
         try container.encode(functionCall, forKey: .functionCall)
 
-      case let .functionResponse(functionResponse):
+      case .functionResponse(let functionResponse):
         try container.encode(functionResponse, forKey: .functionResponse)
 
-      case let .executableCode(executableCode):
+      case .executableCode(let executableCode):
         try container.encode(executableCode, forKey: .executableCode)
 
-      case let .codeExecutionResult(codeExecutionResult):
+      case .codeExecutionResult(let codeExecutionResult):
         try container.encode(codeExecutionResult, forKey: .codeExecutionResult)
     }
   }

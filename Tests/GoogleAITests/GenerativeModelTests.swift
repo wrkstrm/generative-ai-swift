@@ -199,7 +199,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     let candidate = try XCTUnwrap(response.candidates.first)
     XCTAssertEqual(candidate.content.parts.count, 1)
     let part = try XCTUnwrap(candidate.content.parts.first)
-    guard case let .functionCall(functionCall) = part else {
+    guard case .functionCall(let functionCall) = part else {
       XCTFail("Part is not a FunctionCall.")
       return
     }
@@ -221,7 +221,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     let candidate = try XCTUnwrap(response.candidates.first)
     XCTAssertEqual(candidate.content.parts.count, 1)
     let part = try XCTUnwrap(candidate.content.parts.first)
-    guard case let .functionCall(functionCall) = part else {
+    guard case .functionCall(let functionCall) = part else {
       XCTFail("Part is not a FunctionCall.")
       return
     }
@@ -243,7 +243,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     let candidate = try XCTUnwrap(response.candidates.first)
     XCTAssertEqual(candidate.content.parts.count, 1)
     let part = try XCTUnwrap(candidate.content.parts.first)
-    guard case let .functionCall(functionCall) = part else {
+    guard case .functionCall(let functionCall) = part else {
       XCTFail("Part is not a FunctionCall.")
       return
     }
@@ -310,24 +310,24 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     XCTAssertEqual(response.candidates.count, 1)
     let candidate = try XCTUnwrap(response.candidates.first)
     XCTAssertEqual(candidate.content.parts.count, 4)
-    guard case let .text(text1) = candidate.content.parts[0] else {
+    guard case .text(let text1) = candidate.content.parts[0] else {
       XCTFail("Expected first part to be text.")
       return
     }
     XCTAssertEqual(text1, expectedText1)
-    guard case let .executableCode(executableCode) = candidate.content.parts[1] else {
+    guard case .executableCode(let executableCode) = candidate.content.parts[1] else {
       XCTFail("Expected second part to be executable code.")
       return
     }
     XCTAssertEqual(executableCode.language, expectedLanguage)
     XCTAssertEqual(executableCode.code, expectedCode)
-    guard case let .codeExecutionResult(codeExecutionResult) = candidate.content.parts[2] else {
+    guard case .codeExecutionResult(let codeExecutionResult) = candidate.content.parts[2] else {
       XCTFail("Expected second part to be a code execution result.")
       return
     }
     XCTAssertEqual(codeExecutionResult.outcome, .ok)
     XCTAssertEqual(codeExecutionResult.output, expectedOutput)
-    guard case let .text(text2) = candidate.content.parts[3] else {
+    guard case .text(let text2) = candidate.content.parts[3] else {
       XCTFail("Expected fourth part to be text.")
       return
     }
@@ -396,7 +396,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       GenerateContentError
       .internalError(underlying: invalidCandidateError as InvalidCandidateError)
     {
-      guard case let .emptyContent(decodingError) = invalidCandidateError else {
+      guard case .emptyContent(let decodingError) = invalidCandidateError else {
         XCTFail("Not an InvalidCandidateError.emptyContent error: \(invalidCandidateError)")
         return
       }
@@ -572,7 +572,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     XCTAssertNil(content)
     XCTAssertNotNil(responseError)
     let generateContentError = try XCTUnwrap(responseError as? GenerateContentError)
-    guard case let .internalError(underlyingError) = generateContentError else {
+    guard case .internalError(let underlyingError) = generateContentError else {
       XCTFail("Not an internal error: \(generateContentError)")
       return
     }
@@ -596,12 +596,12 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     XCTAssertNil(content)
     XCTAssertNotNil(responseError)
     let generateContentError = try XCTUnwrap(responseError as? GenerateContentError)
-    guard case let .internalError(underlyingError) = generateContentError else {
+    guard case .internalError(let underlyingError) = generateContentError else {
       XCTFail("Not an internal error: \(generateContentError)")
       return
     }
     let decodingError = try XCTUnwrap(underlyingError as? DecodingError)
-    guard case let .dataCorrupted(context) = decodingError else {
+    guard case .dataCorrupted(let context) = decodingError else {
       XCTFail("Not a data corrupted error: \(decodingError)")
       return
     }
@@ -626,12 +626,12 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     XCTAssertNil(content)
     XCTAssertNotNil(responseError)
     let generateContentError = try XCTUnwrap(responseError as? GenerateContentError)
-    guard case let .internalError(underlyingError) = generateContentError else {
+    guard case .internalError(let underlyingError) = generateContentError else {
       XCTFail("Not an internal error: \(generateContentError)")
       return
     }
     let invalidCandidateError = try XCTUnwrap(underlyingError as? InvalidCandidateError)
-    guard case let .malformedContent(malformedContentUnderlyingError) = invalidCandidateError else {
+    guard case .malformedContent(let malformedContentUnderlyingError) = invalidCandidateError else {
       XCTFail("Not a malformed content error: \(invalidCandidateError)")
       return
     }
@@ -913,14 +913,14 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       let candidate = try XCTUnwrap(content.candidates.first)
       let part = try XCTUnwrap(candidate.content.parts.first)
       switch part {
-        case let .text(textPart):
+        case .text(let textPart):
           XCTAssertTrue(expectedTexts.contains(textPart))
 
-        case let .executableCode(executableCode):
+        case .executableCode(let executableCode):
           XCTAssertEqual(executableCode.language, expectedLanguage)
           XCTAssertEqual(executableCode.code, expectedCode)
 
-        case let .codeExecutionResult(codeExecutionResult):
+        case .codeExecutionResult(let codeExecutionResult):
           XCTAssertEqual(codeExecutionResult.outcome, .ok)
           XCTAssertEqual(codeExecutionResult.output, expectedOutput)
 
@@ -1026,7 +1026,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
         XCTFail("Unexpected content in stream: \(content)")
       }
     } catch let GenerateContentError.internalError(underlying as DecodingError) {
-      guard case let .dataCorrupted(context) = underlying else {
+      guard case .dataCorrupted(let context) = underlying else {
         XCTFail("Not a data corrupted error: \(underlying)")
         return
       }
@@ -1050,7 +1050,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
         XCTFail("Unexpected content in stream: \(content)")
       }
     } catch let GenerateContentError.internalError(underlyingError as InvalidCandidateError) {
-      guard case let .malformedContent(contentError) = underlyingError else {
+      guard case .malformedContent(let contentError) = underlyingError else {
         XCTFail("Not a malformed content error: \(underlyingError)")
         return
       }

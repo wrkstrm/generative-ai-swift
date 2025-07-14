@@ -162,7 +162,7 @@ public class Chat {
       // Loop through all the parts, aggregating the text and adding the images.
       for part in aggregate.parts {
         switch part {
-          case let .text(str):
+          case .text(let str):
             combinedText += str
 
           case .data, .fileData, .functionCall, .functionResponse, .executableCode,
