@@ -13,11 +13,12 @@
 // limitations under the License.
 
 import Foundation
+import WrkstrmNetworking
 
 /// A type that represents a remote multimodal model (like Gemini), with the ability to generate
 /// content based on various input types.
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-public final class GenerativeModel {
+public final class GenerativeModel: @unchecked Sendable {
   // The prefix for a model resource in the Gemini API.
   private static let modelResourcePrefix = "models/"
 
@@ -43,7 +44,7 @@ public final class GenerativeModel {
   let systemInstruction: ModelContent?
 
   /// Configuration parameters for sending requests to the backend.
-  let requestOptions: RequestOptions
+  let requestOptions: HTTP.Request.Options
 
   /// Initializes a new remote model with the given parameters.
   ///
@@ -67,7 +68,7 @@ public final class GenerativeModel {
     tools: [Tool]? = nil,
     toolConfig: ToolConfig? = nil,
     systemInstruction: ModelContent? = nil,
-    requestOptions: RequestOptions = RequestOptions()
+    requestOptions: HTTP.Request.Options = HTTP.Request.Options()
   ) {
     self.init(
       name: name,
@@ -103,7 +104,7 @@ public final class GenerativeModel {
     tools: [Tool]? = nil,
     toolConfig: ToolConfig? = nil,
     systemInstruction: String...,
-    requestOptions: RequestOptions = RequestOptions()
+    requestOptions: HTTP.Request.Options = HTTP.Request.Options()
   ) {
     self.init(
       name: name,
@@ -130,7 +131,7 @@ public final class GenerativeModel {
     tools: [Tool]? = nil,
     toolConfig: ToolConfig? = nil,
     systemInstruction: ModelContent? = nil,
-    requestOptions: RequestOptions = RequestOptions(),
+    requestOptions: HTTP.Request.Options = HTTP.Request.Options(),
     urlSession: URLSession
   ) {
     modelResourceName = GenerativeModel.modelResourceName(name: name)
@@ -181,6 +182,7 @@ public final class GenerativeModel {
   /// - Parameter content: The input(s) given to the model as a prompt.
   /// - Returns: The generated content response from the model.
   /// - Throws: A ``GenerateContentError`` if the request failed.
+  @MainActor
   public func generateContent(_ content: @autoclosure () throws -> [ModelContent]) async throws
     -> GenerateContentResponse
   {
@@ -311,7 +313,7 @@ public final class GenerativeModel {
   }
 
   /// Creates a new chat conversation using this model with the provided history.
-  public func startChat(history: [ModelContent] = []) -> Chat {
+  @MainActor public func startChat(history: [ModelContent] = []) -> Chat {
     Chat(model: self, history: history)
   }
 

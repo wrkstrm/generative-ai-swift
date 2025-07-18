@@ -15,7 +15,7 @@
 import Foundation
 
 /// A predicted function call returned from the model.
-public struct FunctionCall: Equatable {
+public struct FunctionCall: Equatable, Sendable {
   /// The name of the function to call.
   public let name: String
 
@@ -27,7 +27,8 @@ public struct FunctionCall: Equatable {
 ///
 /// These types can be objects, but also primitives and arrays. Represents a select subset of an
 /// [OpenAPI 3.0 schema object](https://spec.openapis.org/oas/v3.0.3#schema).
-public class Schema {
+
+public class Schema: @unchecked Sendable {
   /// The data type.
   let type: DataType
 
@@ -100,7 +101,7 @@ public class Schema {
 /// A data type.
 ///
 /// Contains the set of OpenAPI [data types](https://spec.openapis.org/oas/v3.0.3#data-types).
-public enum DataType: String {
+public enum DataType: String, Sendable {
   /// A `String` type.
   case string = "STRING"
 
@@ -124,7 +125,7 @@ public enum DataType: String {
 ///
 /// This `FunctionDeclaration` is a representation of a block of code that can be used as a ``Tool``
 /// by the model and executed by the client.
-public struct FunctionDeclaration {
+public struct FunctionDeclaration: Sendable {
   /// The name of the function.
   let name: String
 
@@ -161,7 +162,7 @@ public struct FunctionDeclaration {
 ///
 /// A `Tool` is a piece of code that enables the system to interact with external systems to
 /// perform an action, or set of actions, outside of knowledge and scope of the model.
-public struct Tool {
+public struct Tool: Sendable {
   /// A list of `FunctionDeclarations` available to the model.
   let functionDeclarations: [FunctionDeclaration]?
 
@@ -190,10 +191,10 @@ public struct Tool {
 }
 
 /// Configuration for specifying function calling behavior.
-public struct FunctionCallingConfig {
+public struct FunctionCallingConfig: Sendable {
   /// Defines the execution behavior for function calling by defining the
   /// execution mode.
-  public enum Mode: String {
+  public enum Mode: String, Sendable {
     /// The default behavior for function calling. The model calls functions to answer queries at
     /// its discretion.
     case auto = "AUTO"
@@ -225,7 +226,7 @@ public struct FunctionCallingConfig {
 }
 
 /// Tool configuration for any `Tool` specified in the request.
-public struct ToolConfig {
+public struct ToolConfig: Sendable {
   let functionCallingConfig: FunctionCallingConfig?
 
   public init(functionCallingConfig: FunctionCallingConfig? = nil) {
@@ -238,7 +239,7 @@ public struct ToolConfig {
 /// Contains a string representing the `FunctionDeclaration.name` and a structured JSON object
 /// containing any output from the function is used as context to the model. This should contain the
 /// result of a ``FunctionCall`` made based on model prediction.
-public struct FunctionResponse: Equatable {
+public struct FunctionResponse: Equatable, Sendable {
   /// The name of the function that was called.
   let name: String
 
@@ -260,7 +261,7 @@ public struct FunctionResponse: Equatable {
 ///
 /// This type has no fields. See ``ExecutableCode`` and ``CodeExecutionResult``, which are only
 /// generated when using this tool.
-public struct CodeExecution {
+public struct CodeExecution: Sendable {
   /// Constructs a new `CodeExecution` tool.
   public init() {}
 }
@@ -269,7 +270,7 @@ public struct CodeExecution {
 ///
 /// Only generated when using the ``CodeExecution`` tool, in which case the code will automatically
 /// be executed, and a corresponding ``CodeExecutionResult`` will also be generated.
-public struct ExecutableCode: Equatable {
+public struct ExecutableCode: Equatable, Sendable {
   /// The programming language of the ``code``.
   public let language: String
 
@@ -281,9 +282,9 @@ public struct ExecutableCode: Equatable {
 ///
 /// Only generated when using the ``CodeExecution`` tool, and always follows a part containing the
 /// ``ExecutableCode``.
-public struct CodeExecutionResult: Equatable {
+public struct CodeExecutionResult: Equatable, Sendable {
   /// Possible outcomes of the code execution.
-  public enum Outcome: String {
+  public enum Outcome: String, Sendable {
     /// An unrecognized code execution outcome was provided.
     case unknown = "OUTCOME_UNKNOWN"
     /// Unspecified status; this value should not be used.

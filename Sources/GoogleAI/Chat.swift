@@ -17,6 +17,7 @@ import Foundation
 /// An object that represents a back-and-forth chat with a model, capturing the history and saving
 /// the context in memory between each message sent.
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
+@MainActor
 public class Chat {
   private let model: GenerativeModel
 
@@ -35,7 +36,7 @@ public class Chat {
   /// - Parameter parts: The new content to send as a single chat message.
   /// - Returns: The model's response if no error occurred.
   /// - Throws: A ``GenerateContentError`` if an error occurred.
-  public func sendMessage(_ parts: any ThrowingPartsRepresentable...) async throws
+  @MainActor public func sendMessage(_ parts: any ThrowingPartsRepresentable...) async throws
     -> GenerateContentResponse
   {
     try await sendMessage([ModelContent(parts: parts)])
@@ -46,23 +47,28 @@ public class Chat {
   /// - Parameter content: The new content to send as a single chat message.
   /// - Returns: The model's response if no error occurred.
   /// - Throws: A ``GenerateContentError`` if an error occurred.
-  public func sendMessage(_ content: @autoclosure () throws -> [ModelContent]) async throws
+  @MainActor public func sendMessage(_ content: @autoclosure () throws -> [ModelContent])
+    async throws
     -> GenerateContentResponse
   {
-    // Ensure that the new content has the role set.
     let newContent: [ModelContent]
+    let request: [ModelContent]
     do {
       newContent = try content().map(populateContentRole(_:))
+      let currentHistory = history
+      request = currentHistory + newContent
     } catch let underlying {
       guard let contentError = underlying as? ImageConversionError else {
         throw GenerateContentError.internalError(underlying: underlying)
       }
       throw GenerateContentError.promptImageContentError(underlying: contentError)
     }
+    // Create local copies to avoid crossing actor boundaries with non-Sendable self.model
+    let localModel = model
+    let localRequest = request
 
-    // Send the history alongside the new message as context.
-    let request = history + newContent
-    let result = try await model.generateContent(request)
+    let result = try await localModel.generateContent(localRequest)
+
     guard let reply = result.candidates.first?.content else {
       let error = NSError(
         domain: "com.google.generative-ai",
@@ -77,9 +83,11 @@ public class Chat {
     // Make sure we inject the role into the content received.
     let toAdd = ModelContent(role: "model", parts: reply.parts)
 
-    // Append the request and successful result to history, then return the value.
-    history.append(contentsOf: newContent)
-    history.append(toAdd)
+    // Append the request and succssful result to history, then return the value.
+    await MainActor.run {
+      self.history.append(contentsOf: newContent)
+      self.history.append(toAdd)
+    }
     return result
   }
 
@@ -88,10 +96,11 @@ public class Chat {
   /// - Parameter parts: The new content to send as a single chat message.
   /// - Returns: A stream containing the model's response or an error if an error occurred.
   @available(macOS 12.0, *)
+  @MainActor
   public func sendMessageStream(_ parts: any ThrowingPartsRepresentable...)
     -> AsyncThrowingStream<GenerateContentResponse, Error>
   {
-    try sendMessageStream([ModelContent(parts: parts)])
+    try! sendMessageStream([ModelContent(parts: parts)])
   }
 
   /// Sends a message using the existing history of this chat as context. If successful, the message
@@ -99,12 +108,16 @@ public class Chat {
   /// - Parameter content: The new content to send as a single chat message.
   /// - Returns: A stream containing the model's response or an error if an error occurred.
   @available(macOS 12.0, *)
+  @MainActor
   public func sendMessageStream(_ content: @autoclosure () throws -> [ModelContent])
     -> AsyncThrowingStream<GenerateContentResponse, Error>
   {
-    let resolvedContent: [ModelContent]
+    let newContent: [ModelContent]
+    let localRequest: [ModelContent]
     do {
-      resolvedContent = try content()
+      let resolvedContent = try content()
+      newContent = resolvedContent.map(populateContentRole(_:))
+      localRequest = history + newContent
     } catch let underlying {
       return AsyncThrowingStream { continuation in
         let error: Error =
@@ -116,40 +129,33 @@ public class Chat {
         continuation.finish(throwing: error)
       }
     }
+    let localModel = model
 
     return AsyncThrowingStream { continuation in
       Task {
-        var aggregatedContent: [ModelContent] = []
-
-        // Ensure that the new content has the role set.
-        let newContent: [ModelContent] = resolvedContent.map(populateContentRole(_:))
-
-        // Send the history alongside the new message as context.
-        let request = history + newContent
-        let stream = model.generateContentStream(request)
+        var localAggregatedContent: [ModelContent] = []
+        let stream = localModel.generateContentStream(localRequest)
         do {
           for try await chunk in stream {
-            // Capture any content that's streaming. This should be populated if there's no error.
             if let chunkContent = chunk.candidates.first?.content {
-              aggregatedContent.append(chunkContent)
+              localAggregatedContent.append(chunkContent)
             }
-
-            // Pass along the chunk.
-            continuation.yield(chunk)
+            // Yield on MainActor to avoid data race with non-Sendable type
+            let safeChunk = chunk
+            _ = await MainActor.run {
+              continuation.yield(safeChunk)
+            }
           }
         } catch {
-          // Rethrow the error that the underlying stream threw. Don't add anything to history.
           continuation.finish(throwing: error)
           return
         }
-
-        // Save the request.
-        history.append(contentsOf: newContent)
-
-        // Aggregate the content to add it to the history before we finish.
-        let aggregated = aggregatedChunks(aggregatedContent)
-        history.append(aggregated)
-
+        // Only now, after streaming completes, update the shared history.
+        await MainActor.run {
+          history.append(contentsOf: newContent)
+          let aggregated = aggregatedChunks(localAggregatedContent)
+          history.append(aggregated)
+        }
         continuation.finish()
       }
     }

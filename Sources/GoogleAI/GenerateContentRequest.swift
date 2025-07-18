@@ -13,9 +13,10 @@
 // limitations under the License.
 
 import Foundation
+import WrkstrmNetworking
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-struct GenerateContentRequest {
+struct GenerateContentRequest: Sendable {
   /// Model name.
   let model: String
   let contents: [ModelContent]
@@ -25,7 +26,7 @@ struct GenerateContentRequest {
   let toolConfig: ToolConfig?
   let systemInstruction: ModelContent?
   let isStreaming: Bool
-  let options: RequestOptions
+  let options: HTTP.Request.Options
 }
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)

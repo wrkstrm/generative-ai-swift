@@ -13,26 +13,41 @@
 // limitations under the License.
 
 import Foundation
+import WrkstrmNetworking
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-struct CountTokensRequest {
+struct CountTokensRequest: GenerativeAIRequest {
+  typealias Response = CountTokensResponse
+  
   let model: String
   let generateContentRequest: GenerateContentRequest
-  let options: RequestOptions
+  let options: HTTP.Request.Options
 }
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-extension CountTokensRequest: GenerativeAIRequest {
-  typealias Response = CountTokensResponse
+extension CountTokensRequest: HTTP.Request.Codable {
+  typealias ResponseType = CountTokensResponse
+  
+  var method: WrkstrmNetworking.HTTP.Method {
+    .get
+  }
+  
+  var path: String {
+    "\(GenerativeAISwift.baseURL)/\(options.apiVersion)/\(model):countTokens"
+  }
+  
+  var queryItems: [URLQueryItem] {
+    []
+  }
 
   var url: URL {
-    URL(string: "\(GenerativeAISwift.baseURL)/\(options.apiVersion)/\(model):countTokens")!
+    URL(string: path)!
   }
 }
 
 /// The model's response to a count tokens request.
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-public struct CountTokensResponse {
+public struct CountTokensResponse: Codable, Sendable {
   /// The total number of tokens in the input given to the model as a prompt.
   public let totalTokens: Int
 }
@@ -45,6 +60,3 @@ extension CountTokensRequest: Encodable {
     case generateContentRequest
   }
 }
-
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-extension CountTokensResponse: Decodable {}

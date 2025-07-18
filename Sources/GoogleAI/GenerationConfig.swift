@@ -17,7 +17,7 @@ import Foundation
 /// A struct defining model parameters to be used when sending generative AI
 /// requests to the backend model.
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-public struct GenerationConfig {
+public struct GenerationConfig: Sendable {
   /// A parameter controlling the degree of randomness in token selection. A
   /// temperature of zero is deterministic, always choosing the
   /// highest-probability response. Typical values are between 0 and 1

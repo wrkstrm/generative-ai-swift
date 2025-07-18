@@ -1,4 +1,5 @@
 // swift-tools-version:6.1
+import Foundation
 import PackageDescription
 
 // Copyright 2023 Google LLC
@@ -15,11 +16,21 @@ import PackageDescription
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+ConfigurationService.local.dependencies = [
+  .package(name: "WrkstrmLog", path: "../universal/WrkstrmLog"),
+  .package(name: "WrkstrmFoundation", path: "../universal/WrkstrmFoundation"),
+]
+
+ConfigurationService.remote.dependencies = [
+  .package(url: "https://github.com/wrkstrm/WrkstrmLog.git", from: "0.0.0"),
+  .package(url: "https://github.com/wrkstrm/WrkstrmFoundation.git", from: "0.0.0"),
+]
+
 let package = Package(
   name: "generative-ai-swift",
   platforms: [
-    .iOS(.v12),
-    .macOS(.v10_13),
+    .iOS(.v17),
+    .macOS(.v13),
     .macCatalyst(.v13),
   ],
   products: [
@@ -28,14 +39,25 @@ let package = Package(
       targets: ["GoogleGenerativeAI"]
     )
   ],
+  dependencies: ConfigurationService.inject.dependencies,
   targets: [
     .target(
       name: "GoogleGenerativeAI",
+      dependencies: [
+        .product(name: "WrkstrmFoundation", package: "WrkstrmFoundation"),
+        .product(name: "WrkstrmNetworking", package: "WrkstrmFoundation"),
+        .product(name: "WrkstrmLog", package: "WrkstrmLog"),
+      ],
       path: "Sources"
     ),
     .testTarget(
       name: "GoogleGenerativeAITests",
-      dependencies: ["GoogleGenerativeAI"],
+      dependencies: [
+        "GoogleGenerativeAI",
+        .product(name: "WrkstrmFoundation", package: "WrkstrmFoundation"),
+        .product(name: "WrkstrmNetworking", package: "WrkstrmFoundation"),
+        .product(name: "WrkstrmLog", package: "WrkstrmLog"),
+      ],
       path: "Tests",
       resources: [
         .process("GoogleAITests/CountTokenResponses"),
@@ -49,3 +71,37 @@ let package = Package(
     ),
   ]
 )
+
+// MARK: - Configuration Service
+
+@MainActor
+public struct ConfigurationService {
+  public static let version = "0.0.0"
+
+  public var swiftSettings: [SwiftSetting] = []
+  var dependencies: [PackageDescription.Package.Dependency] = []
+
+  public static let inject: ConfigurationService = ProcessInfo.useLocalDeps ? .local : .remote
+
+  static var local: ConfigurationService = .init(swiftSettings: [.localSwiftSettings])
+  static var remote: ConfigurationService = .init()
+}
+
+// MARK: - PackageDescription extensions
+
+extension SwiftSetting {
+  public static let localSwiftSettings: SwiftSetting = .unsafeFlags([
+    "-Xfrontend",
+    "-warn-long-expression-type-checking=10",
+  ])
+}
+
+// MARK: - Foundation extensions
+
+extension ProcessInfo {
+  public static var useLocalDeps: Bool {
+    ProcessInfo.processInfo.environment["SPM_USE_LOCAL_DEPS"] == "true"
+  }
+}
+
+// CONFIG_SERVICE_END_V1

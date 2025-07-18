@@ -17,7 +17,7 @@ import Foundation
 /// A protocol describing any data that could be serialized to model-interpretable input data,
 /// where the serialization process might fail with an error.
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-public protocol ThrowingPartsRepresentable {
+public protocol ThrowingPartsRepresentable: Sendable {
   func tryPartsValue() throws -> [ModelContent.Part]
 }
 
