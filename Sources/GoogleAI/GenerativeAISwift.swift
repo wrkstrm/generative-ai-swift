@@ -23,5 +23,5 @@ public enum GenerativeAISwift {
   /// String value of the SDK version
   public static let version = "0.5.6"
   /// The Google AI backend endpoint URL.
-  static let baseURL = "https://generativelanguage.googleapis.com"
+  static let baseURLString = "https://generativelanguage.googleapis.com"
 }

@@ -15,48 +15,38 @@
 import Foundation
 import WrkstrmNetworking
 
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-struct CountTokensRequest: GenerativeAIRequest {
-  typealias Response = CountTokensResponse
+public enum CountTokens {
+  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
+  public struct Request: HTTP.CodableURLRequest, Sendable {
+    public typealias RequestBody = GenerateContent.Request.Body
+    public typealias ResponseType = CountTokens.Response
   
-  let model: String
-  let generateContentRequest: GenerateContentRequest
-  let options: HTTP.Request.Options
-}
+    public var method: HTTP.Method = .post
+    public let options: HTTP.Request.Options
+    public let model: String
+    public let body: RequestBody?
 
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-extension CountTokensRequest: HTTP.Request.Codable {
-  typealias ResponseType = CountTokensResponse
-  
-  var method: WrkstrmNetworking.HTTP.Method {
-    .get
-  }
-  
-  var path: String {
-    "\(GenerativeAISwift.baseURL)/\(options.apiVersion)/\(model):countTokens"
-  }
-  
-  var queryItems: [URLQueryItem] {
-    []
-  }
+    public var path: String {
+      "\(model):countTokens"
+    }
 
-  var url: URL {
-    URL(string: path)!
+    public init(options: HTTP.Request.Options, model: String, body: GenerateContent.Request.Body?) {
+      self.options = options
+      self.model = model
+      if let body = body {
+        self.body = body
+      } else {
+        self.body = nil
+      }
+    }
   }
 }
 
-/// The model's response to a count tokens request.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-public struct CountTokensResponse: Codable, Sendable {
-  /// The total number of tokens in the input given to the model as a prompt.
-  public let totalTokens: Int
-}
-
-// MARK: - Codable Conformances
-
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-extension CountTokensRequest: Encodable {
-  enum CodingKeys: CodingKey {
-    case generateContentRequest
+extension CountTokens {
+  /// The model's response to a count tokens request.
+  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
+  public struct Response: Decodable, Sendable {
+    /// The total number of tokens in the input given to the model as a prompt.
+    public let totalTokens: Int
   }
 }

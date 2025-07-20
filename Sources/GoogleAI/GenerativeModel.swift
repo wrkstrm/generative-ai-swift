@@ -46,42 +46,27 @@ public final class GenerativeModel: @unchecked Sendable {
   /// Configuration parameters for sending requests to the backend.
   let requestOptions: HTTP.Request.Options
 
-  /// Initializes a new remote model with the given parameters.
-  ///
-  /// - Parameters:
-  ///   - name: The name of the model to use, for example `"gemini-1.5-pro-latest"`; see
-  ///     [Gemini models](https://ai.google.dev/models/gemini) for a list of supported model names.
-  ///   - apiKey: The API key for your project.
-  ///   - generationConfig: The content generation parameters your model should use.
-  ///   - safetySettings: A value describing what types of harmful content your model should allow.
-  ///   - tools: A list of ``Tool`` objects  that the model may use to generate the next response.
-  ///   - systemInstruction: Instructions that direct the model to behave a certain way; currently
-  ///     only text content is supported, for example
-  ///     `ModelContent(role: "system", parts: "You are a cat. Your name is Neko.")`.
-  ///   - toolConfig: Tool configuration for any `Tool` specified in the request.
-  ///   - requestOptions Configuration parameters for sending requests to the backend.
-  public convenience init(
-    name: String,
-    apiKey: String,
-    generationConfig: GenerationConfig? = nil,
-    safetySettings: [SafetySetting]? = nil,
-    tools: [Tool]? = nil,
-    toolConfig: ToolConfig? = nil,
-    systemInstruction: ModelContent? = nil,
-    requestOptions: HTTP.Request.Options = HTTP.Request.Options()
-  ) {
-    self.init(
-      name: name,
-      apiKey: apiKey,
-      generationConfig: generationConfig,
-      safetySettings: safetySettings,
-      tools: tools,
-      toolConfig: toolConfig,
-      systemInstruction: systemInstruction,
-      requestOptions: requestOptions,
-      urlSession: .shared
-    )
-  }
+  //  public convenience init(
+  //    name: String,
+  //    apiKey: String,
+  //    generationConfig: GenerationConfig? = nil,
+  //    safetySettings: [SafetySetting]? = nil,
+  //    tools: [Tool]? = nil,
+  //    toolConfig: ToolConfig? = nil,
+  //    systemInstruction: ModelContent? = nil,
+  //    requestOptions: HTTP.Request.Options = HTTP.Request.Options()
+  //  ) {
+  //    self.init(
+  //      name: name,
+  //      apiKey: apiKey,
+  //      generationConfig: generationConfig,
+  //      safetySettings: safetySettings,
+  //      tools: tools,
+  //      toolConfig: toolConfig,
+  //      systemInstruction: systemInstruction,
+  //      requestOptions: requestOptions
+  //    )
+  //  }
 
   /// Initializes a new remote model with the given parameters.
   ///
@@ -117,12 +102,25 @@ public final class GenerativeModel: @unchecked Sendable {
         role: "system",
         parts: systemInstruction.map { ModelContent.Part.text($0) }
       ),
-      requestOptions: requestOptions,
-      urlSession: .shared
+      requestOptions: requestOptions
     )
   }
 
   /// The designated initializer for this class.
+  /// Initializes a new remote model with the given parameters.
+  ///
+  /// - Parameters:
+  ///   - name: The name of the model to use, for example `"gemini-1.5-pro-latest"`; see
+  ///     [Gemini models](https://ai.google.dev/models/gemini) for a list of supported model names.
+  ///   - apiKey: The API key for your project.
+  ///   - generationConfig: The content generation parameters your model should use.
+  ///   - safetySettings: A value describing what types of harmful content your model should allow.
+  ///   - tools: A list of ``Tool`` objects  that the model may use to generate the next response.
+  ///   - systemInstruction: Instructions that direct the model to behave a certain way; currently
+  ///     only text content is supported, for example
+  ///     `ModelContent(role: "system", parts: "You are a cat. Your name is Neko.")`.
+  ///   - toolConfig: Tool configuration for any `Tool` specified in the request.
+  ///   - requestOptions Configuration parameters for sending requests to the backend.
   init(
     name: String,
     apiKey: String,
@@ -132,10 +130,9 @@ public final class GenerativeModel: @unchecked Sendable {
     toolConfig: ToolConfig? = nil,
     systemInstruction: ModelContent? = nil,
     requestOptions: HTTP.Request.Options = HTTP.Request.Options(),
-    urlSession: URLSession
   ) {
     modelResourceName = GenerativeModel.modelResourceName(name: name)
-    generativeAIService = GenerativeAIService(apiKey: apiKey, urlSession: urlSession)
+    generativeAIService = GenerativeAIService(apiKey: apiKey)
     self.generationConfig = generationConfig
     self.safetySettings = safetySettings
     self.tools = tools
@@ -148,7 +145,8 @@ public final class GenerativeModel: @unchecked Sendable {
       [GoogleGenerativeAI] Model \(name, privacy: .public) initialized.
       To enable additional logging, add \
       `\(Logging.enableArgumentKey, privacy: .public)` as a launch argument in Xcode.
-      """)
+      """
+    )
     Logging.verbose.debug("[GoogleGenerativeAI] Verbose logging enabled.")
   }
 
@@ -183,26 +181,34 @@ public final class GenerativeModel: @unchecked Sendable {
   /// - Returns: The generated content response from the model.
   /// - Throws: A ``GenerateContentError`` if the request failed.
   @MainActor
-  public func generateContent(_ content: @autoclosure () throws -> [ModelContent]) async throws
+  public func generateContent(
+    _ content: @autoclosure () throws -> [ModelContent]
+  ) async throws
     -> GenerateContentResponse
   {
     let response: GenerateContentResponse
     do {
-      let generateContentRequest = try GenerateContentRequest(
-        model: modelResourceName,
-        contents: content(),
-        generationConfig: generationConfig,
-        safetySettings: safetySettings,
-        tools: tools,
-        toolConfig: toolConfig,
-        systemInstruction: systemInstruction,
+      let generateContentRequest = try GenerateContent.Request(
         isStreaming: false,
-        options: requestOptions
+        options: requestOptions,
+        body: .init(
+          model: modelResourceName,
+          contents: content(),
+          generationConfig: generationConfig,
+          safetySettings: safetySettings,
+          tools: tools,
+          toolConfig: toolConfig,
+          systemInstruction: systemInstruction
+        )
       )
-      response = try await generativeAIService.loadRequest(request: generateContentRequest)
+      response = try await generativeAIService.loadRequest(
+        request: generateContentRequest
+      )
     } catch {
       if let imageError = error as? ImageConversionError {
-        throw GenerateContentError.promptImageContentError(underlying: imageError)
+        throw GenerateContentError.promptImageContentError(
+          underlying: imageError
+        )
       }
       throw GenerativeModel.generateContentError(from: error)
     }
@@ -214,7 +220,10 @@ public final class GenerativeModel: @unchecked Sendable {
 
     // Check to see if an error should be thrown for stop reason.
     if let reason = response.candidates.first?.finishReason, reason != .stop {
-      throw GenerateContentError.responseStoppedEarly(reason: reason, response: response)
+      throw GenerateContentError.responseStoppedEarly(
+        reason: reason,
+        response: response
+      )
     }
 
     return response
@@ -252,7 +261,9 @@ public final class GenerativeModel: @unchecked Sendable {
   /// - Returns: A stream wrapping content generated by the model or a ``GenerateContentError``
   ///     error if an error occurred.
   @available(macOS 12.0, *)
-  public func generateContentStream(_ content: @autoclosure () throws -> [ModelContent])
+  public func generateContentStream(
+    _ content: @autoclosure () throws -> [ModelContent]
+  )
     -> AsyncThrowingStream<GenerateContentResponse, Error>
   {
     let evaluatedContent: [ModelContent]
@@ -262,7 +273,9 @@ public final class GenerativeModel: @unchecked Sendable {
       return AsyncThrowingStream { continuation in
         let error: Error =
           if let contentError = underlying as? ImageConversionError {
-            GenerateContentError.promptImageContentError(underlying: contentError)
+            GenerateContentError.promptImageContentError(
+              underlying: contentError
+            )
           } else {
             GenerateContentError.internalError(underlying: underlying)
           }
@@ -270,20 +283,20 @@ public final class GenerativeModel: @unchecked Sendable {
       }
     }
 
-    let generateContentRequest = GenerateContentRequest(
-      model: modelResourceName,
-      contents: evaluatedContent,
-      generationConfig: generationConfig,
-      safetySettings: safetySettings,
-      tools: tools,
-      toolConfig: toolConfig,
-      systemInstruction: systemInstruction,
+    let generateContentRequest = GenerateContent.Request(
       isStreaming: true,
-      options: requestOptions
+      options: requestOptions,
+      body: .init(
+        model: modelResourceName, contents: evaluatedContent, generationConfig: generationConfig,
+        safetySettings: safetySettings, tools: tools, toolConfig: toolConfig,
+        systemInstruction: systemInstruction
+      )
     )
 
-    var responseIterator = generativeAIService.loadRequestStream(request: generateContentRequest)
-      .makeAsyncIterator()
+    var responseIterator = generativeAIService.loadRequestStream(
+      request: generateContentRequest
+    )
+    .makeAsyncIterator()
     return AsyncThrowingStream {
       let response: GenerateContentResponse?
       do {
@@ -304,11 +317,16 @@ public final class GenerativeModel: @unchecked Sendable {
       }
 
       // If the stream ended early unexpectedly, throw an error.
-      guard let finishReason = response.candidates.first?.finishReason, finishReason != .stop else {
+      guard let finishReason = response.candidates.first?.finishReason,
+        finishReason != .stop
+      else {
         // Response was valid content, pass it along and continue.
         return response
       }
-      throw GenerateContentError.responseStoppedEarly(reason: finishReason, response: response)
+      throw GenerateContentError.responseStoppedEarly(
+        reason: finishReason,
+        response: response
+      )
     }
   }
 
@@ -336,8 +354,9 @@ public final class GenerativeModel: @unchecked Sendable {
   /// - Returns: The results of running the model's tokenizer on the input; contains
   /// ``CountTokensResponse/totalTokens``.
   /// - Throws: A ``CountTokensError`` if the tokenization request failed.
-  public func countTokens(_ parts: any ThrowingPartsRepresentable...) async throws
-    -> CountTokensResponse
+  public func countTokens(_ parts: any ThrowingPartsRepresentable...)
+    async throws
+    -> CountTokens.Response
   {
     try await countTokens([ModelContent(parts: parts)])
   }
@@ -349,27 +368,32 @@ public final class GenerativeModel: @unchecked Sendable {
   /// ``CountTokensResponse/totalTokens``.
   /// - Throws: A ``CountTokensError`` if the tokenization request failed or the input content was
   /// invalid.
-  public func countTokens(_ content: @autoclosure () throws -> [ModelContent]) async throws
-    -> CountTokensResponse
+  public func countTokens(_ content: @autoclosure () throws -> [ModelContent])
+    async throws
+    -> CountTokens.Response
   {
     do {
-      let generateContentRequest = try GenerateContentRequest(
-        model: modelResourceName,
-        contents: content(),
-        generationConfig: generationConfig,
-        safetySettings: safetySettings,
-        tools: tools,
-        toolConfig: toolConfig,
-        systemInstruction: systemInstruction,
-        isStreaming: false,
-        options: requestOptions
+      let generateContentRequest: GenerateContent.Request = try .init(
+        isStreaming: true,
+        options: requestOptions,
+        body: .init(
+          model: modelResourceName,
+          contents: content(),
+          generationConfig: generationConfig,
+          safetySettings: safetySettings,
+          tools: tools,
+          toolConfig: toolConfig,
+          systemInstruction: systemInstruction
+        )
       )
-      let countTokensRequest = CountTokensRequest(
+      let countTokensRequest = CountTokens.Request(
+        options: requestOptions,
         model: modelResourceName,
-        generateContentRequest: generateContentRequest,
-        options: requestOptions
+        body: .init(generateContentRequest.body!)
       )
-      return try await generativeAIService.loadRequest(request: countTokensRequest)
+      return try await generativeAIService.loadRequest(
+        request: countTokensRequest
+      )
     } catch {
       throw CountTokensError.internalError(underlying: error)
     }
@@ -387,12 +411,16 @@ public final class GenerativeModel: @unchecked Sendable {
   /// Returns a `GenerateContentError` (for public consumption) from an internal error.
   ///
   /// If `error` is already a `GenerateContentError` the error is returned unchanged.
-  private static func generateContentError(from error: Error) -> GenerateContentError {
+  private static func generateContentError(from error: Error)
+    -> GenerateContentError
+  {
     if let error = error as? GenerateContentError {
       return error
     } else if let error = error as? RPCError, error.isInvalidAPIKeyError() {
       return GenerateContentError.invalidAPIKey(message: error.message)
-    } else if let error = error as? RPCError, error.isUnsupportedUserLocationError() {
+    } else if let error = error as? RPCError,
+      error.isUnsupportedUserLocationError()
+    {
       return GenerateContentError.unsupportedUserLocation
     }
     return GenerateContentError.internalError(underlying: error)

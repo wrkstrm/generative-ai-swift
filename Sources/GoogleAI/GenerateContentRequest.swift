@@ -15,42 +15,38 @@
 import Foundation
 import WrkstrmNetworking
 
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-struct GenerateContentRequest: Sendable {
-  /// Model name.
-  let model: String
-  let contents: [ModelContent]
-  let generationConfig: GenerationConfig?
-  let safetySettings: [SafetySetting]?
-  let tools: [Tool]?
-  let toolConfig: ToolConfig?
-  let systemInstruction: ModelContent?
-  let isStreaming: Bool
-  let options: HTTP.Request.Options
-}
-
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-extension GenerateContentRequest: Encodable {
-  enum CodingKeys: String, CodingKey {
-    case model
-    case contents
-    case generationConfig
-    case safetySettings
-    case tools
-    case toolConfig
-    case systemInstruction
+public enum GenerateContent {
+  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
+  public struct Request: HTTP.CodableURLRequest, Sendable {
+    public typealias RequestBody = GenerateContent.Request.Body
+    public typealias ResponseType = GenerateContentResponse
+    
+    public var method: WrkstrmNetworking.HTTP.Method = .post
+    
+    public var path: String {
+      guard isStreaming else {
+        return "\(body!.model):generateContent"
+      }
+      return "\(body!.model):streamGenerateContent?alt=sse"
+    }
+    
+    public var queryItems: [URLQueryItem] = []
+    
+    /// Model name.
+    public let isStreaming: Bool
+    public let options: HTTP.Request.Options
+    public var body: GenerateContent.Request.Body?
   }
 }
 
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-extension GenerateContentRequest: GenerativeAIRequest {
-  typealias Response = GenerateContentResponse
-
-  var url: URL {
-    let modelURL = "\(GenerativeAISwift.baseURL)/\(options.apiVersion)/\(model)"
-    guard isStreaming else {
-      return URL(string: "\(modelURL):generateContent")!
-    }
-    return URL(string: "\(modelURL):streamGenerateContent?alt=sse")!
+extension GenerateContent.Request {
+  public struct Body: Encodable, Sendable {
+    public let model: String
+    public let contents: [ModelContent]
+    public let generationConfig: GenerationConfig?
+    public let safetySettings: [SafetySetting]?
+    public let tools: [Tool]?
+    public let toolConfig: ToolConfig?
+    public let systemInstruction: ModelContent?
   }
 }
