@@ -23,7 +23,7 @@ ConfigurationService.local.dependencies = [
 
 ConfigurationService.remote.dependencies = [
   .package(url: "https://github.com/wrkstrm/WrkstrmLog.git", from: "0.0.0"),
-  .package(url: "https://github.com/wrkstrm/WrkstrmFoundation.git", from: "0.0.0"),
+  .package(url: "https://github.com/wrkstrm/WrkstrmFoundation.git", from: "1.0.0"),
 ]
 
 let package = Package(
