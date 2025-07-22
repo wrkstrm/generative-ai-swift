@@ -13,33 +13,32 @@
 // limitations under the License.
 
 import Foundation
-import WrkstrmNetworking
+import WrkstrmFoundation
 import WrkstrmLog
+import WrkstrmNetworking
 
 extension Log {
   /// A non default
   static let network: Log =
-  if ProcessInfo.processInfo.arguments.contains(Logging.enableArgumentKey) {
-    .init(system: Logging.subsystem, category: "NetworkResponse")
-  } else {
-    // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
-    .disabled
-  }
+    if ProcessInfo.processInfo.arguments.contains(Logging.enableArgumentKey) {
+      .init(system: Logging.subsystem, category: "NetworkResponse")
+    } else {
+      // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
+      .disabled
+    }
 }
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-struct GenerativeAIService: HTTP.Client {
-  private let urlSession: URLSession
-  
+struct GenerativeAIService {
+  var codableClient: HTTP.CodableClient
+
   var environment: any WrkstrmNetworking.HTTP.Environment
-  
-  var json: (encoder: JSONEncoder, decoder: JSONDecoder) = (.snakecase, .snakecase)
 
   init(environment: AI.GoogleGenAI.Environment) {
     self.environment = environment
     let configuration: URLSessionConfiguration = .default
     configuration.httpAdditionalHeaders = environment.headers
-    urlSession = URLSession(configuration: configuration)
+    codableClient = HTTP.CodableClient(environment: environment, json: (.snakecase, .snakecase))
   }
 
   func loadRequest<T: HTTP.CodableURLRequest>(request: T) async throws -> T.ResponseType {
@@ -49,47 +48,7 @@ struct GenerativeAIService: HTTP.Client {
     printCURLCommand(from: urlRequest)
     #endif
 
-    let (data, rawResponse) = try await urlSession.data(for: urlRequest)
-
-    let response = try httpResponse(urlResponse: rawResponse)
-
-    // Verify the status code is 200
-    guard response.statusCode.isHTTPOKStatusRange else {
-      Log.network.error("The server responded with an error: \(response)")
-      if let responseString = String(data: data, encoding: .utf8) {
-        Log.shared.error("Response payload: \(responseString)")
-      }
-
-      throw parseError(responseData: data)
-    }
-
-    return try parseResponse(T.ResponseType.self, from: data)
-  }
-
-  func loadGenAIRequest<T: HTTP.CodableURLRequest>(request: T) async throws -> T.ResponseType {
-    let urlRequest = try request.asURLRequest(with: environment)
-
-    #if DEBUG
-    printCURLCommand(from: urlRequest)
-    #endif
-
-    let data: Data
-    let rawResponse: URLResponse
-    (data, rawResponse) = try await urlSession.data(for: urlRequest)
-
-    let response = try httpResponse(urlResponse: rawResponse)
-
-    // Verify the status code is 200
-    guard response.statusCode.isHTTPOKStatusRange else {
-      Log.network.error("[GoogleGenerativeAI] The server responded with an error: \(response)")
-      if let responseString = String(data: data, encoding: .utf8) {
-        Logging.default.error("[GoogleGenerativeAI] Response payload: \(responseString)")
-      }
-
-      throw parseError(responseData: data)
-    }
-
-    return try parseResponse(T.ResponseType.self, from: data)
+    return try await codableClient.send(request)
   }
 
   @available(macOS 12.0, *)
@@ -113,7 +72,7 @@ struct GenerativeAIService: HTTP.Client {
         let stream: URLSession.AsyncBytes
         let rawResponse: URLResponse
         do {
-          (stream, rawResponse) = try await urlSession.bytes(for: urlRequest)
+          (stream, rawResponse) = try await codableClient.session.bytes(for: urlRequest)
         } catch {
           continuation.finish(throwing: error)
           return
@@ -192,12 +151,12 @@ struct GenerativeAIService: HTTP.Client {
     guard let response = urlResponse as? HTTPURLResponse else {
       Logging.default
         .error(
-          "[GoogleGenerativeAI] Response wasn't an HTTP response, internal error \(urlResponse)"
+          "[GoogleGenerativeAI] Response wasn't an HTTP response, internal error \(urlResponse)",
         )
       throw NSError(
         domain: "com.google.generative-ai",
         code: -1,
-        userInfo: [NSLocalizedDescriptionKey: "Response was not an HTTP response."]
+        userInfo: [NSLocalizedDescriptionKey: "Response was not an HTTP response."],
       )
     }
 
@@ -209,7 +168,7 @@ struct GenerativeAIService: HTTP.Client {
       let error = NSError(
         domain: "com.google.generative-ai",
         code: -1,
-        userInfo: [NSLocalizedDescriptionKey: "Could not parse response as UTF8."]
+        userInfo: [NSLocalizedDescriptionKey: "Could not parse response as UTF8."],
       )
       throw error
     }
