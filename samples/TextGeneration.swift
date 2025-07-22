@@ -27,7 +27,7 @@ final class TextGeneration: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipIf(
       APIKey.default.isEmpty,
-      "`\(APIKey.apiKeyEnvVar)` environment variable not set."
+      "`\(APIKey.apiKeyEnvVar)` environment variable not set.",
     )
   }
 
@@ -39,7 +39,7 @@ final class TextGeneration: XCTestCase {
         name: "gemini-1.5-flash",
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
-        apiKey: APIKey.default
+        apiKey: APIKey.default,
       )
 
     let prompt = "Write a story about a magic backpack."
@@ -58,7 +58,7 @@ final class TextGeneration: XCTestCase {
         name: "gemini-1.5-flash",
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
-        apiKey: APIKey.default
+        apiKey: APIKey.default,
       )
 
     let prompt = "Write a story about a magic backpack."
@@ -79,7 +79,7 @@ final class TextGeneration: XCTestCase {
         name: "gemini-1.5-flash",
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
-        apiKey: APIKey.default
+        apiKey: APIKey.default,
       )
 
     guard let image = UIImage(systemName: "cloud.sun") else { fatalError() }
@@ -101,7 +101,7 @@ final class TextGeneration: XCTestCase {
         name: "gemini-1.5-flash",
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
-        apiKey: APIKey.default
+        apiKey: APIKey.default,
       )
 
     guard let image = UIImage(systemName: "cloud.sun") else { fatalError() }
@@ -124,7 +124,7 @@ final class TextGeneration: XCTestCase {
         name: "gemini-1.5-flash",
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
-        apiKey: APIKey.default
+        apiKey: APIKey.default,
       )
 
     guard let image1 = UIImage(systemName: "cloud.sun") else { fatalError() }
@@ -147,7 +147,7 @@ final class TextGeneration: XCTestCase {
         name: "gemini-1.5-flash",
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
-        apiKey: APIKey.default
+        apiKey: APIKey.default,
       )
 
     guard let image1 = UIImage(systemName: "cloud.sun") else { fatalError() }
