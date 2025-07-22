@@ -51,19 +51,19 @@ class FunctionCallingViewModel: ObservableObject {
                 type: .string,
                 format: "enum",
                 description: "The currency to convert from in ISO 4217 format",
-                enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"]
+                enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"],
               ),
               "currency_to": Schema(
                 type: .string,
                 format: "enum",
                 description: "The currency to convert to in ISO 4217 format",
-                enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"]
+                enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"],
               ),
             ],
-            requiredParameters: ["currency_from", "currency_to"]
+            requiredParameters: ["currency_from", "currency_to"],
           )
         ])
-      ]
+      ],
     )
     chat = model.startChat()
   }
@@ -176,7 +176,7 @@ class FunctionCallingViewModel: ObservableObject {
           functionResponses.append(
             FunctionResponse(
               name: "get_exchange_rate",
-              response: exchangeRates
+              response: exchangeRates,
             ))
 
         default:
@@ -265,7 +265,7 @@ extension [FunctionResponse] {
     self.map {
       ModelContent(
         role: "function",
-        parts: [ModelContent.Part.functionResponse($0)]
+        parts: [ModelContent.Part.functionResponse($0)],
       )
     }
   }
