@@ -33,7 +33,7 @@ private enum APIKeyCodeSnippet {
       }
       if value.starts(with: "_") {
         fatalError(
-          "Follow the instructions at https://ai.google.dev/tutorials/setup to get an API key."
+          "Follow the instructions at https://ai.google.dev/tutorials/setup to get an API key.",
         )
       }
       return value
