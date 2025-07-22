@@ -74,7 +74,7 @@ extension CGImage: ThrowingPartsRepresentable {
     let output = NSMutableData()
     guard
       let imageDestination = CGImageDestinationCreateWithData(
-        output, UTType.jpeg.identifier as CFString, 1, nil
+        output, UTType.jpeg.identifier as CFString, 1, nil,
       )
     else {
       throw ImageConversionError.couldNotAllocateDestination
@@ -84,7 +84,7 @@ extension CGImage: ThrowingPartsRepresentable {
       imageDestination,
       [
         kCGImageDestinationLossyCompressionQuality: imageCompressionQuality
-      ] as CFDictionary
+      ] as CFDictionary,
     )
     if CGImageDestinationFinalize(imageDestination) {
       return [.data(mimetype: "image/jpeg", output as Data)]
