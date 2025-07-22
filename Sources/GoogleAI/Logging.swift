@@ -30,14 +30,6 @@ enum Logging {
   /// than `.notice`.
   static let `default` = Logger(subsystem: subsystem, category: defaultCategory)
 
-  /// A non default
-  static let network: Logger =
-    if ProcessInfo.processInfo.arguments.contains(enableArgumentKey) {
-      .init(subsystem: subsystem, category: "NetworkResponse")
-    } else {
-      // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
-      .init(.disabled)
-    }
 
   ///
   static let verbose: Logger =
