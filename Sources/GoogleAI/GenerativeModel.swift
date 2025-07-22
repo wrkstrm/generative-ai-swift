@@ -132,7 +132,7 @@ public final class GenerativeModel: @unchecked Sendable {
     requestOptions: HTTP.Request.Options = HTTP.Request.Options(),
   ) {
     modelResourceName = GenerativeModel.modelResourceName(name: name)
-    generativeAIService = GenerativeAIService(apiKey: apiKey)
+    generativeAIService = GenerativeAIService(environment: .betaEnv(with: apiKey))
     self.generationConfig = generationConfig
     self.safetySettings = safetySettings
     self.tools = tools
