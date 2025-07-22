@@ -153,7 +153,7 @@ public struct FunctionDeclaration: Sendable {
     self.parameters = Schema(
       type: .object,
       properties: parameters,
-      requiredProperties: requiredParameters
+      requiredProperties: requiredParameters,
     )
   }
 }
