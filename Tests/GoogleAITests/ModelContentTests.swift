@@ -22,7 +22,7 @@ final class ModelContentTests: XCTestCase {
 
   override func setUp() {
     encoder.outputFormatting = .init(
-      arrayLiteral: .prettyPrinted, .sortedKeys, .withoutEscapingSlashes
+      arrayLiteral: .prettyPrinted, .sortedKeys, .withoutEscapingSlashes,
     )
   }
 
@@ -45,7 +45,7 @@ final class ModelContentTests: XCTestCase {
           "mime_type" : "\(mimeType)"
         }
       }
-      """
+      """,
     )
   }
 }
