@@ -53,7 +53,7 @@ extension [ThrowingPartsRepresentable]: ThrowingPartsRepresentable {
     try compactMap { element in
       try element.tryPartsValue()
     }
-    .flatMap { $0 }
+    .flatMap(\.self)
   }
 }
 
