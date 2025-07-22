@@ -30,7 +30,6 @@ enum Logging {
   /// than `.notice`.
   static let `default` = Logger(subsystem: subsystem, category: defaultCategory)
 
-
   ///
   static let verbose: Logger =
     if ProcessInfo.processInfo.arguments.contains(enableArgumentKey) {
