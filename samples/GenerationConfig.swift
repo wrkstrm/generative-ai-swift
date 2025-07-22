@@ -26,7 +26,7 @@ final class GenerationConfigSnippets: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipIf(
       APIKey.default.isEmpty,
-      "`\(APIKey.apiKeyEnvVar)` environment variable not set."
+      "`\(APIKey.apiKeyEnvVar)` environment variable not set.",
     )
   }
 
@@ -38,7 +38,7 @@ final class GenerationConfigSnippets: XCTestCase {
       topK: 16,
       candidateCount: 1,
       maxOutputTokens: 200,
-      stopSequences: ["red", "orange"]
+      stopSequences: ["red", "orange"],
     )
 
     let generativeModel =
@@ -48,7 +48,7 @@ final class GenerationConfigSnippets: XCTestCase {
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
         apiKey: APIKey.default,
-        generationConfig: config
+        generationConfig: config,
       )
     // [END configure_model_parameters]
 
