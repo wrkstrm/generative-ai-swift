@@ -31,7 +31,7 @@ let package = Package(
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "GoogleGenerativeAI", package: "GoogleGenerativeAI"),
       ],
-      path: "Sources"
+      path: "Sources",
     )
-  ]
+  ],
 )
