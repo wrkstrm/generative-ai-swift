@@ -158,7 +158,7 @@ extension ModelContent.Part: Codable {
       case .data(let mimetype, let bytes):
         var inlineDataContainer = container.nestedContainer(
           keyedBy: InlineDataKeys.self,
-          forKey: .inlineData
+          forKey: .inlineData,
         )
         try inlineDataContainer.encode(mimetype, forKey: .mimeType)
         try inlineDataContainer.encode(bytes, forKey: .bytes)
@@ -166,7 +166,7 @@ extension ModelContent.Part: Codable {
       case .fileData(mimetype: let mimetype, let url):
         var fileDataContainer = container.nestedContainer(
           keyedBy: FileDataKeys.self,
-          forKey: .fileData
+          forKey: .fileData,
         )
         try fileDataContainer.encode(mimetype, forKey: .mimeType)
         try fileDataContainer.encode(url, forKey: .url)
@@ -192,7 +192,7 @@ extension ModelContent.Part: Codable {
     } else if values.contains(.inlineData) {
       let dataContainer = try values.nestedContainer(
         keyedBy: InlineDataKeys.self,
-        forKey: .inlineData
+        forKey: .inlineData,
       )
       let mimetype = try dataContainer.decode(String.self, forKey: .mimeType)
       let bytes = try dataContainer.decode(Data.self, forKey: .bytes)
@@ -205,13 +205,13 @@ extension ModelContent.Part: Codable {
       self = try .codeExecutionResult(
         values.decode(
           CodeExecutionResult.self,
-          forKey: .codeExecutionResult
+          forKey: .codeExecutionResult,
         ))
     } else {
       throw DecodingError.dataCorrupted(
         .init(
           codingPath: [CodingKeys.text, CodingKeys.inlineData],
-          debugDescription: "No text, inline data or function call was found."
+          debugDescription: "No text, inline data or function call was found.",
         ))
     }
   }
