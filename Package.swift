@@ -36,7 +36,7 @@ let package = Package(
   products: [
     .library(
       name: "GoogleGenerativeAI",
-      targets: ["GoogleGenerativeAI"]
+      targets: ["GoogleGenerativeAI"],
     )
   ],
   dependencies: ConfigurationService.inject.dependencies,
@@ -48,7 +48,7 @@ let package = Package(
         .product(name: "WrkstrmNetworking", package: "WrkstrmFoundation"),
         .product(name: "WrkstrmLog", package: "WrkstrmLog"),
       ],
-      path: "Sources"
+      path: "Sources",
     ),
     .testTarget(
       name: "GoogleGenerativeAITests",
@@ -62,14 +62,14 @@ let package = Package(
       resources: [
         .process("GoogleAITests/CountTokenResponses"),
         .process("GoogleAITests/GenerateContentResponses"),
-      ]
+      ],
     ),
     .testTarget(
       name: "CodeSnippetTests",
       dependencies: ["GoogleGenerativeAI"],
-      path: "samples"
+      path: "samples",
     ),
-  ]
+  ],
 )
 
 // MARK: - Configuration Service

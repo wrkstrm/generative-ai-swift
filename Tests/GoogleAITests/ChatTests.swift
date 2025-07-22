@@ -35,7 +35,7 @@ final class ChatTests: XCTestCase {
     let fileURL = try XCTUnwrap(
       Bundle.module.url(
         forResource: "streaming-success-basic-reply-long",
-        withExtension: "txt"
+        withExtension: "txt",
       ))
 
     MockURLProtocol.requestHandler = { request in
@@ -43,7 +43,7 @@ final class ChatTests: XCTestCase {
         url: request.url!,
         statusCode: 200,
         httpVersion: nil,
-        headerFields: nil
+        headerFields: nil,
       )!
       return (response, fileURL.lines)
     }

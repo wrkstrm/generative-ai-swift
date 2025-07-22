@@ -47,7 +47,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-basic-reply-long",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -72,7 +72,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-basic-reply-short",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -94,7 +94,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-citations",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -131,7 +131,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-quote-reply",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -160,7 +160,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-unknown-enum-safety-ratings",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -174,13 +174,13 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-basic-reply-short",
-        withExtension: "json"
+        withExtension: "json",
       )
     let model = GenerativeModel(
       // Model name is prefixed with "models/".
       name: "models/test-model",
       apiKey: "API_KEY",
-      urlSession: urlSession
+      urlSession: urlSession,
     )
 
     _ = try await model.generateContent(testPrompt)
@@ -190,7 +190,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-function-call-empty-arguments",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -212,7 +212,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-function-call-no-arguments",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -234,7 +234,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-function-call-with-arguments",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -260,7 +260,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-function-call-parallel-calls",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -276,7 +276,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-function-call-mixed-content",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -294,7 +294,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-code-execution",
-        withExtension: "json"
+        withExtension: "json",
       )
     let expectedText1 = """
       To print strings in Python, you use the `print()` function. \
@@ -343,7 +343,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       \(expectedOutput)
       ```
       \(expectedText2)
-      """
+      """,
     )
   }
 
@@ -351,7 +351,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-basic-reply-short",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -369,7 +369,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-api-key",
         withExtension: "json",
-        statusCode: expectedStatusCode
+        statusCode: expectedStatusCode,
       )
 
     do {
@@ -386,7 +386,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-empty-content",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     do {
@@ -402,7 +402,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       }
       _ = try XCTUnwrap(
         decodingError as? DecodingError,
-        "Not a DecodingError: \(decodingError)"
+        "Not a DecodingError: \(decodingError)",
       )
     } catch {
       XCTFail("Should throw GenerateContentError.internalError; error thrown: \(error)")
@@ -413,7 +413,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-finish-reason-safety",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     do {
@@ -431,7 +431,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-finish-reason-safety-no-content",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     do {
@@ -451,7 +451,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-image-rejected",
         withExtension: "json",
-        statusCode: 400
+        statusCode: 400,
       )
 
     do {
@@ -470,7 +470,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-prompt-blocked-safety",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     do {
@@ -487,7 +487,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-unknown-enum-finish-reason",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     do {
@@ -505,7 +505,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-unknown-enum-prompt-blocked",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     do {
@@ -525,7 +525,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-unknown-model",
         withExtension: "json",
-        statusCode: 404
+        statusCode: 404,
       )
 
     do {
@@ -545,7 +545,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-unsupported-user-location",
         withExtension: "json",
-        statusCode: 400
+        statusCode: 400,
       )
 
     do {
@@ -582,7 +582,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
   func testGenerateContent_failure_invalidResponse() async throws {
     MockURLProtocol.requestHandler = try httpRequestHandler(
       forResource: "unary-failure-invalid-response",
-      withExtension: "json"
+      withExtension: "json",
     )
 
     var responseError: Error?
@@ -612,7 +612,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-malformed-content",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     var responseError: Error?
@@ -637,14 +637,14 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     }
     _ = try XCTUnwrap(
       malformedContentUnderlyingError as? DecodingError,
-      "Not a decoding error: \(malformedContentUnderlyingError)"
+      "Not a decoding error: \(malformedContentUnderlyingError)",
     )
   }
 
   func testGenerateContentMissingSafetyRatings() async throws {
     MockURLProtocol.requestHandler = try httpRequestHandler(
       forResource: "unary-success-missing-safety-ratings",
-      withExtension: "json"
+      withExtension: "json",
     )
 
     let content = try await model.generateContent(testPrompt)
@@ -659,14 +659,14 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-basic-reply-short",
         withExtension: "json",
-        timeout: expectedTimeout
+        timeout: expectedTimeout,
       )
     let requestOptions = RequestOptions(timeout: expectedTimeout)
     model = GenerativeModel(
       name: "my-model",
       apiKey: "API_KEY",
       requestOptions: requestOptions,
-      urlSession: urlSession
+      urlSession: urlSession,
     )
 
     let response = try await model.generateContent(testPrompt)
@@ -680,7 +680,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       .requestHandler = try httpRequestHandler(
         forResource: "unary-success-basic-reply-short",
         withExtension: "json",
-        timeout: expectedTimeout
+        timeout: expectedTimeout,
       )
 
     let response = try await model.generateContent(testPrompt)
@@ -694,7 +694,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-api-key",
-        withExtension: "json"
+        withExtension: "json",
       )
 
     do {
@@ -714,7 +714,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-failure-empty-content",
-        withExtension: "txt"
+        withExtension: "txt",
       )
 
     do {
@@ -734,7 +734,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-failure-finish-reason-safety",
-        withExtension: "txt"
+        withExtension: "txt",
       )
 
     do {
@@ -754,7 +754,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-failure-prompt-blocked-safety",
-        withExtension: "txt"
+        withExtension: "txt",
       )
 
     do {
@@ -774,7 +774,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-failure-unknown-finish-enum",
-        withExtension: "txt"
+        withExtension: "txt",
       )
 
     let stream = model.generateContentStream("Hi")
@@ -794,7 +794,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-success-basic-reply-long",
-        withExtension: "txt"
+        withExtension: "txt",
       )
 
     var responses = 0
@@ -811,7 +811,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-success-basic-reply-short",
-        withExtension: "txt"
+        withExtension: "txt",
       )
 
     var responses = 0
@@ -828,7 +828,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-success-unknown-safety-enum",
-        withExtension: "txt"
+        withExtension: "txt",
       )
 
     var hadUnknown = false
@@ -849,7 +849,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-success-citations",
-        withExtension: "txt"
+        withExtension: "txt",
       )
 
     let stream = model.generateContentStream("Hi")
@@ -890,7 +890,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-success-code-execution",
-        withExtension: "txt"
+        withExtension: "txt",
       )
     let expectedTexts1 = [
       "Thoughts",
@@ -913,19 +913,19 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       let candidate = try XCTUnwrap(content.candidates.first)
       let part = try XCTUnwrap(candidate.content.parts.first)
       switch part {
-        case .text(let textPart):
-          XCTAssertTrue(expectedTexts.contains(textPart))
+      case .text(let textPart):
+        XCTAssertTrue(expectedTexts.contains(textPart))
 
-        case .executableCode(let executableCode):
-          XCTAssertEqual(executableCode.language, expectedLanguage)
-          XCTAssertEqual(executableCode.code, expectedCode)
+      case .executableCode(let executableCode):
+        XCTAssertEqual(executableCode.language, expectedLanguage)
+        XCTAssertEqual(executableCode.code, expectedCode)
 
-        case .codeExecutionResult(let codeExecutionResult):
-          XCTAssertEqual(codeExecutionResult.outcome, .ok)
-          XCTAssertEqual(codeExecutionResult.output, expectedOutput)
+      case .codeExecutionResult(let codeExecutionResult):
+        XCTAssertEqual(codeExecutionResult.outcome, .ok)
+        XCTAssertEqual(codeExecutionResult.output, expectedOutput)
 
-        default:
-          XCTFail("Unexpected part type: \(part)")
+      default:
+        XCTFail("Unexpected part type: \(part)")
       }
       try textValues.append(XCTUnwrap(content.text))
     }
@@ -941,7 +941,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       \(expectedOutput)
       ```
       \(expectedTexts2.joined(separator: "\n"))
-      """
+      """,
     )
   }
 
@@ -949,7 +949,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-success-basic-reply-short",
-        withExtension: "txt"
+        withExtension: "txt",
       )
     var responses: [GenerateContentResponse] = []
 
@@ -975,7 +975,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
   func testGenerateContentStream_errorMidStream() async throws {
     MockURLProtocol.requestHandler = try httpRequestHandler(
       forResource: "streaming-failure-error-mid-stream",
-      withExtension: "txt"
+      withExtension: "txt",
     )
 
     var responseCount = 0
@@ -1017,7 +1017,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-failure-invalid-json",
-        withExtension: "txt"
+        withExtension: "txt",
       )
 
     let stream = model.generateContentStream(testPrompt)
@@ -1041,7 +1041,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     MockURLProtocol
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-failure-malformed-content",
-        withExtension: "txt"
+        withExtension: "txt",
       )
 
     let stream = model.generateContentStream(testPrompt)
@@ -1067,7 +1067,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       .requestHandler = try httpRequestHandler(
         forResource: "unary-failure-unsupported-user-location",
         withExtension: "json",
-        statusCode: 400
+        statusCode: 400,
       )
 
     let stream = model.generateContentStream(testPrompt)
@@ -1088,14 +1088,14 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-success-basic-reply-short",
         withExtension: "txt",
-        timeout: expectedTimeout
+        timeout: expectedTimeout,
       )
     let requestOptions = RequestOptions(timeout: expectedTimeout)
     model = GenerativeModel(
       name: "my-model",
       apiKey: "API_KEY",
       requestOptions: requestOptions,
-      urlSession: urlSession
+      urlSession: urlSession,
     )
 
     var responses = 0
@@ -1114,7 +1114,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       .requestHandler = try httpRequestHandler(
         forResource: "streaming-success-basic-reply-short",
         withExtension: "txt",
-        timeout: expectedTimeout
+        timeout: expectedTimeout,
       )
 
     var responses = 0
@@ -1132,7 +1132,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
   func testCountTokens_succeeds() async throws {
     MockURLProtocol.requestHandler = try httpRequestHandler(
       forResource: "success-total-tokens",
-      withExtension: "json"
+      withExtension: "json",
     )
 
     let response = try await model.countTokens("Why is the sky blue?")
@@ -1142,7 +1142,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
   func testCountTokens_modelNotFound() async throws {
     MockURLProtocol.requestHandler = try httpRequestHandler(
       forResource: "failure-model-not-found", withExtension: "json",
-      statusCode: 404
+      statusCode: 404,
     )
 
     do {
@@ -1164,14 +1164,14 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       .requestHandler = try httpRequestHandler(
         forResource: "success-total-tokens",
         withExtension: "json",
-        timeout: expectedTimeout
+        timeout: expectedTimeout,
       )
     let requestOptions = RequestOptions(timeout: expectedTimeout)
     model = GenerativeModel(
       name: "my-model",
       apiKey: "API_KEY",
       requestOptions: requestOptions,
-      urlSession: urlSession
+      urlSession: urlSession,
     )
 
     let response = try await model.countTokens(testPrompt)
@@ -1185,7 +1185,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       .requestHandler = try httpRequestHandler(
         forResource: "success-total-tokens",
         withExtension: "json",
-        timeout: expectedTimeout
+        timeout: expectedTimeout,
       )
 
     let response = try await model.countTokens(testPrompt)
@@ -1234,7 +1234,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
         url: request.url!,
         mimeType: nil,
         expectedContentLength: 0,
-        textEncodingName: nil
+        textEncodingName: nil,
       )
       return (response, nil)
     }
@@ -1245,7 +1245,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     withExtension ext: String,
     statusCode: Int = 200,
     timeout: TimeInterval = RequestOptions()
-      .timeout
+      .timeout,
   ) throws -> (
     (URLRequest) throws -> (
       URLResponse,
@@ -1262,7 +1262,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
           url: requestURL,
           statusCode: statusCode,
           httpVersion: nil,
-          headerFields: nil
+          headerFields: nil,
         ))
       return (response, fileURL.lines)
     }

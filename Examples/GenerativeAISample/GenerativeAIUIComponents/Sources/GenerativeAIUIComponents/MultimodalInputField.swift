@@ -59,7 +59,7 @@ public struct MultimodalInputField: View {
 
   public init(
     text: Binding<String>,
-    selection: Binding<[PhotosPickerItem]>
+    selection: Binding<[PhotosPickerItem]>,
   ) {
     _text = text
     _selection = selection
@@ -77,7 +77,7 @@ public struct MultimodalInputField: View {
           TextField(
             "Upload an image, and then ask a question about it",
             text: $text,
-            axis: .vertical
+            axis: .vertical,
           )
           .padding(.vertical, 4)
           .onSubmit(submit)
@@ -104,7 +104,7 @@ public struct MultimodalInputField: View {
         .overlay {
           RoundedRectangle(
             cornerRadius: 8,
-            style: .continuous
+            style: .continuous,
           )
           .stroke(Color(UIColor.systemFill), lineWidth: 1)
         }
@@ -119,7 +119,7 @@ public struct MultimodalInputField: View {
     .confirmationDialog(
       "Select an image",
       isPresented: $isChooseAttachmentTypePickerShowing,
-      titleVisibility: .hidden
+      titleVisibility: .hidden,
     ) {
       Button(action: showAttachmentPicker) {
         Text("Photo & Video Library")

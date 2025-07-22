@@ -20,18 +20,18 @@ public enum GenerateContent {
   public struct Request: HTTP.CodableURLRequest, Sendable {
     public typealias RequestBody = GenerateContent.Request.Body
     public typealias ResponseType = GenerateContentResponse
-    
+
     public var method: WrkstrmNetworking.HTTP.Method = .post
-    
+
     public var path: String {
       guard isStreaming else {
         return "\(body!.model):generateContent"
       }
       return "\(body!.model):streamGenerateContent?alt=sse"
     }
-    
+
     public var queryItems: [URLQueryItem] = []
-    
+
     /// Model name.
     public let isStreaming: Bool
     public let options: HTTP.Request.Options

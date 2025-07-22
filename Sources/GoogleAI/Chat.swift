@@ -75,7 +75,7 @@ public class Chat {
         code: -1,
         userInfo: [
           NSLocalizedDescriptionKey: "No candidates with content available."
-        ]
+        ],
       )
       throw GenerateContentError.internalError(underlying: error)
     }
@@ -168,19 +168,19 @@ public class Chat {
       // Loop through all the parts, aggregating the text and adding the images.
       for part in aggregate.parts {
         switch part {
-          case .text(let str):
-            combinedText += str
+        case .text(let str):
+          combinedText += str
 
-          case .data, .fileData, .functionCall, .functionResponse, .executableCode,
-            .codeExecutionResult:
-            // Don't combine it, just add to the content. If there's any text pending, add that as
-            // a part.
-            if !combinedText.isEmpty {
-              parts.append(.text(combinedText))
-              combinedText = ""
-            }
+        case .data, .fileData, .functionCall, .functionResponse, .executableCode,
+          .codeExecutionResult:
+          // Don't combine it, just add to the content. If there's any text pending, add that as
+          // a part.
+          if !combinedText.isEmpty {
+            parts.append(.text(combinedText))
+            combinedText = ""
+          }
 
-            parts.append(part)
+          parts.append(part)
         }
       }
     }

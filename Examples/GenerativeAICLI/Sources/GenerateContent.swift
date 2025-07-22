@@ -30,25 +30,25 @@ struct GenerateContent: AsyncParsableCommand {
   @Option(
     name: .customLong("image-path"),
     help: "The file path of an image to pass to the model; must be in JPEG or PNG format.",
-    transform: URL.filePath(_:)
+    transform: URL.filePath(_:),
   )
   var imageURL: URL?
 
   @Flag(
     name: .customLong("streaming"),
-    help: "Stream response data, printing it incrementally as it's received."
+    help: "Stream response data, printing it incrementally as it's received.",
   ) var isStreaming = false
 
   @Flag(
     name: .customLong("GoogleGenerativeAIDebugLogEnabled", withSingleDash: true),
-    help: "Enable additional debug logging."
+    help: "Enable additional debug logging.",
   ) var debugLogEnabled = false
 
   mutating func validate() throws {
     if textPrompt == nil, imageURL == nil {
       throw ValidationError(
         "Missing expected argument(s) '--text-prompt <text-prompt>' and/or"
-          + " '--image-path <image-path>'."
+          + " '--image-path <image-path>'.",
       )
     }
   }
@@ -66,12 +66,12 @@ struct GenerateContent: AsyncParsableCommand {
       if let imageURL {
         let mimeType: String
         switch imageURL.pathExtension {
-          case "jpg", "jpeg":
-            mimeType = "image/jpeg"
-          case "png":
-            mimeType = "image/png"
-          default:
-            throw CLIError.unsupportedImageType
+        case "jpg", "jpeg":
+          mimeType = "image/jpeg"
+        case "png":
+          mimeType = "image/png"
+        default:
+          throw CLIError.unsupportedImageType
         }
         let imageData = try Data(contentsOf: imageURL)
         parts.append(.data(mimetype: mimeType, imageData))

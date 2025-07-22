@@ -13,26 +13,26 @@
 // limitations under the License.
 
 import Foundation
-import WrkstrmNetworking
 import WrkstrmLog
+import WrkstrmNetworking
 
 extension Log {
   /// A non default
   static let network: Log =
-  if ProcessInfo.processInfo.arguments.contains(Logging.enableArgumentKey) {
-    .init(system: Logging.subsystem, category: "NetworkResponse")
-  } else {
-    // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
-    .disabled
-  }
+    if ProcessInfo.processInfo.arguments.contains(Logging.enableArgumentKey) {
+      .init(system: Logging.subsystem, category: "NetworkResponse")
+    } else {
+      // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
+      .disabled
+    }
 }
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 struct GenerativeAIService: HTTP.Client {
   private let urlSession: URLSession
-  
+
   var environment: any WrkstrmNetworking.HTTP.Environment
-  
+
   var json: (encoder: JSONEncoder, decoder: JSONDecoder) = (.snakecase, .snakecase)
 
   init(environment: AI.GoogleGenAI.Environment) {
@@ -46,7 +46,7 @@ struct GenerativeAIService: HTTP.Client {
     let urlRequest = try request.asURLRequest(with: environment)
 
     #if DEBUG
-    printCURLCommand(from: urlRequest)
+      printCURLCommand(from: urlRequest)
     #endif
 
     let (data, rawResponse) = try await urlSession.data(for: urlRequest)
@@ -70,7 +70,7 @@ struct GenerativeAIService: HTTP.Client {
     let urlRequest = try request.asURLRequest(with: environment)
 
     #if DEBUG
-    printCURLCommand(from: urlRequest)
+      printCURLCommand(from: urlRequest)
     #endif
 
     let data: Data
@@ -107,7 +107,7 @@ struct GenerativeAIService: HTTP.Client {
         }
 
         #if DEBUG
-        printCURLCommand(from: urlRequest)
+          printCURLCommand(from: urlRequest)
         #endif
 
         let stream: URLSession.AsyncBytes
@@ -192,12 +192,12 @@ struct GenerativeAIService: HTTP.Client {
     guard let response = urlResponse as? HTTPURLResponse else {
       Logging.default
         .error(
-          "[GoogleGenerativeAI] Response wasn't an HTTP response, internal error \(urlResponse)"
+          "[GoogleGenerativeAI] Response wasn't an HTTP response, internal error \(urlResponse)",
         )
       throw NSError(
         domain: "com.google.generative-ai",
         code: -1,
-        userInfo: [NSLocalizedDescriptionKey: "Response was not an HTTP response."]
+        userInfo: [NSLocalizedDescriptionKey: "Response was not an HTTP response."],
       )
     }
 
@@ -209,7 +209,7 @@ struct GenerativeAIService: HTTP.Client {
       let error = NSError(
         domain: "com.google.generative-ai",
         code: -1,
-        userInfo: [NSLocalizedDescriptionKey: "Could not parse response as UTF8."]
+        userInfo: [NSLocalizedDescriptionKey: "Could not parse response as UTF8."],
       )
       throw error
     }
@@ -248,35 +248,35 @@ struct GenerativeAIService: HTTP.Client {
   }
 
   #if DEBUG
-  private func cURLCommand(from request: URLRequest) -> String {
-    var returnValue = "curl "
-    if let allHeaders = request.allHTTPHeaderFields {
-      for (key, value) in allHeaders {
-        returnValue += "-H '\(key): \(value)' "
+    private func cURLCommand(from request: URLRequest) -> String {
+      var returnValue = "curl "
+      if let allHeaders = request.allHTTPHeaderFields {
+        for (key, value) in allHeaders {
+          returnValue += "-H '\(key): \(value)' "
+        }
       }
+
+      guard let url = request.url else { return "" }
+      returnValue += "'\(url.absoluteString)' "
+
+      guard let body = request.httpBody,
+        let jsonStr = String(bytes: body, encoding: .utf8)
+      else { return "" }
+      let escapedJSON = jsonStr.replacingOccurrences(of: "'", with: "'\\''")
+      returnValue += "-d '\(escapedJSON)'"
+
+      return returnValue
     }
 
-    guard let url = request.url else { return "" }
-    returnValue += "'\(url.absoluteString)' "
-
-    guard let body = request.httpBody,
-      let jsonStr = String(bytes: body, encoding: .utf8)
-    else { return "" }
-    let escapedJSON = jsonStr.replacingOccurrences(of: "'", with: "'\\''")
-    returnValue += "-d '\(escapedJSON)'"
-
-    return returnValue
-  }
-
-  private func printCURLCommand(from request: URLRequest) {
-    let command = cURLCommand(from: request)
-    Logging.verbose.debug(
-      """
-      [GoogleGenerativeAI] Creating request with the equivalent cURL command:
-      ----- cURL command -----
-      \(command, privacy: .private)
-      ------------------------
-      """)
-  }
+    private func printCURLCommand(from request: URLRequest) {
+      let command = cURLCommand(from: request)
+      Logging.verbose.debug(
+        """
+        [GoogleGenerativeAI] Creating request with the equivalent cURL command:
+        ----- cURL command -----
+        \(command, privacy: .private)
+        ------------------------
+        """)
+    }
   #endif  // DEBUG
 }

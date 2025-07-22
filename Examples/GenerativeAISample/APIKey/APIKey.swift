@@ -28,7 +28,7 @@ enum APIKey {
     }
     if value.starts(with: "_") || value.isEmpty {
       fatalError(
-        "Follow the instructions at https://ai.google.dev/tutorials/setup to get an API key."
+        "Follow the instructions at https://ai.google.dev/tutorials/setup to get an API key.",
       )
     }
     return value

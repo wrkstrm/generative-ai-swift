@@ -26,7 +26,7 @@ final class GenerateContentRequestTests: XCTestCase {
 
   override func setUp() {
     encoder.outputFormatting = .init(
-      arrayLiteral: .prettyPrinted, .sortedKeys, .withoutEscapingSlashes
+      arrayLiteral: .prettyPrinted, .sortedKeys, .withoutEscapingSlashes,
     )
   }
 
@@ -41,7 +41,7 @@ final class GenerateContentRequestTests: XCTestCase {
       safetySettings: [
         SafetySetting(
           harmCategory: .dangerousContent,
-          threshold: .blockLowAndAbove
+          threshold: .blockLowAndAbove,
         )
       ],
       tools: [
@@ -49,7 +49,7 @@ final class GenerateContentRequestTests: XCTestCase {
           FunctionDeclaration(
             name: "test-function-name",
             description: "test-function-description",
-            parameters: nil
+            parameters: nil,
           )
         ]),
         Tool(codeExecution: CodeExecution()),
@@ -57,7 +57,7 @@ final class GenerateContentRequestTests: XCTestCase {
       toolConfig: ToolConfig(functionCallingConfig: FunctionCallingConfig(mode: .auto)),
       systemInstruction: ModelContent(role: "system", parts: "test-system-instruction"),
       isStreaming: false,
-      options: RequestOptions()
+      options: RequestOptions(),
     )
 
     let jsonData = try encoder.encode(request)
@@ -119,7 +119,7 @@ final class GenerateContentRequestTests: XCTestCase {
           }
         ]
       }
-      """
+      """,
     )
   }
 
@@ -134,7 +134,7 @@ final class GenerateContentRequestTests: XCTestCase {
       toolConfig: nil,
       systemInstruction: nil,
       isStreaming: false,
-      options: RequestOptions()
+      options: RequestOptions(),
     )
 
     let jsonData = try encoder.encode(request)
@@ -156,7 +156,7 @@ final class GenerateContentRequestTests: XCTestCase {
         ],
         "model" : "\(modelName)"
       }
-      """
+      """,
     )
   }
 }

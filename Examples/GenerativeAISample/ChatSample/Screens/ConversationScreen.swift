@@ -65,7 +65,7 @@ struct ConversationScreen: View {
                 focusedField = .message
               }
             }
-          }
+          },
         )
       }
       InputField("Message...", text: $userPrompt) {

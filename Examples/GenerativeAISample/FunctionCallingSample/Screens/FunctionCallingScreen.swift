@@ -66,7 +66,7 @@ struct FunctionCallingScreen: View {
                 focusedField = .message
               }
             }
-          }
+          },
         )
         .onTapGesture {
           focusedField = nil

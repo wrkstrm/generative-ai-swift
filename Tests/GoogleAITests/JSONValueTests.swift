@@ -130,7 +130,7 @@ final class JSONValueTests: XCTestCase {
     let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
     XCTAssertEqual(
       json,
-      "{\"\(stringKey)\":\"\(stringValue)\",\"\(numberKey)\":\(numberValueEncoded)}"
+      "{\"\(stringKey)\":\"\(stringValue)\",\"\(numberKey)\":\(numberValueEncoded)}",
     )
   }
 

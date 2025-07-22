@@ -91,7 +91,7 @@ public struct GenerationConfig: Sendable {
     temperature: Float? = nil, topP: Float? = nil, topK: Int? = nil,
     candidateCount: Int? = nil, maxOutputTokens: Int? = nil,
     stopSequences: [String]? = nil, responseMIMEType: String? = nil,
-    responseSchema: Schema? = nil
+    responseSchema: Schema? = nil,
   ) {
     // Explicit init because otherwise if we re-arrange the above variables it changes the API
     // surface.

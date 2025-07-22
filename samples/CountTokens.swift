@@ -26,7 +26,7 @@ final class CountTokensSnippets: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipIf(
       APIKey.default.isEmpty,
-      "`\(APIKey.apiKeyEnvVar)` environment variable not set."
+      "`\(APIKey.apiKeyEnvVar)` environment variable not set.",
     )
   }
 
@@ -38,7 +38,7 @@ final class CountTokensSnippets: XCTestCase {
         name: "gemini-1.5-flash",
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
-        apiKey: APIKey.default
+        apiKey: APIKey.default,
       )
 
     let prompt = "Write a story about a magic backpack."
@@ -57,7 +57,7 @@ final class CountTokensSnippets: XCTestCase {
         name: "gemini-1.5-flash",
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
-        apiKey: APIKey.default
+        apiKey: APIKey.default,
       )
 
     // Optionally specify existing chat history
@@ -78,26 +78,26 @@ final class CountTokensSnippets: XCTestCase {
   }
 
   #if canImport(UIKit)
-  func testCountTokensMultimodalInline() async throws {
-    // [START tokens_multimodal_image_inline]
-    let generativeModel =
-      GenerativeModel(
-        // Specify a Gemini model appropriate for your use case
-        name: "gemini-1.5-flash",
-        // Access your API key from your on-demand resource .plist file (see "Set up your API key"
-        // above)
-        apiKey: APIKey.default
-      )
+    func testCountTokensMultimodalInline() async throws {
+      // [START tokens_multimodal_image_inline]
+      let generativeModel =
+        GenerativeModel(
+          // Specify a Gemini model appropriate for your use case
+          name: "gemini-1.5-flash",
+          // Access your API key from your on-demand resource .plist file (see "Set up your API key"
+          // above)
+          apiKey: APIKey.default,
+        )
 
-    guard let image1 = UIImage(systemName: "cloud.sun") else { fatalError() }
-    guard let image2 = UIImage(systemName: "cloud.heavyrain") else { fatalError() }
+      guard let image1 = UIImage(systemName: "cloud.sun") else { fatalError() }
+      guard let image2 = UIImage(systemName: "cloud.heavyrain") else { fatalError() }
 
-    let prompt = "What's the difference between these pictures?"
+      let prompt = "What's the difference between these pictures?"
 
-    let response = try await generativeModel.countTokens(image1, image2, prompt)
-    print("Total Tokens: \(response.totalTokens)")
-    // [END tokens_multimodal_image_inline]
-  }
+      let response = try await generativeModel.countTokens(image1, image2, prompt)
+      print("Total Tokens: \(response.totalTokens)")
+      // [END tokens_multimodal_image_inline]
+    }
   #endif  // canImport(UIKit)
 
   func testCountTokensSystemInstruction() async throws {
@@ -109,7 +109,7 @@ final class CountTokensSnippets: XCTestCase {
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
         apiKey: APIKey.default,
-        systemInstruction: ModelContent(role: "system", parts: "You are a cat. Your name is Neko.")
+        systemInstruction: ModelContent(role: "system", parts: "You are a cat. Your name is Neko."),
       )
 
     let prompt = "What is your name?"
@@ -137,19 +137,19 @@ final class CountTokensSnippets: XCTestCase {
                 "brightness": Schema(
                   type: .number,
                   format: "double",
-                  description: "Light level from 0 to 100. Zero is off and 100 is full brightness."
+                  description: "Light level from 0 to 100. Zero is off and 100 is full brightness.",
                 ),
                 "colorTemperature": Schema(
                   type: .string,
                   format: "enum",
                   description: "Color temperature of the light fixture.",
-                  enumValues: ["daylight", "cool", "warm"]
+                  enumValues: ["daylight", "cool", "warm"],
                 ),
               ],
-              requiredParameters: ["brightness", "colorTemperature"]
+              requiredParameters: ["brightness", "colorTemperature"],
             )
           ])
-        ]
+        ],
       )
 
     let prompt = "Dim the lights so the room feels cozy and warm."

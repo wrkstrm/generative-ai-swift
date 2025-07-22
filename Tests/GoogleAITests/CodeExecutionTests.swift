@@ -32,7 +32,7 @@ final class CodeExecutionTests: XCTestCase {
 
   override func setUp() {
     encoder.outputFormatting = .init(
-      arrayLiteral: .prettyPrinted, .sortedKeys, .withoutEscapingSlashes
+      arrayLiteral: .prettyPrinted, .sortedKeys, .withoutEscapingSlashes,
     )
   }
 
@@ -46,7 +46,7 @@ final class CodeExecutionTests: XCTestCase {
       {
 
       }
-      """
+      """,
     )
   }
 
@@ -78,7 +78,7 @@ final class CodeExecutionTests: XCTestCase {
         "\(codeKey)" : "\(codeValue)",
         "\(languageKey)" : "\(languageValue)"
       }
-      """
+      """,
     )
   }
 
@@ -122,7 +122,7 @@ final class CodeExecutionTests: XCTestCase {
     let codeExecutionResult = try XCTUnwrap(
       decoder.decode(
         CodeExecutionResult.self,
-        from: jsonData
+        from: jsonData,
       ))
 
     XCTAssertEqual(codeExecutionResult, expectedCodeExecutionResult)
@@ -140,7 +140,7 @@ final class CodeExecutionTests: XCTestCase {
     let codeExecutionResult = try XCTUnwrap(
       decoder.decode(
         CodeExecutionResult.self,
-        from: jsonData
+        from: jsonData,
       ))
 
     XCTAssertEqual(codeExecutionResult, expectedCodeExecutionResult)
@@ -159,7 +159,7 @@ final class CodeExecutionTests: XCTestCase {
         "\(outcomeKey)" : "\(outcomeValue)",
         "\(outputKey)" : "\(outputValue)"
       }
-      """
+      """,
     )
   }
 }

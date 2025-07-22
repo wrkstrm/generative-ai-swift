@@ -47,7 +47,7 @@ struct ErrorView: View {
                   Cillum ex aliqua amet aliquip labore amet,
                 eiusmod consectetur reprehenderit sit commodo.
                 """
-              ]
+              ],
             ),
             safetyRatings: [
               SafetyRating(category: .dangerousContent, probability: .high),
@@ -56,11 +56,11 @@ struct ErrorView: View {
               SafetyRating(category: .sexuallyExplicit, probability: .low),
             ],
             finishReason: FinishReason.other,
-            citationMetadata: nil
+            citationMetadata: nil,
           )
         ],
-        promptFeedback: nil
-      )
+        promptFeedback: nil,
+      ),
     )
     List {
       MessageView(message: ChatMessage.samples[0])

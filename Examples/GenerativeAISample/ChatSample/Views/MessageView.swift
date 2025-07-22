@@ -23,7 +23,7 @@ struct RoundedCorner: Shape {
     let path = UIBezierPath(
       roundedRect: rect,
       byRoundingCorners: corners,
-      cornerRadii: CGSize(width: radius, height: radius)
+      cornerRadii: CGSize(width: radius, height: radius),
     )
     return Path(path.cgPath)
   }
@@ -78,7 +78,7 @@ struct MessageView: View {
         .background(
           message.participant == .system
             ? Color(UIColor.systemFill)
-            : Color(UIColor.systemBlue)
+            : Color(UIColor.systemBlue),
         )
         .roundedCorner(
           10,
@@ -86,7 +86,7 @@ struct MessageView: View {
             .topLeft,
             .topRight,
             message.participant == .system ? .bottomRight : .bottomLeft,
-          ]
+          ],
         )
       if message.participant == .system {
         Spacer()

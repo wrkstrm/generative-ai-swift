@@ -26,7 +26,7 @@ final class ControlledGenerationSnippets: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipIf(
       APIKey.default.isEmpty,
-      "`\(APIKey.apiKeyEnvVar)` environment variable not set."
+      "`\(APIKey.apiKeyEnvVar)` environment variable not set.",
     )
   }
 
@@ -40,8 +40,8 @@ final class ControlledGenerationSnippets: XCTestCase {
         properties: [
           "recipeName": Schema(type: .string, description: "Name of the recipe", nullable: false)
         ],
-        requiredProperties: ["recipeName"]
-      )
+        requiredProperties: ["recipeName"],
+      ),
     )
 
     let generativeModel = GenerativeModel(
@@ -52,8 +52,8 @@ final class ControlledGenerationSnippets: XCTestCase {
       apiKey: APIKey.default,
       generationConfig: GenerationConfig(
         responseMIMEType: "application/json",
-        responseSchema: jsonSchema
-      )
+        responseSchema: jsonSchema,
+      ),
     )
 
     let prompt = "List a few popular cookie recipes."
@@ -71,7 +71,7 @@ final class ControlledGenerationSnippets: XCTestCase {
       // Access your API key from your on-demand resource .plist file (see "Set up your API key"
       // above)
       apiKey: APIKey.default,
-      generationConfig: GenerationConfig(responseMIMEType: "application/json")
+      generationConfig: GenerationConfig(responseMIMEType: "application/json"),
     )
 
     let prompt = """

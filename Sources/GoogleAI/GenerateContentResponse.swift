@@ -47,24 +47,23 @@ public struct GenerateContentResponse: Sendable {
     }
     let textValues: [String] = candidate.content.parts.compactMap { part in
       switch part {
-        case .text(let text):
-          return text
-
-        case .executableCode(let executableCode):
-          let codeBlockLanguage: String =
-            if executableCode.language == "LANGUAGE_UNSPECIFIED" {
-              ""
-            } else {
-              executableCode.language.lowercased()
-            }
-          return "```\(codeBlockLanguage)\n\(executableCode.code)\n```"
-        case .codeExecutionResult(let codeExecutionResult):
-          if codeExecutionResult.output.isEmpty {
-            return nil
+      case .text(let text):
+        return text
+      case .executableCode(let executableCode):
+        let codeBlockLanguage: String =
+          if executableCode.language == "LANGUAGE_UNSPECIFIED" {
+            ""
+          } else {
+            executableCode.language.lowercased()
           }
-          return "```\n\(codeExecutionResult.output)\n```"
-        case .data, .fileData, .functionCall, .functionResponse:
+        return "```\(codeBlockLanguage)\n\(executableCode.code)\n```"
+      case .codeExecutionResult(let codeExecutionResult):
+        if codeExecutionResult.output.isEmpty {
           return nil
+        }
+        return "```\n\(codeExecutionResult.output)\n```"
+      case .data, .fileData, .functionCall, .functionResponse:
+        return nil
       }
     }
     guard !textValues.isEmpty else {
@@ -90,7 +89,7 @@ public struct GenerateContentResponse: Sendable {
   /// Initializer for SwiftUI previews or tests.
   public init(
     candidates: [CandidateResponse], promptFeedback: PromptFeedback? = nil,
-    usageMetadata: UsageMetadata? = nil
+    usageMetadata: UsageMetadata? = nil,
   ) {
     self.candidates = candidates
     self.promptFeedback = promptFeedback
@@ -118,7 +117,7 @@ public struct CandidateResponse: Sendable {
   /// Initializer for SwiftUI previews or tests.
   public init(
     content: ModelContent, safetyRatings: [SafetyRating], finishReason: FinishReason?,
-    citationMetadata: CitationMetadata?
+    citationMetadata: CitationMetadata?,
   ) {
     self.content = content
     self.safetyRatings = safetyRatings
@@ -227,14 +226,14 @@ extension GenerateContentResponse: Decodable {
       let context = DecodingError.Context(
         codingPath: [],
         debugDescription: "Failed to decode GenerateContentResponse;"
-          + " missing keys 'candidates' and 'promptFeedback'."
+          + " missing keys 'candidates' and 'promptFeedback'.",
       )
       throw DecodingError.dataCorrupted(context)
     }
 
     if let candidates = try container.decodeIfPresent(
       [CandidateResponse].self,
-      forKey: .candidates
+      forKey: .candidates,
     ) {
       self.candidates = candidates
     } else {
@@ -294,7 +293,7 @@ extension CandidateResponse: Decodable {
 
     if let safetyRatings = try container.decodeIfPresent(
       [SafetyRating].self,
-      forKey: .safetyRatings
+      forKey: .safetyRatings,
     ) {
       self.safetyRatings = safetyRatings
     } else {
@@ -305,7 +304,7 @@ extension CandidateResponse: Decodable {
 
     citationMetadata = try container.decodeIfPresent(
       CitationMetadata.self,
-      forKey: .citationMetadata
+      forKey: .citationMetadata,
     )
   }
 }
@@ -378,11 +377,11 @@ extension PromptFeedback: Decodable {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     blockReason = try container.decodeIfPresent(
       PromptFeedback.BlockReason.self,
-      forKey: .blockReason
+      forKey: .blockReason,
     )
     if let safetyRatings = try container.decodeIfPresent(
       [SafetyRating].self,
-      forKey: .safetyRatings
+      forKey: .safetyRatings,
     ) {
       self.safetyRatings = safetyRatings
     } else {
