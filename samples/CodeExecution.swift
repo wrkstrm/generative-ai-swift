@@ -26,7 +26,7 @@ final class CodeExecutionSnippets: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipIf(
       APIKey.default.isEmpty,
-      "`\(APIKey.apiKeyEnvVar)` environment variable not set."
+      "`\(APIKey.apiKeyEnvVar)` environment variable not set.",
     )
   }
 
@@ -39,7 +39,7 @@ final class CodeExecutionSnippets: XCTestCase {
         // Access your API key from your on-demand resource .plist file (see
         // "Set up your API key" above)
         apiKey: APIKey.default,
-        tools: [Tool(codeExecution: CodeExecution())]
+        tools: [Tool(codeExecution: CodeExecution())],
       )
 
     let prompt = """
@@ -62,7 +62,7 @@ final class CodeExecutionSnippets: XCTestCase {
         // Access your API key from your on-demand resource .plist file (see
         // "Set up your API key" above)
         apiKey: APIKey.default,
-        tools: [Tool(codeExecution: CodeExecution())]
+        tools: [Tool(codeExecution: CodeExecution())],
       )
 
     let chat = generativeModel.startChat()
