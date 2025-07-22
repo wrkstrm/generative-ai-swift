@@ -62,7 +62,7 @@ extension JSONValue: Decodable {
     } else {
       throw DecodingError.dataCorruptedError(
         in: container,
-        debugDescription: "Failed to decode JSON value."
+        debugDescription: "Failed to decode JSON value.",
       )
     }
   }
