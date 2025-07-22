@@ -26,7 +26,7 @@ final class ChatSnippets: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipIf(
       APIKey.default.isEmpty,
-      "`\(APIKey.apiKeyEnvVar)` environment variable not set."
+      "`\(APIKey.apiKeyEnvVar)` environment variable not set.",
     )
   }
 
@@ -38,7 +38,7 @@ final class ChatSnippets: XCTestCase {
         name: "gemini-1.5-flash",
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
-        apiKey: APIKey.default
+        apiKey: APIKey.default,
       )
 
     // Optionally specify existing chat history
@@ -66,7 +66,7 @@ final class ChatSnippets: XCTestCase {
         name: "gemini-1.5-flash",
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
-        apiKey: APIKey.default
+        apiKey: APIKey.default,
       )
 
     // Optionally specify existing chat history
@@ -97,7 +97,7 @@ final class ChatSnippets: XCTestCase {
         name: "gemini-1.5-flash",
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
-        apiKey: APIKey.default
+        apiKey: APIKey.default,
       )
 
     // Optionally specify existing chat history
