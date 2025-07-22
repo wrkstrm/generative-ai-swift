@@ -26,7 +26,7 @@ final class FunctionCallingSnippets: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipIf(
       APIKey.default.isEmpty,
-      "`\(APIKey.apiKeyEnvVar)` environment variable not set."
+      "`\(APIKey.apiKeyEnvVar)` environment variable not set.",
     )
   }
 
@@ -53,19 +53,19 @@ final class FunctionCallingSnippets: XCTestCase {
                 "brightness": Schema(
                   type: .number,
                   format: "double",
-                  description: "Light level from 0 to 100. Zero is off and 100 is full brightness."
+                  description: "Light level from 0 to 100. Zero is off and 100 is full brightness.",
                 ),
                 "colorTemperature": Schema(
                   type: .string,
                   format: "enum",
                   description: "Color temperature of the light fixture.",
-                  enumValues: ["daylight", "cool", "warm"]
+                  enumValues: ["daylight", "cool", "warm"],
                 ),
               ],
-              requiredParameters: ["brightness", "colorTemperature"]
+              requiredParameters: ["brightness", "colorTemperature"],
             )
           ])
-        ]
+        ],
       )
 
     let chat = generativeModel.startChat()
@@ -101,7 +101,7 @@ final class FunctionCallingSnippets: XCTestCase {
     let response2 = try await chat.sendMessage([
       ModelContent(
         role: "function",
-        parts: [.functionResponse(FunctionResponse(name: "controlLight", response: apiResponse))]
+        parts: [.functionResponse(FunctionResponse(name: "controlLight", response: apiResponse))],
       )
     ])
 
