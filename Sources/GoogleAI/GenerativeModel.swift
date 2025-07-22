@@ -41,32 +41,12 @@ public final class GenerativeModel: @unchecked Sendable {
   let toolConfig: ToolConfig?
 
   /// Instructions that direct the model to behave a certain way.
+  /// NOTE: This is not optional in the latest releases.
+  /// TODO: Remove optional system intructions.
   let systemInstruction: ModelContent?
 
   /// Configuration parameters for sending requests to the backend.
   let requestOptions: HTTP.Request.Options
-
-  //  public convenience init(
-  //    name: String,
-  //    apiKey: String,
-  //    generationConfig: GenerationConfig? = nil,
-  //    safetySettings: [SafetySetting]? = nil,
-  //    tools: [Tool]? = nil,
-  //    toolConfig: ToolConfig? = nil,
-  //    systemInstruction: ModelContent? = nil,
-  //    requestOptions: HTTP.Request.Options = HTTP.Request.Options()
-  //  ) {
-  //    self.init(
-  //      name: name,
-  //      apiKey: apiKey,
-  //      generationConfig: generationConfig,
-  //      safetySettings: safetySettings,
-  //      tools: tools,
-  //      toolConfig: toolConfig,
-  //      systemInstruction: systemInstruction,
-  //      requestOptions: requestOptions
-  //    )
-  //  }
 
   /// Initializes a new remote model with the given parameters.
   ///
