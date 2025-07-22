@@ -49,7 +49,6 @@ public struct GenerateContentResponse: Sendable {
       switch part {
         case .text(let text):
           return text
-
         case .executableCode(let executableCode):
           let codeBlockLanguage: String =
             if executableCode.language == "LANGUAGE_UNSPECIFIED" {
@@ -227,14 +226,14 @@ extension GenerateContentResponse: Decodable {
       let context = DecodingError.Context(
         codingPath: [],
         debugDescription: "Failed to decode GenerateContentResponse;"
-          + " missing keys 'candidates' and 'promptFeedback'."
+          + " missing keys 'candidates' and 'promptFeedback'.",
       )
       throw DecodingError.dataCorrupted(context)
     }
 
     if let candidates = try container.decodeIfPresent(
       [CandidateResponse].self,
-      forKey: .candidates
+      forKey: .candidates,
     ) {
       self.candidates = candidates
     } else {
@@ -294,7 +293,7 @@ extension CandidateResponse: Decodable {
 
     if let safetyRatings = try container.decodeIfPresent(
       [SafetyRating].self,
-      forKey: .safetyRatings
+      forKey: .safetyRatings,
     ) {
       self.safetyRatings = safetyRatings
     } else {
@@ -305,7 +304,7 @@ extension CandidateResponse: Decodable {
 
     citationMetadata = try container.decodeIfPresent(
       CitationMetadata.self,
-      forKey: .citationMetadata
+      forKey: .citationMetadata,
     )
   }
 }
@@ -378,11 +377,11 @@ extension PromptFeedback: Decodable {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     blockReason = try container.decodeIfPresent(
       PromptFeedback.BlockReason.self,
-      forKey: .blockReason
+      forKey: .blockReason,
     )
     if let safetyRatings = try container.decodeIfPresent(
       [SafetyRating].self,
-      forKey: .safetyRatings
+      forKey: .safetyRatings,
     ) {
       self.safetyRatings = safetyRatings
     } else {
