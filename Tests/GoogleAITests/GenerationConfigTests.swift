@@ -22,7 +22,7 @@ final class GenerationConfigTests: XCTestCase {
 
   override func setUp() {
     encoder.outputFormatting = .init(
-      arrayLiteral: .prettyPrinted, .sortedKeys, .withoutEscapingSlashes
+      arrayLiteral: .prettyPrinted, .sortedKeys, .withoutEscapingSlashes,
     )
   }
 
@@ -40,7 +40,7 @@ final class GenerationConfigTests: XCTestCase {
       {
 
       }
-      """
+      """,
     )
   }
 
@@ -64,7 +64,7 @@ final class GenerationConfigTests: XCTestCase {
       maxOutputTokens: maxOutputTokens,
       stopSequences: stopSequences,
       responseMIMEType: responseMIMEType,
-      responseSchema: responseSchema
+      responseSchema: responseSchema,
     )
 
     let jsonData = try encoder.encode(generationConfig)
@@ -93,7 +93,7 @@ final class GenerationConfigTests: XCTestCase {
         "topK" : \(topK),
         "topP" : \(topP)
       }
-      """
+      """,
     )
   }
 
@@ -110,7 +110,7 @@ final class GenerationConfigTests: XCTestCase {
       {
         "responseMIMEType" : "\(mimeType)"
       }
-      """
+      """,
     )
   }
 
@@ -136,7 +136,7 @@ final class GenerationConfigTests: XCTestCase {
           "type" : "\(schemaType.rawValue)"
         }
       }
-      """
+      """,
     )
   }
 }
