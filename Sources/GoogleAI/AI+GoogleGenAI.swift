@@ -22,19 +22,18 @@ import WrkstrmNetworking
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 enum AI {
   public enum GoogleGenAI {
-
     struct Environment: HTTP.Environment, Sendable {
       static func betaEnv(with apiKey: String) -> Environment {
         .init(apiKey: apiKey)
       }
-      
+
       var clientVersion: String? = "0.5.6"
       var scheme: HTTP.Scheme = .https
       /// The Google AI backend endpoint URL.
       var baseURLString: String = "generativelanguage.googleapis.com"
       var apiVersion: String? = "v1beta"
       var apiKey: String?
-      
+
       var headers: HTTP.Client.Headers {
         [
           "x-goog-api-key": apiKey ?? "",
@@ -42,9 +41,9 @@ enum AI {
           "Content-Type": "application/json",
         ]
       }
-      
+
       init(apiKey: String) {
-        self.apiKey =  apiKey
+        self.apiKey = apiKey
       }
     }
   }
