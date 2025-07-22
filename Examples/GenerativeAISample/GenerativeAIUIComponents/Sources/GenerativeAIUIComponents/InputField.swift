@@ -46,7 +46,7 @@ public struct InputField<Label>: View where Label: View {
           TextField(
             title ?? "",
             text: $text,
-            axis: .vertical
+            axis: .vertical,
           )
           .padding(.vertical, 4)
           .onSubmit(submit)
@@ -56,7 +56,7 @@ public struct InputField<Label>: View where Label: View {
         .overlay {
           RoundedRectangle(
             cornerRadius: 8,
-            style: .continuous
+            style: .continuous,
           )
           .stroke(Color(UIColor.systemFill), lineWidth: 1)
         }
