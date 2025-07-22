@@ -100,7 +100,7 @@ struct ErrorDetailsView: View {
             Section("Details") {
               SubtitleFormRow(
                 title: "Error description",
-                value: underlyingError.localizedDescription
+                value: underlyingError.localizedDescription,
               )
             }
 
@@ -125,9 +125,8 @@ struct ErrorDetailsView: View {
 
           case GenerateContentError.responseStoppedEarly(
             reason: let finishReason,
-            response: let generateContentResponse
+            response: let generateContentResponse,
           ):
-
             Section("Error Type") {
               Text("Response stopped early")
             }
@@ -155,7 +154,7 @@ struct ErrorDetailsView: View {
                 title: "Help",
                 value: """
                   Please provide a valid value for `API_KEY` in the `GenerativeAI-Info.plist` file.
-                  """
+                  """,
               )
             }
 
@@ -171,7 +170,7 @@ struct ErrorDetailsView: View {
                 value: """
                   The API is unsupported in your location (country / territory); please see the list
                   of [available regions](https://ai.google.dev/available_regions#available_regions).
-                  """
+                  """,
               )
             }
 
@@ -205,7 +204,7 @@ struct ErrorDetailsView: View {
               Cillum ex aliqua amet aliquip labore amet,
               eiusmod consectetur reprehenderit sit commodo.
               """
-            ]
+            ],
           ),
           safetyRatings: [
             SafetyRating(category: .dangerousContent, probability: .high),
@@ -214,11 +213,11 @@ struct ErrorDetailsView: View {
             SafetyRating(category: .sexuallyExplicit, probability: .low),
           ],
           finishReason: FinishReason.maxTokens,
-          citationMetadata: nil
+          citationMetadata: nil,
         )
       ],
-      promptFeedback: nil
-    )
+      promptFeedback: nil,
+    ),
   )
 
   return ErrorDetailsView(error: error)
@@ -237,7 +236,7 @@ struct ErrorDetailsView: View {
               Cillum ex aliqua amet aliquip labore amet,
               eiusmod consectetur reprehenderit sit commodo.
               """
-            ]
+            ],
           ),
           safetyRatings: [
             SafetyRating(category: .dangerousContent, probability: .high),
@@ -246,11 +245,11 @@ struct ErrorDetailsView: View {
             SafetyRating(category: .sexuallyExplicit, probability: .low),
           ],
           finishReason: FinishReason.other,
-          citationMetadata: nil
+          citationMetadata: nil,
         )
       ],
-      promptFeedback: nil
-    )
+      promptFeedback: nil,
+    ),
   )
 
   return ErrorDetailsView(error: error)
