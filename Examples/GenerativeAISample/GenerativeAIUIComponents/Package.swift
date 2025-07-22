@@ -24,12 +24,12 @@ let package = Package(
   products: [
     .library(
       name: "GenerativeAIUIComponents",
-      targets: ["GenerativeAIUIComponents"]
+      targets: ["GenerativeAIUIComponents"],
     )
   ],
   targets: [
     .target(
-      name: "GenerativeAIUIComponents"
+      name: "GenerativeAIUIComponents",
     )
-  ]
+  ],
 )
