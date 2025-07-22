@@ -20,7 +20,7 @@ public enum CountTokens {
   public struct Request: HTTP.CodableURLRequest, Sendable {
     public typealias RequestBody = GenerateContent.Request.Body
     public typealias ResponseType = CountTokens.Response
-  
+
     public var method: HTTP.Method = .post
     public let options: HTTP.Request.Options
     public let model: String
@@ -33,7 +33,7 @@ public enum CountTokens {
     public init(options: HTTP.Request.Options, model: String, body: GenerateContent.Request.Body?) {
       self.options = options
       self.model = model
-      if let body = body {
+      if let body {
         self.body = body
       } else {
         self.body = nil
