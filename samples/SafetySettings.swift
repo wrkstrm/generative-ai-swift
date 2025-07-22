@@ -26,7 +26,7 @@ final class SafetySettingsSnippets: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipIf(
       APIKey.default.isEmpty,
-      "`\(APIKey.apiKeyEnvVar)` environment variable not set."
+      "`\(APIKey.apiKeyEnvVar)` environment variable not set.",
     )
   }
 
@@ -39,7 +39,7 @@ final class SafetySettingsSnippets: XCTestCase {
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
         apiKey: APIKey.default,
-        safetySettings: [SafetySetting(harmCategory: .harassment, threshold: .blockLowAndAbove)]
+        safetySettings: [SafetySetting(harmCategory: .harassment, threshold: .blockLowAndAbove)],
       )
     // [END safety_settings]
 
@@ -62,7 +62,7 @@ final class SafetySettingsSnippets: XCTestCase {
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
         apiKey: APIKey.default,
-        safetySettings: safetySettings
+        safetySettings: safetySettings,
       )
     // [END safety_settings_multi]
 
