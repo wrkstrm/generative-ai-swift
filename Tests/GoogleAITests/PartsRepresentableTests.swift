@@ -37,7 +37,7 @@ final class PartsRepresentableTests: XCTestCase {
         bytesPerRow: 4 * 8,
         space: CGColorSpace(name: CGColorSpace.sRGB)!,
         bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue
-          + CGImageAlphaInfo.premultipliedFirst.rawValue
+          + CGImageAlphaInfo.premultipliedFirst.rawValue,
       )!
       return ctx.makeImage()!
     }
