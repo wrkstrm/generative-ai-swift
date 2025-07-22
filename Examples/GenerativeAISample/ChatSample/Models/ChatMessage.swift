@@ -65,7 +65,7 @@ extension ChatMessage {
         The variable i is assigned each number in the range,
         and the value of i is added to the sum variable.
         After the loop has finished executing, the value of sum is printed to the console.
-        """, participant: .system
+        """, participant: .system,
     ),
   ]
 
