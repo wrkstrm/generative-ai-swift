@@ -80,9 +80,9 @@ public final class GenerativeModel: @unchecked Sendable {
       toolConfig: toolConfig,
       systemInstruction: ModelContent(
         role: "system",
-        parts: systemInstruction.map { ModelContent.Part.text($0) }
+        parts: systemInstruction.map { ModelContent.Part.text($0) },
       ),
-      requestOptions: requestOptions
+      requestOptions: requestOptions,
     )
   }
 
@@ -125,7 +125,7 @@ public final class GenerativeModel: @unchecked Sendable {
       [GoogleGenerativeAI] Model \(name, privacy: .public) initialized.
       To enable additional logging, add \
       `\(Logging.enableArgumentKey, privacy: .public)` as a launch argument in Xcode.
-      """
+      """,
     )
     Logging.verbose.debug("[GoogleGenerativeAI] Verbose logging enabled.")
   }
@@ -162,7 +162,7 @@ public final class GenerativeModel: @unchecked Sendable {
   /// - Throws: A ``GenerateContentError`` if the request failed.
   @MainActor
   public func generateContent(
-    _ content: @autoclosure () throws -> [ModelContent]
+    _ content: @autoclosure () throws -> [ModelContent],
   ) async throws
     -> GenerateContentResponse
   {
@@ -178,16 +178,16 @@ public final class GenerativeModel: @unchecked Sendable {
           safetySettings: safetySettings,
           tools: tools,
           toolConfig: toolConfig,
-          systemInstruction: systemInstruction
-        )
+          systemInstruction: systemInstruction,
+        ),
       )
       response = try await generativeAIService.loadRequest(
-        request: generateContentRequest
+        request: generateContentRequest,
       )
     } catch {
       if let imageError = error as? ImageConversionError {
         throw GenerateContentError.promptImageContentError(
-          underlying: imageError
+          underlying: imageError,
         )
       }
       throw GenerativeModel.generateContentError(from: error)
@@ -202,7 +202,7 @@ public final class GenerativeModel: @unchecked Sendable {
     if let reason = response.candidates.first?.finishReason, reason != .stop {
       throw GenerateContentError.responseStoppedEarly(
         reason: reason,
-        response: response
+        response: response,
       )
     }
 
@@ -242,7 +242,7 @@ public final class GenerativeModel: @unchecked Sendable {
   ///     error if an error occurred.
   @available(macOS 12.0, *)
   public func generateContentStream(
-    _ content: @autoclosure () throws -> [ModelContent]
+    _ content: @autoclosure () throws -> [ModelContent],
   )
     -> AsyncThrowingStream<GenerateContentResponse, Error>
   {
@@ -254,7 +254,7 @@ public final class GenerativeModel: @unchecked Sendable {
         let error: Error =
           if let contentError = underlying as? ImageConversionError {
             GenerateContentError.promptImageContentError(
-              underlying: contentError
+              underlying: contentError,
             )
           } else {
             GenerateContentError.internalError(underlying: underlying)
@@ -269,12 +269,12 @@ public final class GenerativeModel: @unchecked Sendable {
       body: .init(
         model: modelResourceName, contents: evaluatedContent, generationConfig: generationConfig,
         safetySettings: safetySettings, tools: tools, toolConfig: toolConfig,
-        systemInstruction: systemInstruction
-      )
+        systemInstruction: systemInstruction,
+      ),
     )
 
     var responseIterator = generativeAIService.loadRequestStream(
-      request: generateContentRequest
+      request: generateContentRequest,
     )
     .makeAsyncIterator()
     return AsyncThrowingStream {
@@ -305,7 +305,7 @@ public final class GenerativeModel: @unchecked Sendable {
       }
       throw GenerateContentError.responseStoppedEarly(
         reason: finishReason,
-        response: response
+        response: response,
       )
     }
   }
@@ -363,16 +363,16 @@ public final class GenerativeModel: @unchecked Sendable {
           safetySettings: safetySettings,
           tools: tools,
           toolConfig: toolConfig,
-          systemInstruction: systemInstruction
-        )
+          systemInstruction: systemInstruction,
+        ),
       )
       let countTokensRequest = CountTokens.Request(
         options: requestOptions,
         model: modelResourceName,
-        body: .init(generateContentRequest.body!)
+        body: .init(generateContentRequest.body!),
       )
       return try await generativeAIService.loadRequest(
-        request: countTokensRequest
+        request: countTokensRequest,
       )
     } catch {
       throw CountTokensError.internalError(underlying: error)
