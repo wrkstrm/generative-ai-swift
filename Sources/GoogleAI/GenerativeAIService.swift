@@ -14,40 +14,31 @@
 
 import Foundation
 import WrkstrmNetworking
+import WrkstrmLog
+
+extension Log {
+  /// A non default
+  static let network: Log =
+  if ProcessInfo.processInfo.arguments.contains(Logging.enableArgumentKey) {
+    .init(system: Logging.subsystem, category: "NetworkResponse")
+  } else {
+    // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
+    .disabled
+  }
+}
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 struct GenerativeAIService: HTTP.Client {
-  struct Environment: HTTP.Environment {
-    var baseURLString: String = GenerativeAISwift.baseURLString
-
-    var apiVersion: String = "v1beta"
-  }
-
-  var environment: any WrkstrmNetworking.HTTP.Environment = Environment()
-
-  var decoder: JSONDecoder = .snakecase
-
-  /// Gives permission to talk to the backend.
-  private let apiKey: String
-
   private let urlSession: URLSession
+  
+  var environment: any WrkstrmNetworking.HTTP.Environment
+  
+  var json: (encoder: JSONEncoder, decoder: JSONDecoder) = (.snakecase, .snakecase)
 
-  static func buildHeaders(apiKey: String) -> [String: String] {
-    [
-      "x-goog-api-key": apiKey,
-      "x-goog-api-client": "genai-swift/\(GenerativeAISwift.version)",
-      "Content-Type": "application/json",
-    ]
-  }
-
-  var headers: WrkstrmNetworking.HTTP.Request.Headers {
-    Self.buildHeaders(apiKey: apiKey)
-  }
-
-  init(apiKey: String) {
-    self.apiKey = apiKey
+  init(environment: AI.GoogleGenAI.Environment) {
+    self.environment = environment
     let configuration: URLSessionConfiguration = .default
-    configuration.httpAdditionalHeaders = Self.buildHeaders(apiKey: apiKey)
+    configuration.httpAdditionalHeaders = environment.headers
     urlSession = URLSession(configuration: configuration)
   }
 
@@ -58,17 +49,15 @@ struct GenerativeAIService: HTTP.Client {
     printCURLCommand(from: urlRequest)
     #endif
 
-    let data: Data
-    let rawResponse: URLResponse
-    (data, rawResponse) = try await urlSession.data(for: urlRequest)
+    let (data, rawResponse) = try await urlSession.data(for: urlRequest)
 
     let response = try httpResponse(urlResponse: rawResponse)
 
     // Verify the status code is 200
     guard response.statusCode.isHTTPOKStatusRange else {
-      Logging.network.error("[GoogleGenerativeAI] The server responded with an error: \(response)")
+      Log.network.error("The server responded with an error: \(response)")
       if let responseString = String(data: data, encoding: .utf8) {
-        Logging.default.error("[GoogleGenerativeAI] Response payload: \(responseString)")
+        Log.shared.error("Response payload: \(responseString)")
       }
 
       throw parseError(responseData: data)
@@ -92,7 +81,7 @@ struct GenerativeAIService: HTTP.Client {
 
     // Verify the status code is 200
     guard response.statusCode.isHTTPOKStatusRange else {
-      Logging.network.error("[GoogleGenerativeAI] The server responded with an error: \(response)")
+      Log.network.error("[GoogleGenerativeAI] The server responded with an error: \(response)")
       if let responseString = String(data: data, encoding: .utf8) {
         Logging.default.error("[GoogleGenerativeAI] Response payload: \(responseString)")
       }
@@ -141,7 +130,7 @@ struct GenerativeAIService: HTTP.Client {
 
         // Verify the status code is 200
         guard response.statusCode.isHTTPOKStatusRange else {
-          Logging.network
+          Log.network
             .error("[GoogleGenerativeAI] The server responded with an error: \(response)")
           var responseBody = ""
           for try await line in stream.lines {
@@ -160,7 +149,7 @@ struct GenerativeAIService: HTTP.Client {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         for try await line in stream.lines {
-          Logging.network.debug("[GoogleGenerativeAI] Stream response: \(line)")
+          Log.network.verbose("[GoogleGenerativeAI] Stream response: \(line)")
 
           if line.hasPrefix("data:") {
             // We can assume 5 characters since it's utf-8 encoded, removing `data:`.
@@ -251,9 +240,9 @@ struct GenerativeAIService: HTTP.Client {
       return try JSONDecoder().decode(type, from: data)
     } catch {
       if let json = String(data: data, encoding: .utf8) {
-        Logging.network.error("[GoogleGenerativeAI] JSON response: \(json)")
+        Log.network.error("[GoogleGenerativeAI] JSON response: \(json)")
       }
-      Logging.default.error("[GoogleGenerativeAI] Error decoding server JSON: \(error)")
+      Log.shared.error("[GoogleGenerativeAI] Error decoding server JSON: \(error)")
       throw error
     }
   }
