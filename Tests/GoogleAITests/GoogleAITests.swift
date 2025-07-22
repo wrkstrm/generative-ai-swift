@@ -31,7 +31,7 @@ final class GoogleGenerativeAITests: XCTestCase {
       candidateCount: 4,
       maxOutputTokens: 256,
       stopSequences: ["..."],
-      responseMIMEType: "text/plain"
+      responseMIMEType: "text/plain",
     )
     let filters = [SafetySetting(harmCategory: .dangerousContent, threshold: .blockOnlyHigh)]
     let systemInstruction = ModelContent(role: "system", parts: [.text("Talk like a pirate.")])
@@ -41,29 +41,29 @@ final class GoogleGenerativeAITests: XCTestCase {
     _ = GenerativeModel(
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
-      safetySettings: filters
+      safetySettings: filters,
     )
     _ = GenerativeModel(
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
-      generationConfig: config
+      generationConfig: config,
     )
     _ = GenerativeModel(
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
-      systemInstruction: systemInstruction
-    )
-
-    _ = GenerativeModel(
-      name: "gemini-1.5-pro-latest",
-      apiKey: "API_KEY",
-      systemInstruction: "Talk like a pirate."
+      systemInstruction: systemInstruction,
     )
 
     _ = GenerativeModel(
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
-      systemInstruction: "Talk like a pirate.", "Your name is Francis Drake."
+      systemInstruction: "Talk like a pirate.",
+    )
+
+    _ = GenerativeModel(
+      name: "gemini-1.5-pro-latest",
+      apiKey: "API_KEY",
+      systemInstruction: "Talk like a pirate.", "Your name is Francis Drake.",
     )
 
     // All arguments passed.
@@ -72,7 +72,7 @@ final class GoogleGenerativeAITests: XCTestCase {
       apiKey: "API_KEY",
       generationConfig: config,  // Optional
       safetySettings: filters,  // Optional
-      systemInstruction: systemInstruction  // Optional
+      systemInstruction: systemInstruction,  // Optional
     )
     // Full Typed Usage
     let pngData = Data()  // ....
@@ -82,7 +82,7 @@ final class GoogleGenerativeAITests: XCTestCase {
         parts: [
           .text("Is it a cat?"),
           .png(pngData),
-        ]
+        ],
       )
     ]
 
@@ -103,8 +103,8 @@ final class GoogleGenerativeAITests: XCTestCase {
       str,
       ModelContent.Part.fileData(
         mimetype: "image/jpeg",
-        uri: "https://generativelanguage.googleapis.com/v1beta/files/rand0mha5sh"
-      )
+        uri: "https://generativelanguage.googleapis.com/v1beta/files/rand0mha5sh",
+      ),
     )
     #if canImport(UIKit)
     _ = try await genAI.generateContent(UIImage())
@@ -142,7 +142,7 @@ final class GoogleGenerativeAITests: XCTestCase {
         str,
         ModelContent.Part.data(
           mimetype: "foo",
-          Data()
+          Data(),
         ),
       ] as [any ThrowingPartsRepresentable])
     #if canImport(UIKit)
@@ -187,7 +187,7 @@ final class GoogleGenerativeAITests: XCTestCase {
     #if canImport(UIKit)
     let _: CountTokensResponse = try await genAI.countTokens(
       "What color is the Sky?",
-      UIImage()
+      UIImage(),
     )
     let _: CountTokensResponse = try await genAI.countTokens([
       ModelContent("What color is the Sky?", UIImage()),
@@ -221,16 +221,16 @@ final class GoogleGenerativeAITests: XCTestCase {
                                  .text("Is it a cat?"),
                                  .png(pngData)
                                 ])]
-
+  
    // Turns into...
-
+  
    let contents = GenAIContent {
      Role("user") {
        Text("Is this a cat?")
        Image(png: pngData)
      }
    }
-
+  
    GenAIContent {
      ForEach(myInput) { input in
        Role(input.role) {
@@ -238,7 +238,7 @@ final class GoogleGenerativeAITests: XCTestCase {
        }
      }
    }
-
+  
    // Thoughts: this looks great from a code demo, but since I assume most content will be
    // user generated, the result builder may not be the best API.
    */
