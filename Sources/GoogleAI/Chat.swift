@@ -75,7 +75,7 @@ public class Chat {
         code: -1,
         userInfo: [
           NSLocalizedDescriptionKey: "No candidates with content available."
-        ]
+        ],
       )
       throw GenerateContentError.internalError(underlying: error)
     }
