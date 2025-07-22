@@ -33,7 +33,7 @@ final class GenerateContentResponseTests: XCTestCase {
       content: ModelContent(role: "model", parts: parts),
       safetyRatings: [],
       finishReason: nil,
-      citationMetadata: nil
+      citationMetadata: nil,
     )
     let response = GenerateContentResponse(candidates: [candidate])
 
@@ -48,7 +48,7 @@ final class GenerateContentResponseTests: XCTestCase {
       content: ModelContent(role: "model", parts: parts),
       safetyRatings: [],
       finishReason: nil,
-      citationMetadata: nil
+      citationMetadata: nil,
     )
     let response = GenerateContentResponse(candidates: [candidate])
 
@@ -59,7 +59,7 @@ final class GenerateContentResponseTests: XCTestCase {
       """
       \(testText1)
       \(testText2)
-      """
+      """,
     )
   }
 
@@ -68,14 +68,14 @@ final class GenerateContentResponseTests: XCTestCase {
       ModelContent.Part.executableCode(
         ExecutableCode(
           language: testLanguage,
-          code: testCode
+          code: testCode,
         ))
     ]
     let candidate = CandidateResponse(
       content: ModelContent(role: "model", parts: parts),
       safetyRatings: [],
       finishReason: nil,
-      citationMetadata: nil
+      citationMetadata: nil,
     )
     let response = GenerateContentResponse(candidates: [candidate])
 
@@ -87,7 +87,7 @@ final class GenerateContentResponseTests: XCTestCase {
       ```\(testLanguage.lowercased())
       \(testCode)
       ```
-      """
+      """,
     )
   }
 
@@ -96,14 +96,14 @@ final class GenerateContentResponseTests: XCTestCase {
       ModelContent.Part.executableCode(
         ExecutableCode(
           language: "LANGUAGE_UNSPECIFIED",
-          code: "echo $SHELL"
+          code: "echo $SHELL",
         ))
     ]
     let candidate = CandidateResponse(
       content: ModelContent(role: "model", parts: parts),
       safetyRatings: [],
       finishReason: nil,
-      citationMetadata: nil
+      citationMetadata: nil,
     )
     let response = GenerateContentResponse(candidates: [candidate])
 
@@ -115,7 +115,7 @@ final class GenerateContentResponseTests: XCTestCase {
       ```
       echo $SHELL
       ```
-      """
+      """,
     )
   }
 
@@ -124,14 +124,14 @@ final class GenerateContentResponseTests: XCTestCase {
       ModelContent.Part.codeExecutionResult(
         CodeExecutionResult(
           outcome: .ok,
-          output: testOutput
+          output: testOutput,
         ))
     ]
     let candidate = CandidateResponse(
       content: ModelContent(role: "model", parts: parts),
       safetyRatings: [],
       finishReason: nil,
-      citationMetadata: nil
+      citationMetadata: nil,
     )
     let response = GenerateContentResponse(candidates: [candidate])
 
@@ -143,7 +143,7 @@ final class GenerateContentResponseTests: XCTestCase {
       ```
       \(testOutput)
       ```
-      """
+      """,
     )
   }
 
@@ -152,14 +152,14 @@ final class GenerateContentResponseTests: XCTestCase {
       ModelContent.Part.codeExecutionResult(
         CodeExecutionResult(
           outcome: .deadlineExceeded,
-          output: ""
+          output: "",
         ))
     ]
     let candidate = CandidateResponse(
       content: ModelContent(role: "model", parts: parts),
       safetyRatings: [],
       finishReason: nil,
-      citationMetadata: nil
+      citationMetadata: nil,
     )
     let response = GenerateContentResponse(candidates: [candidate])
 
@@ -177,7 +177,7 @@ final class GenerateContentResponseTests: XCTestCase {
       content: ModelContent(role: "model", parts: parts),
       safetyRatings: [],
       finishReason: nil,
-      citationMetadata: nil
+      citationMetadata: nil,
     )
     let response = GenerateContentResponse(candidates: [candidate])
 
@@ -194,7 +194,7 @@ final class GenerateContentResponseTests: XCTestCase {
       \(testOutput)
       ```
       \(testText2)
-      """
+      """,
     )
   }
 }
