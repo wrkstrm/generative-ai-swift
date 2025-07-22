@@ -26,7 +26,7 @@ final class SystemInstructionsSnippets: XCTestCase {
   override func setUpWithError() throws {
     try XCTSkipIf(
       APIKey.default.isEmpty,
-      "`\(APIKey.apiKeyEnvVar)` environment variable not set."
+      "`\(APIKey.apiKeyEnvVar)` environment variable not set.",
     )
   }
 
@@ -39,7 +39,7 @@ final class SystemInstructionsSnippets: XCTestCase {
         // Access your API key from your on-demand resource .plist file (see "Set up your API key"
         // above)
         apiKey: APIKey.default,
-        systemInstruction: ModelContent(role: "system", parts: "You are a cat. Your name is Neko.")
+        systemInstruction: ModelContent(role: "system", parts: "You are a cat. Your name is Neko."),
       )
     // [END system_instruction]
 
