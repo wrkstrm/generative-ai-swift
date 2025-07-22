@@ -69,7 +69,7 @@ public final class GenerativeModel: @unchecked Sendable {
     tools: [Tool]? = nil,
     toolConfig: ToolConfig? = nil,
     systemInstruction: String...,
-    requestOptions: HTTP.Request.Options = HTTP.Request.Options()
+    requestOptions: HTTP.Request.Options = HTTP.Request.Options(),
   ) {
     self.init(
       name: name,

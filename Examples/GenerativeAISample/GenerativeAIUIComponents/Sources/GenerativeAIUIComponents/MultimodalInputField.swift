@@ -59,7 +59,7 @@ public struct MultimodalInputField: View {
 
   public init(
     text: Binding<String>,
-    selection: Binding<[PhotosPickerItem]>
+    selection: Binding<[PhotosPickerItem]>,
   ) {
     _text = text
     _selection = selection

@@ -72,28 +72,28 @@ extension JSONValue: Encodable {
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     switch self {
-      case .null:
-        try container.encodeNil()
+    case .null:
+      try container.encodeNil()
 
-      case .number(let numberValue):
-        // Convert to `Decimal` before encoding for consistent floating-point serialization across
-        // platforms. E.g., `Double` serializes 3.14159 as 3.1415899999999999 in some cases and
-        // 3.14159 in others. See
-        // https://forums.swift.org/t/jsonencoder-encodable-floating-point-rounding-error/41390/4
-        // for more details.
-        try container.encode(Decimal(numberValue))
+    case .number(let numberValue):
+      // Convert to `Decimal` before encoding for consistent floating-point serialization across
+      // platforms. E.g., `Double` serializes 3.14159 as 3.1415899999999999 in some cases and
+      // 3.14159 in others. See
+      // https://forums.swift.org/t/jsonencoder-encodable-floating-point-rounding-error/41390/4
+      // for more details.
+      try container.encode(Decimal(numberValue))
 
-      case .string(let stringValue):
-        try container.encode(stringValue)
+    case .string(let stringValue):
+      try container.encode(stringValue)
 
-      case .bool(let boolValue):
-        try container.encode(boolValue)
+    case .bool(let boolValue):
+      try container.encode(boolValue)
 
-      case .object(let objectValue):
-        try container.encode(objectValue)
+    case .object(let objectValue):
+      try container.encode(objectValue)
 
-      case .array(let arrayValue):
-        try container.encode(arrayValue)
+    case .array(let arrayValue):
+      try container.encode(arrayValue)
     }
   }
 }

@@ -16,9 +16,9 @@ import GoogleGenerativeAI
 import XCTest
 
 #if canImport(AppKit)
-import AppKit  // For NSImage extensions.
+  import AppKit  // For NSImage extensions.
 #elseif canImport(UIKit)
-import UIKit  // For UIImage extensions.
+  import UIKit  // For UIImage extensions.
 #endif
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
@@ -32,6 +32,7 @@ final class GoogleGenerativeAITests: XCTestCase {
       maxOutputTokens: 256,
       stopSequences: ["..."],
       responseMIMEType: "text/plain",
+      responseMIMEType: "text/plain",
     )
     let filters = [SafetySetting(harmCategory: .dangerousContent, threshold: .blockOnlyHigh)]
     let systemInstruction = ModelContent(role: "system", parts: [.text("Talk like a pirate.")])
@@ -42,21 +43,25 @@ final class GoogleGenerativeAITests: XCTestCase {
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
       safetySettings: filters,
+      safetySettings: filters,
     )
     _ = GenerativeModel(
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
+      generationConfig: config,
       generationConfig: config,
     )
     _ = GenerativeModel(
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
       systemInstruction: systemInstruction,
+      systemInstruction: systemInstruction,
     )
 
     _ = GenerativeModel(
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
+      systemInstruction: "Talk like a pirate.",
       systemInstruction: "Talk like a pirate.",
     )
 
@@ -105,24 +110,26 @@ final class GoogleGenerativeAITests: XCTestCase {
         mimetype: "image/jpeg",
         uri: "https://generativelanguage.googleapis.com/v1beta/files/rand0mha5sh",
       ),
+        uri: "https://generativelanguage.googleapis.com/v1beta/files/rand0mha5sh",
+      ),
     )
     #if canImport(UIKit)
-    _ = try await genAI.generateContent(UIImage())
-    _ = try await genAI.generateContent([UIImage()])
-    _ =
-      try await genAI
-      .generateContent([str, UIImage(), ModelContent.Part.text(str)])
-    _ = try await genAI.generateContent(str, UIImage(), "def", UIImage())
-    _ = try await genAI.generateContent([str, UIImage(), "def", UIImage()])
-    _ = try await genAI.generateContent([
-      ModelContent("def", UIImage()),
-      ModelContent("def", UIImage()),
-    ])
+      _ = try await genAI.generateContent(UIImage())
+      _ = try await genAI.generateContent([UIImage()])
+      _ =
+        try await genAI
+        .generateContent([str, UIImage(), ModelContent.Part.text(str)])
+      _ = try await genAI.generateContent(str, UIImage(), "def", UIImage())
+      _ = try await genAI.generateContent([str, UIImage(), "def", UIImage()])
+      _ = try await genAI.generateContent([
+        ModelContent("def", UIImage()),
+        ModelContent("def", UIImage()),
+      ])
     #elseif canImport(AppKit)
-    _ = try await genAI.generateContent(NSImage())
-    _ = try await genAI.generateContent([NSImage()])
-    _ = try await genAI.generateContent(str, NSImage(), "def", NSImage())
-    _ = try await genAI.generateContent([str, NSImage(), "def", NSImage()])
+      _ = try await genAI.generateContent(NSImage())
+      _ = try await genAI.generateContent([NSImage()])
+      _ = try await genAI.generateContent(str, NSImage(), "def", NSImage())
+      _ = try await genAI.generateContent([str, NSImage(), "def", NSImage()])
     #endif
 
     // ThrowingPartsRepresentable combinations.
@@ -143,43 +150,44 @@ final class GoogleGenerativeAITests: XCTestCase {
         ModelContent.Part.data(
           mimetype: "foo",
           Data(),
+          Data(),
         ),
       ] as [any ThrowingPartsRepresentable])
     #if canImport(UIKit)
-    _ = try ModelContent(role: "user", parts: UIImage())
-    _ = try ModelContent(role: "user", parts: [UIImage()])
-    // Note: without `as [any ThrowingPartsRepresentable]` this will fail to compile with "Cannot
-    // convert
-    // value of type `[Any]` to expected type `[any ThrowingPartsRepresentable]`. Not sure if
-    // there's a
-    // way we can get it to work.
-    _ = try ModelContent(parts: [str, UIImage()] as [any ThrowingPartsRepresentable])
-    // Alternatively, you can explicitly declare the type in a variable and pass it in.
-    let representable2: [any ThrowingPartsRepresentable] = [str, UIImage()]
-    _ = try ModelContent(parts: representable2)
-    _ = try ModelContent(
-      parts: [
-        str, UIImage(),
-        ModelContent.Part.text(str),
-      ] as [any ThrowingPartsRepresentable])
-    #elseif canImport(AppKit)
-    _ = try ModelContent(role: "user", parts: NSImage())
-    _ = try ModelContent(role: "user", parts: [NSImage()])
-    // Note: without `as [any ThrowingPartsRepresentable]` this will fail to compile with "Cannot
-    // convert
-    // value of type `[Any]` to expected type `[any ThrowingPartsRepresentable]`. Not sure if
-    // there's a
-    // way we can get it to work.
-    _ = try ModelContent(parts: [str, NSImage()] as [any ThrowingPartsRepresentable])
-    // Alternatively, you can explicitly declare the type in a variable and pass it in.
-    let representable2: [any ThrowingPartsRepresentable] = [str, NSImage()]
-    _ = try ModelContent(parts: representable2)
-    _ =
-      try ModelContent(
+      _ = try ModelContent(role: "user", parts: UIImage())
+      _ = try ModelContent(role: "user", parts: [UIImage()])
+      // Note: without `as [any ThrowingPartsRepresentable]` this will fail to compile with "Cannot
+      // convert
+      // value of type `[Any]` to expected type `[any ThrowingPartsRepresentable]`. Not sure if
+      // there's a
+      // way we can get it to work.
+      _ = try ModelContent(parts: [str, UIImage()] as [any ThrowingPartsRepresentable])
+      // Alternatively, you can explicitly declare the type in a variable and pass it in.
+      let representable2: [any ThrowingPartsRepresentable] = [str, UIImage()]
+      _ = try ModelContent(parts: representable2)
+      _ = try ModelContent(
         parts: [
-          str, NSImage(),
+          str, UIImage(),
           ModelContent.Part.text(str),
         ] as [any ThrowingPartsRepresentable])
+    #elseif canImport(AppKit)
+      _ = try ModelContent(role: "user", parts: NSImage())
+      _ = try ModelContent(role: "user", parts: [NSImage()])
+      // Note: without `as [any ThrowingPartsRepresentable]` this will fail to compile with "Cannot
+      // convert
+      // value of type `[Any]` to expected type `[any ThrowingPartsRepresentable]`. Not sure if
+      // there's a
+      // way we can get it to work.
+      _ = try ModelContent(parts: [str, NSImage()] as [any ThrowingPartsRepresentable])
+      // Alternatively, you can explicitly declare the type in a variable and pass it in.
+      let representable2: [any ThrowingPartsRepresentable] = [str, NSImage()]
+      _ = try ModelContent(parts: representable2)
+      _ =
+        try ModelContent(
+          parts: [
+            str, NSImage(),
+            ModelContent.Part.text(str),
+          ] as [any ThrowingPartsRepresentable])
     #endif
 
     // countTokens API
@@ -221,16 +229,19 @@ final class GoogleGenerativeAITests: XCTestCase {
                                  .text("Is it a cat?"),
                                  .png(pngData)
                                 ])]
-  
+
+
    // Turns into...
-  
+
+
    let contents = GenAIContent {
      Role("user") {
        Text("Is this a cat?")
        Image(png: pngData)
      }
    }
-  
+
+
    GenAIContent {
      ForEach(myInput) { input in
        Role(input.role) {
@@ -238,7 +249,8 @@ final class GoogleGenerativeAITests: XCTestCase {
        }
      }
    }
-  
+
+
    // Thoughts: this looks great from a code demo, but since I assume most content will be
    // user generated, the result builder may not be the best API.
    */

@@ -32,7 +32,7 @@ public struct InputField<Label>: View where Label: View {
 
   public init(
     _ title: String? = nil, text: Binding<String>,
-    @ViewBuilder label: @escaping () -> Label
+    @ViewBuilder label: @escaping () -> Label,
   ) {
     self.title = title
     _text = text

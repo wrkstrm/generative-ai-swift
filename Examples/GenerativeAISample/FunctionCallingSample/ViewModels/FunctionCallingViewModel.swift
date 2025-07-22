@@ -52,17 +52,21 @@ class FunctionCallingViewModel: ObservableObject {
                 format: "enum",
                 description: "The currency to convert from in ISO 4217 format",
                 enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"],
+                enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"],
               ),
               "currency_to": Schema(
                 type: .string,
                 format: "enum",
                 description: "The currency to convert to in ISO 4217 format",
                 enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"],
+                enumValues: ["USD", "EUR", "JPY", "GBP", "AUD", "CAD"],
               ),
             ],
             requiredParameters: ["currency_from", "currency_to"],
+            requiredParameters: ["currency_from", "currency_to"],
           )
         ])
+      ],
       ],
     )
     chat = model.startChat()
@@ -152,17 +156,17 @@ class FunctionCallingViewModel: ObservableObject {
 
     for part in candidate.content.parts {
       switch part {
-        case .text(let text):
-          // replace pending message with backend response
-          messages[messages.count - 1].message += text
-          messages[messages.count - 1].pending = false
+      case .text(let text):
+        // replace pending message with backend response
+        messages[messages.count - 1].message += text
+        messages[messages.count - 1].pending = false
 
-        case .functionCall(let functionCall):
-          messages.insert(functionCall.chatMessage(), at: messages.count - 1)
-          functionCalls.append(functionCall)
+      case .functionCall(let functionCall):
+        messages.insert(functionCall.chatMessage(), at: messages.count - 1)
+        functionCalls.append(functionCall)
 
-        case .data, .fileData, .functionResponse, .executableCode, .codeExecutionResult:
-          fatalError("Unsupported response content.")
+      case .data, .fileData, .functionResponse, .executableCode, .codeExecutionResult:
+        fatalError("Unsupported response content.")
       }
     }
   }
@@ -179,8 +183,8 @@ class FunctionCallingViewModel: ObservableObject {
               response: exchangeRates,
             ))
 
-        default:
-          fatalError("Unknown function named \"\(functionCall.name)\".")
+      default:
+        fatalError("Unknown function named \"\(functionCall.name)\".")
       }
     }
     functionCalls = []
@@ -265,6 +269,7 @@ extension [FunctionResponse] {
     self.map {
       ModelContent(
         role: "function",
+        parts: [ModelContent.Part.functionResponse($0)],
         parts: [ModelContent.Part.functionResponse($0)],
       )
     }

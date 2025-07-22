@@ -85,7 +85,7 @@ public class Schema: @unchecked Sendable {
     nullable: Bool? = nil,
     enumValues: [String]? = nil, items: Schema? = nil,
     properties: [String: Schema]? = nil,
-    requiredProperties: [String]? = nil
+    requiredProperties: [String]? = nil,
   ) {
     self.type = type
     self.format = format
@@ -146,7 +146,7 @@ public struct FunctionDeclaration: Sendable {
   ///   - requiredParameters: A list of required parameters by name.
   public init(
     name: String, description: String, parameters: [String: Schema]?,
-    requiredParameters: [String]? = nil
+    requiredParameters: [String]? = nil,
   ) {
     self.name = name
     self.description = description
@@ -183,7 +183,7 @@ public struct Tool: Sendable {
   ///   - codeExecution: Enables the model to execute code as part of generation, if provided.
   public init(
     functionDeclarations: [FunctionDeclaration]? = nil,
-    codeExecution: CodeExecution? = nil
+    codeExecution: CodeExecution? = nil,
   ) {
     self.functionDeclarations = functionDeclarations
     self.codeExecution = codeExecution

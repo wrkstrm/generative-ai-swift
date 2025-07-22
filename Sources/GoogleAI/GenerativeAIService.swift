@@ -45,7 +45,7 @@ struct GenerativeAIService {
     let urlRequest = try request.asURLRequest(with: environment)
 
     #if DEBUG
-    printCURLCommand(from: urlRequest)
+      printCURLCommand(from: urlRequest)
     #endif
 
     return try await codableClient.send(request)
@@ -66,7 +66,7 @@ struct GenerativeAIService {
         }
 
         #if DEBUG
-        printCURLCommand(from: urlRequest)
+          printCURLCommand(from: urlRequest)
         #endif
 
         let stream: URLSession.AsyncBytes
@@ -207,35 +207,35 @@ struct GenerativeAIService {
   }
 
   #if DEBUG
-  private func cURLCommand(from request: URLRequest) -> String {
-    var returnValue = "curl "
-    if let allHeaders = request.allHTTPHeaderFields {
-      for (key, value) in allHeaders {
-        returnValue += "-H '\(key): \(value)' "
+    private func cURLCommand(from request: URLRequest) -> String {
+      var returnValue = "curl "
+      if let allHeaders = request.allHTTPHeaderFields {
+        for (key, value) in allHeaders {
+          returnValue += "-H '\(key): \(value)' "
+        }
       }
+
+      guard let url = request.url else { return "" }
+      returnValue += "'\(url.absoluteString)' "
+
+      guard let body = request.httpBody,
+        let jsonStr = String(bytes: body, encoding: .utf8)
+      else { return "" }
+      let escapedJSON = jsonStr.replacingOccurrences(of: "'", with: "'\\''")
+      returnValue += "-d '\(escapedJSON)'"
+
+      return returnValue
     }
 
-    guard let url = request.url else { return "" }
-    returnValue += "'\(url.absoluteString)' "
-
-    guard let body = request.httpBody,
-      let jsonStr = String(bytes: body, encoding: .utf8)
-    else { return "" }
-    let escapedJSON = jsonStr.replacingOccurrences(of: "'", with: "'\\''")
-    returnValue += "-d '\(escapedJSON)'"
-
-    return returnValue
-  }
-
-  private func printCURLCommand(from request: URLRequest) {
-    let command = cURLCommand(from: request)
-    Logging.verbose.debug(
-      """
-      [GoogleGenerativeAI] Creating request with the equivalent cURL command:
-      ----- cURL command -----
-      \(command, privacy: .private)
-      ------------------------
-      """)
-  }
+    private func printCURLCommand(from request: URLRequest) {
+      let command = cURLCommand(from: request)
+      Logging.verbose.debug(
+        """
+        [GoogleGenerativeAI] Creating request with the equivalent cURL command:
+        ----- cURL command -----
+        \(command, privacy: .private)
+        ------------------------
+        """)
+    }
   #endif  // DEBUG
 }

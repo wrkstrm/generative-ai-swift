@@ -19,12 +19,12 @@ import SwiftUI
 extension SafetySetting.HarmCategory: CustomStringConvertible {
   public var description: String {
     switch self {
-      case .dangerousContent: "Dangerous content"
-      case .harassment: "Harassment"
-      case .hateSpeech: "Hate speech"
-      case .sexuallyExplicit: "Sexually explicit"
-      case .unknown: "Unknown"
-      case .unspecified: "Unspecified"
+    case .dangerousContent: "Dangerous content"
+    case .harassment: "Harassment"
+    case .hateSpeech: "Hate speech"
+    case .sexuallyExplicit: "Sexually explicit"
+    case .unknown: "Unknown"
+    case .unspecified: "Unspecified"
     }
   }
 }
@@ -32,12 +32,12 @@ extension SafetySetting.HarmCategory: CustomStringConvertible {
 extension SafetyRating.HarmProbability: CustomStringConvertible {
   public var description: String {
     switch self {
-      case .high: "High"
-      case .low: "Low"
-      case .medium: "Medium"
-      case .negligible: "Negligible"
-      case .unknown: "Unknown"
-      case .unspecified: "Unspecified"
+    case .high: "High"
+    case .low: "Low"
+    case .medium: "Medium"
+    case .negligible: "Negligible"
+    case .unknown: "Unknown"
+    case .unspecified: "Unspecified"
     }
   }
 }
@@ -92,10 +92,10 @@ struct ErrorDetailsView: View {
     NavigationView {
       Form {
         switch error {
-          case GenerateContentError.internalError(underlying: let underlyingError):
-            Section("Error Type") {
-              Text("Internal error")
-            }
+        case GenerateContentError.internalError(underlying: let underlyingError):
+          Section("Error Type") {
+            Text("Internal error")
+          }
 
             Section("Details") {
               SubtitleFormRow(
@@ -104,24 +104,24 @@ struct ErrorDetailsView: View {
               )
             }
 
-          case GenerateContentError.promptBlocked(response: let generateContentResponse):
-            Section("Error Type") {
-              Text("Your prompt was blocked")
+        case GenerateContentError.promptBlocked(response: let generateContentResponse):
+          Section("Error Type") {
+            Text("Your prompt was blocked")
+          }
+
+          Section("Details") {
+            if let reason = generateContentResponse.promptFeedback?.blockReason {
+              SubtitleFormRow(title: "Reason for blocking", value: reason.rawValue)
             }
 
-            Section("Details") {
-              if let reason = generateContentResponse.promptFeedback?.blockReason {
-                SubtitleFormRow(title: "Reason for blocking", value: reason.rawValue)
-              }
-
-              if let text = generateContentResponse.text {
-                SubtitleMarkdownFormRow(title: "Last chunk for the response", value: text)
-              }
+            if let text = generateContentResponse.text {
+              SubtitleMarkdownFormRow(title: "Last chunk for the response", value: text)
             }
+          }
 
-            if let ratings = generateContentResponse.candidates.first?.safetyRatings {
-              SafetyRatingsSection(ratings: ratings)
-            }
+          if let ratings = generateContentResponse.candidates.first?.safetyRatings {
+            SafetyRatingsSection(ratings: ratings)
+          }
 
           case GenerateContentError.responseStoppedEarly(
             reason: let finishReason,
@@ -131,22 +131,22 @@ struct ErrorDetailsView: View {
               Text("Response stopped early")
             }
 
-            Section("Details") {
-              SubtitleFormRow(title: "Reason for finishing early", value: finishReason.rawValue)
+          Section("Details") {
+            SubtitleFormRow(title: "Reason for finishing early", value: finishReason.rawValue)
 
-              if let text = generateContentResponse.text {
-                SubtitleMarkdownFormRow(title: "Last chunk for the response", value: text)
-              }
+            if let text = generateContentResponse.text {
+              SubtitleMarkdownFormRow(title: "Last chunk for the response", value: text)
             }
+          }
 
-            if let ratings = generateContentResponse.candidates.first?.safetyRatings {
-              SafetyRatingsSection(ratings: ratings)
-            }
+          if let ratings = generateContentResponse.candidates.first?.safetyRatings {
+            SafetyRatingsSection(ratings: ratings)
+          }
 
-          case GenerateContentError.invalidAPIKey:
-            Section("Error Type") {
-              Text("Invalid API Key")
-            }
+        case GenerateContentError.invalidAPIKey:
+          Section("Error Type") {
+            Text("Invalid API Key")
+          }
 
             Section("Details") {
               SubtitleFormRow(title: "Error description", value: error.localizedDescription)
@@ -158,10 +158,10 @@ struct ErrorDetailsView: View {
               )
             }
 
-          case GenerateContentError.unsupportedUserLocation:
-            Section("Error Type") {
-              Text("Unsupported User Location")
-            }
+        case GenerateContentError.unsupportedUserLocation:
+          Section("Error Type") {
+            Text("Unsupported User Location")
+          }
 
             Section("Details") {
               SubtitleFormRow(title: "Error description", value: error.localizedDescription)
@@ -174,14 +174,14 @@ struct ErrorDetailsView: View {
               )
             }
 
-          default:
-            Section("Error Type") {
-              Text("Some other error")
-            }
+        default:
+          Section("Error Type") {
+            Text("Some other error")
+          }
 
-            Section("Details") {
-              SubtitleFormRow(title: "Error description", value: error.localizedDescription)
-            }
+          Section("Details") {
+            SubtitleFormRow(title: "Error description", value: error.localizedDescription)
+          }
         }
       }
       .navigationTitle("Error details")
@@ -214,8 +214,11 @@ struct ErrorDetailsView: View {
           ],
           finishReason: FinishReason.maxTokens,
           citationMetadata: nil,
+          citationMetadata: nil,
         )
       ],
+      promptFeedback: nil,
+    ),
       promptFeedback: nil,
     ),
   )
@@ -237,6 +240,7 @@ struct ErrorDetailsView: View {
               eiusmod consectetur reprehenderit sit commodo.
               """
             ],
+            ],
           ),
           safetyRatings: [
             SafetyRating(category: .dangerousContent, probability: .high),
@@ -246,8 +250,11 @@ struct ErrorDetailsView: View {
           ],
           finishReason: FinishReason.other,
           citationMetadata: nil,
+          citationMetadata: nil,
         )
       ],
+      promptFeedback: nil,
+    ),
       promptFeedback: nil,
     ),
   )

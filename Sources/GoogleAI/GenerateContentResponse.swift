@@ -47,23 +47,23 @@ public struct GenerateContentResponse: Sendable {
     }
     let textValues: [String] = candidate.content.parts.compactMap { part in
       switch part {
-        case .text(let text):
-          return text
-        case .executableCode(let executableCode):
-          let codeBlockLanguage: String =
-            if executableCode.language == "LANGUAGE_UNSPECIFIED" {
-              ""
-            } else {
-              executableCode.language.lowercased()
-            }
-          return "```\(codeBlockLanguage)\n\(executableCode.code)\n```"
-        case .codeExecutionResult(let codeExecutionResult):
-          if codeExecutionResult.output.isEmpty {
-            return nil
+      case .text(let text):
+        return text
+      case .executableCode(let executableCode):
+        let codeBlockLanguage: String =
+          if executableCode.language == "LANGUAGE_UNSPECIFIED" {
+            ""
+          } else {
+            executableCode.language.lowercased()
           }
-          return "```\n\(codeExecutionResult.output)\n```"
-        case .data, .fileData, .functionCall, .functionResponse:
+        return "```\(codeBlockLanguage)\n\(executableCode.code)\n```"
+      case .codeExecutionResult(let codeExecutionResult):
+        if codeExecutionResult.output.isEmpty {
           return nil
+        }
+        return "```\n\(codeExecutionResult.output)\n```"
+      case .data, .fileData, .functionCall, .functionResponse:
+        return nil
       }
     }
     guard !textValues.isEmpty else {
@@ -89,7 +89,7 @@ public struct GenerateContentResponse: Sendable {
   /// Initializer for SwiftUI previews or tests.
   public init(
     candidates: [CandidateResponse], promptFeedback: PromptFeedback? = nil,
-    usageMetadata: UsageMetadata? = nil
+    usageMetadata: UsageMetadata? = nil,
   ) {
     self.candidates = candidates
     self.promptFeedback = promptFeedback
@@ -117,7 +117,7 @@ public struct CandidateResponse: Sendable {
   /// Initializer for SwiftUI previews or tests.
   public init(
     content: ModelContent, safetyRatings: [SafetyRating], finishReason: FinishReason?,
-    citationMetadata: CitationMetadata?
+    citationMetadata: CitationMetadata?,
   ) {
     self.content = content
     self.safetyRatings = safetyRatings

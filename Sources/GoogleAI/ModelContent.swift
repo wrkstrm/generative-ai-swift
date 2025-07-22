@@ -72,8 +72,8 @@ public struct ModelContent: Equatable, Sendable {
     /// Returns the text contents of this ``Part``, if it contains text.
     public var text: String? {
       switch self {
-        case .text(let contents): contents
-        default: nil
+      case .text(let contents): contents
+      default: nil
       }
     }
   }
@@ -152,36 +152,36 @@ extension ModelContent.Part: Codable {
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     switch self {
-      case .text(let a0):
-        try container.encode(a0, forKey: .text)
+    case .text(let a0):
+      try container.encode(a0, forKey: .text)
 
-      case .data(let mimetype, let bytes):
-        var inlineDataContainer = container.nestedContainer(
-          keyedBy: InlineDataKeys.self,
-          forKey: .inlineData,
-        )
-        try inlineDataContainer.encode(mimetype, forKey: .mimeType)
-        try inlineDataContainer.encode(bytes, forKey: .bytes)
+    case .data(let mimetype, let bytes):
+      var inlineDataContainer = container.nestedContainer(
+        keyedBy: InlineDataKeys.self,
+        forKey: .inlineData,
+      )
+      try inlineDataContainer.encode(mimetype, forKey: .mimeType)
+      try inlineDataContainer.encode(bytes, forKey: .bytes)
 
-      case .fileData(mimetype: let mimetype, let url):
-        var fileDataContainer = container.nestedContainer(
-          keyedBy: FileDataKeys.self,
-          forKey: .fileData,
-        )
-        try fileDataContainer.encode(mimetype, forKey: .mimeType)
-        try fileDataContainer.encode(url, forKey: .url)
+    case .fileData(let mimetype, let url):
+      var fileDataContainer = container.nestedContainer(
+        keyedBy: FileDataKeys.self,
+        forKey: .fileData,
+      )
+      try fileDataContainer.encode(mimetype, forKey: .mimeType)
+      try fileDataContainer.encode(url, forKey: .url)
 
-      case .functionCall(let functionCall):
-        try container.encode(functionCall, forKey: .functionCall)
+    case .functionCall(let functionCall):
+      try container.encode(functionCall, forKey: .functionCall)
 
-      case .functionResponse(let functionResponse):
-        try container.encode(functionResponse, forKey: .functionResponse)
+    case .functionResponse(let functionResponse):
+      try container.encode(functionResponse, forKey: .functionResponse)
 
-      case .executableCode(let executableCode):
-        try container.encode(executableCode, forKey: .executableCode)
+    case .executableCode(let executableCode):
+      try container.encode(executableCode, forKey: .executableCode)
 
-      case .codeExecutionResult(let codeExecutionResult):
-        try container.encode(codeExecutionResult, forKey: .codeExecutionResult)
+    case .codeExecutionResult(let codeExecutionResult):
+      try container.encode(codeExecutionResult, forKey: .codeExecutionResult)
     }
   }
 
@@ -192,6 +192,7 @@ extension ModelContent.Part: Codable {
     } else if values.contains(.inlineData) {
       let dataContainer = try values.nestedContainer(
         keyedBy: InlineDataKeys.self,
+        forKey: .inlineData,
         forKey: .inlineData,
       )
       let mimetype = try dataContainer.decode(String.self, forKey: .mimeType)
@@ -206,11 +207,13 @@ extension ModelContent.Part: Codable {
         values.decode(
           CodeExecutionResult.self,
           forKey: .codeExecutionResult,
+          forKey: .codeExecutionResult,
         ))
     } else {
       throw DecodingError.dataCorrupted(
         .init(
           codingPath: [CodingKeys.text, CodingKeys.inlineData],
+          debugDescription: "No text, inline data or function call was found.",
           debugDescription: "No text, inline data or function call was found.",
         ))
     }

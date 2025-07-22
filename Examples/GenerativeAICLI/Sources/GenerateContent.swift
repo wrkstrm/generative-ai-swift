@@ -66,12 +66,12 @@ struct GenerateContent: AsyncParsableCommand {
       if let imageURL {
         let mimeType: String
         switch imageURL.pathExtension {
-          case "jpg", "jpeg":
-            mimeType = "image/jpeg"
-          case "png":
-            mimeType = "image/png"
-          default:
-            throw CLIError.unsupportedImageType
+        case "jpg", "jpeg":
+          mimeType = "image/jpeg"
+        case "png":
+          mimeType = "image/png"
+        default:
+          throw CLIError.unsupportedImageType
         }
         let imageData = try Data(contentsOf: imageURL)
         parts.append(.data(mimetype: mimeType, imageData))

@@ -913,19 +913,19 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
       let candidate = try XCTUnwrap(content.candidates.first)
       let part = try XCTUnwrap(candidate.content.parts.first)
       switch part {
-        case .text(let textPart):
-          XCTAssertTrue(expectedTexts.contains(textPart))
+      case .text(let textPart):
+        XCTAssertTrue(expectedTexts.contains(textPart))
 
-        case .executableCode(let executableCode):
-          XCTAssertEqual(executableCode.language, expectedLanguage)
-          XCTAssertEqual(executableCode.code, expectedCode)
+      case .executableCode(let executableCode):
+        XCTAssertEqual(executableCode.language, expectedLanguage)
+        XCTAssertEqual(executableCode.code, expectedCode)
 
-        case .codeExecutionResult(let codeExecutionResult):
-          XCTAssertEqual(codeExecutionResult.outcome, .ok)
-          XCTAssertEqual(codeExecutionResult.output, expectedOutput)
+      case .codeExecutionResult(let codeExecutionResult):
+        XCTAssertEqual(codeExecutionResult.outcome, .ok)
+        XCTAssertEqual(codeExecutionResult.output, expectedOutput)
 
-        default:
-          XCTFail("Unexpected part type: \(part)")
+      default:
+        XCTFail("Unexpected part type: \(part)")
       }
       try textValues.append(XCTUnwrap(content.text))
     }
