@@ -43,11 +43,6 @@ struct GenerativeAIService {
 
   func loadRequest<T: HTTP.CodableURLRequest>(request: T) async throws -> T.ResponseType {
     let urlRequest = try request.asURLRequest(with: environment)
-
-    #if DEBUG
-      printCURLCommand(from: urlRequest)
-    #endif
-
     return try await codableClient.send(request)
   }
 
@@ -65,9 +60,7 @@ struct GenerativeAIService {
           return
         }
 
-        #if DEBUG
-          printCURLCommand(from: urlRequest)
-        #endif
+        CURL.printCURLCommand(from: urlRequest)
 
         let stream: URLSession.AsyncBytes
         let rawResponse: URLResponse
@@ -205,37 +198,4 @@ struct GenerativeAIService {
       throw error
     }
   }
-
-  #if DEBUG
-    private func cURLCommand(from request: URLRequest) -> String {
-      var returnValue = "curl "
-      if let allHeaders = request.allHTTPHeaderFields {
-        for (key, value) in allHeaders {
-          returnValue += "-H '\(key): \(value)' "
-        }
-      }
-
-      guard let url = request.url else { return "" }
-      returnValue += "'\(url.absoluteString)' "
-
-      guard let body = request.httpBody,
-        let jsonStr = String(bytes: body, encoding: .utf8)
-      else { return "" }
-      let escapedJSON = jsonStr.replacingOccurrences(of: "'", with: "'\\''")
-      returnValue += "-d '\(escapedJSON)'"
-
-      return returnValue
-    }
-
-    private func printCURLCommand(from request: URLRequest) {
-      let command = cURLCommand(from: request)
-      Logging.verbose.debug(
-        """
-        [GoogleGenerativeAI] Creating request with the equivalent cURL command:
-        ----- cURL command -----
-        \(command, privacy: .private)
-        ------------------------
-        """)
-    }
-  #endif  // DEBUG
 }
