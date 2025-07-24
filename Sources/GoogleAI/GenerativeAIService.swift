@@ -42,7 +42,11 @@ struct GenerativeAIService {
   }
 
   func loadRequest<T: HTTP.CodableURLRequest>(request: T) async throws -> T.ResponseType {
-    let urlRequest = try request.asURLRequest(with: environment)
+    let urlRequest = try await request.asURLRequest(with: environment, encoder: codableClient.json.requestEncoder)
+
+    #if DEBUG
+      printCURLCommand(from: urlRequest)
+    #endif
     return try await codableClient.send(request)
   }
 
