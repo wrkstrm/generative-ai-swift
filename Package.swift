@@ -17,8 +17,8 @@ import PackageDescription
 // limitations under the License.
 
 ConfigurationService.local.dependencies = [
-  .package(name: "WrkstrmLog", path: "../universal/WrkstrmLog"),
-  .package(name: "WrkstrmFoundation", path: "../universal/WrkstrmFoundation"),
+  .package(name: "WrkstrmLog", path: "../WrkstrmLog"),
+  .package(name: "WrkstrmFoundation", path: "../WrkstrmFoundation"),
 ]
 
 ConfigurationService.remote.dependencies = [
