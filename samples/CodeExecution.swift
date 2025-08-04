@@ -65,7 +65,7 @@ final class CodeExecutionSnippets: XCTestCase {
         tools: [Tool(codeExecution: CodeExecution())],
       )
 
-    let chat = generativeModel.startChat()
+    let chat = await generativeModel.startChat()
 
     let prompt = """
       What is the sum of the first 50 prime numbers?

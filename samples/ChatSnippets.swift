@@ -76,10 +76,10 @@ final class ChatSnippets: XCTestCase {
     ]
 
     // Initialize the chat with optional chat history
-    let chat = generativeModel.startChat(history: history)
+    let chat = await generativeModel.startChat(history: history)
 
     // To stream generated text output, call sendMessageStream and pass in the message
-    let contentStream = chat.sendMessageStream("How many paws are in my house?")
+    let contentStream = await chat.sendMessageStream("How many paws are in my house?")
     for try await chunk in contentStream {
       if let text = chunk.text {
         print(text)
