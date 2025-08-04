@@ -97,12 +97,12 @@ struct ErrorDetailsView: View {
             Text("Internal error")
           }
 
-            Section("Details") {
-              SubtitleFormRow(
-                title: "Error description",
-                value: underlyingError.localizedDescription,
-              )
-            }
+          Section("Details") {
+            SubtitleFormRow(
+              title: "Error description",
+              value: underlyingError.localizedDescription,
+            )
+          }
 
         case GenerateContentError.promptBlocked(response: let generateContentResponse):
           Section("Error Type") {
@@ -123,13 +123,13 @@ struct ErrorDetailsView: View {
             SafetyRatingsSection(ratings: ratings)
           }
 
-          case GenerateContentError.responseStoppedEarly(
-            reason: let finishReason,
-            response: let generateContentResponse,
-          ):
-            Section("Error Type") {
-              Text("Response stopped early")
-            }
+        case GenerateContentError.responseStoppedEarly(
+          reason: let finishReason,
+          response: let generateContentResponse,
+        ):
+          Section("Error Type") {
+            Text("Response stopped early")
+          }
 
           Section("Details") {
             SubtitleFormRow(title: "Reason for finishing early", value: finishReason.rawValue)
@@ -148,31 +148,31 @@ struct ErrorDetailsView: View {
             Text("Invalid API Key")
           }
 
-            Section("Details") {
-              SubtitleFormRow(title: "Error description", value: error.localizedDescription)
-              SubtitleMarkdownFormRow(
-                title: "Help",
-                value: """
-                  Please provide a valid value for `API_KEY` in the `GenerativeAI-Info.plist` file.
-                  """,
-              )
-            }
+          Section("Details") {
+            SubtitleFormRow(title: "Error description", value: error.localizedDescription)
+            SubtitleMarkdownFormRow(
+              title: "Help",
+              value: """
+                Please provide a valid value for `API_KEY` in the `GenerativeAI-Info.plist` file.
+                """,
+            )
+          }
 
         case GenerateContentError.unsupportedUserLocation:
           Section("Error Type") {
             Text("Unsupported User Location")
           }
 
-            Section("Details") {
-              SubtitleFormRow(title: "Error description", value: error.localizedDescription)
-              SubtitleMarkdownFormRow(
-                title: "Help",
-                value: """
-                  The API is unsupported in your location (country / territory); please see the list
-                  of [available regions](https://ai.google.dev/available_regions#available_regions).
-                  """,
-              )
-            }
+          Section("Details") {
+            SubtitleFormRow(title: "Error description", value: error.localizedDescription)
+            SubtitleMarkdownFormRow(
+              title: "Help",
+              value: """
+                The API is unsupported in your location (country / territory); please see the list
+                of [available regions](https://ai.google.dev/available_regions#available_regions).
+                """,
+            )
+          }
 
         default:
           Section("Error Type") {
@@ -219,8 +219,6 @@ struct ErrorDetailsView: View {
       ],
       promptFeedback: nil,
     ),
-      promptFeedback: nil,
-    ),
   )
 
   return ErrorDetailsView(error: error)
@@ -240,7 +238,6 @@ struct ErrorDetailsView: View {
               eiusmod consectetur reprehenderit sit commodo.
               """
             ],
-            ],
           ),
           safetyRatings: [
             SafetyRating(category: .dangerousContent, probability: .high),
@@ -253,8 +250,6 @@ struct ErrorDetailsView: View {
           citationMetadata: nil,
         )
       ],
-      promptFeedback: nil,
-    ),
       promptFeedback: nil,
     ),
   )

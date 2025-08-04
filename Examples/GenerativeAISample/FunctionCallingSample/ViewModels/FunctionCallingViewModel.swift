@@ -67,7 +67,6 @@ class FunctionCallingViewModel: ObservableObject {
           )
         ])
       ],
-      ],
     )
     chat = model.startChat()
   }
@@ -175,13 +174,13 @@ class FunctionCallingViewModel: ObservableObject {
     var functionResponses: [FunctionResponse] = []
     for functionCall in functionCalls {
       switch functionCall.name {
-        case "get_exchange_rate":
-          let exchangeRates = getExchangeRate(args: functionCall.args)
-          functionResponses.append(
-            FunctionResponse(
-              name: "get_exchange_rate",
-              response: exchangeRates,
-            ))
+      case "get_exchange_rate":
+        let exchangeRates = getExchangeRate(args: functionCall.args)
+        functionResponses.append(
+          FunctionResponse(
+            name: "get_exchange_rate",
+            response: exchangeRates,
+          ))
 
       default:
         fatalError("Unknown function named \"\(functionCall.name)\".")

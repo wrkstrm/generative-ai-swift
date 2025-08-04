@@ -38,38 +38,55 @@ struct GenerativeAIService {
     self.environment = environment
     let configuration: URLSessionConfiguration = .default
     configuration.httpAdditionalHeaders = environment.headers
-    codableClient = HTTP.CodableClient(environment: environment, json: (.snakecase, .snakecase))
+    codableClient = HTTP.CodableClient(
+      environment: environment,
+      json: (.snakecase, .snakecase)
+    )
   }
 
-  func loadRequest<T: HTTP.CodableURLRequest>(request: T) async throws -> T.ResponseType {
-    let urlRequest = try await request.asURLRequest(with: environment, encoder: codableClient.json.requestEncoder)
+  func loadRequest<T: HTTP.CodableURLRequest>(request: T) async throws
+    -> T.ResponseType
+  {
+    let urlRequest = try await request.asURLRequest(
+      with: environment,
+      encoder: codableClient.json.requestEncoder
+    )
 
     #if DEBUG
-      printCURLCommand(from: urlRequest)
+      CURL.printCURLCommand(from: urlRequest, in: self.environment)
     #endif
     return try await codableClient.send(request)
   }
 
   @available(macOS 12.0, *)
-  func loadRequestStream<T: HTTP.CodableURLRequest>(request: T) -> AsyncThrowingStream<
-    T.ResponseType, Error
-  > where T.ResponseType: Sendable {
+  func loadRequestStream<T: HTTP.CodableURLRequest>(request: T)
+    -> AsyncThrowingStream<
+      T.ResponseType, Error
+    > where T.ResponseType: Sendable
+  {
     AsyncThrowingStream { continuation in
       Task {
         let urlRequest: URLRequest
         do {
-          urlRequest = try request.asURLRequest(with: environment)
+          urlRequest = try await request.asURLRequest(
+            with: environment,
+            encoder: self.codableClient.json.requestEncoder
+          )
         } catch {
           continuation.finish(throwing: error)
           return
         }
 
-        CURL.printCURLCommand(from: urlRequest)
+        #if DEBUG
+          CURL.printCURLCommand(from: urlRequest, in: self.environment)
+        #endif
 
         let stream: URLSession.AsyncBytes
         let rawResponse: URLResponse
         do {
-          (stream, rawResponse) = try await codableClient.session.bytes(for: urlRequest)
+          (stream, rawResponse) = try await codableClient.session.bytes(
+            for: urlRequest
+          )
         } catch {
           continuation.finish(throwing: error)
           return
@@ -87,13 +104,17 @@ struct GenerativeAIService {
         // Verify the status code is 200
         guard response.statusCode.isHTTPOKStatusRange else {
           Log.network
-            .error("[GoogleGenerativeAI] The server responded with an error: \(response)")
+            .error(
+              "[GoogleGenerativeAI] The server responded with an error: \(response)"
+            )
           var responseBody = ""
           for try await line in stream.lines {
             responseBody += line + "\n"
           }
 
-          Logging.default.error("[GoogleGenerativeAI] Response payload: \(responseBody)")
+          Logging.default.error(
+            "[GoogleGenerativeAI] Response payload: \(responseBody)"
+          )
           continuation.finish(throwing: parseError(responseBody: responseBody))
 
           return
@@ -153,7 +174,9 @@ struct GenerativeAIService {
       throw NSError(
         domain: "com.google.generative-ai",
         code: -1,
-        userInfo: [NSLocalizedDescriptionKey: "Response was not an HTTP response."],
+        userInfo: [
+          NSLocalizedDescriptionKey: "Response was not an HTTP response."
+        ],
       )
     }
 
@@ -165,7 +188,9 @@ struct GenerativeAIService {
       let error = NSError(
         domain: "com.google.generative-ai",
         code: -1,
-        userInfo: [NSLocalizedDescriptionKey: "Could not parse response as UTF8."],
+        userInfo: [
+          NSLocalizedDescriptionKey: "Could not parse response as UTF8."
+        ],
       )
       throw error
     }
@@ -191,14 +216,18 @@ struct GenerativeAIService {
     }
   }
 
-  private func parseResponse<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+  private func parseResponse<T: Decodable>(_ type: T.Type, from data: Data)
+    throws -> T
+  {
     do {
       return try JSONDecoder().decode(type, from: data)
     } catch {
       if let json = String(data: data, encoding: .utf8) {
         Log.network.error("[GoogleGenerativeAI] JSON response: \(json)")
       }
-      Log.shared.error("[GoogleGenerativeAI] Error decoding server JSON: \(error)")
+      Log.shared.error(
+        "[GoogleGenerativeAI] Error decoding server JSON: \(error)"
+      )
       throw error
     }
   }

@@ -32,7 +32,6 @@ final class GoogleGenerativeAITests: XCTestCase {
       maxOutputTokens: 256,
       stopSequences: ["..."],
       responseMIMEType: "text/plain",
-      responseMIMEType: "text/plain",
     )
     let filters = [SafetySetting(harmCategory: .dangerousContent, threshold: .blockOnlyHigh)]
     let systemInstruction = ModelContent(role: "system", parts: [.text("Talk like a pirate.")])
@@ -43,25 +42,21 @@ final class GoogleGenerativeAITests: XCTestCase {
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
       safetySettings: filters,
-      safetySettings: filters,
     )
     _ = GenerativeModel(
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
       generationConfig: config,
-      generationConfig: config,
     )
     _ = GenerativeModel(
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
-      systemInstruction: systemInstruction,
-      systemInstruction: systemInstruction,
+      systemInstruction: "Talk like a pirate.",
     )
 
     _ = GenerativeModel(
       name: "gemini-1.5-pro-latest",
       apiKey: "API_KEY",
-      systemInstruction: "Talk like a pirate.",
       systemInstruction: "Talk like a pirate.",
     )
 
@@ -110,8 +105,6 @@ final class GoogleGenerativeAITests: XCTestCase {
         mimetype: "image/jpeg",
         uri: "https://generativelanguage.googleapis.com/v1beta/files/rand0mha5sh",
       ),
-        uri: "https://generativelanguage.googleapis.com/v1beta/files/rand0mha5sh",
-      ),
     )
     #if canImport(UIKit)
       _ = try await genAI.generateContent(UIImage())
@@ -149,7 +142,6 @@ final class GoogleGenerativeAITests: XCTestCase {
         str,
         ModelContent.Part.data(
           mimetype: "foo",
-          Data(),
           Data(),
         ),
       ] as [any ThrowingPartsRepresentable])
@@ -193,14 +185,14 @@ final class GoogleGenerativeAITests: XCTestCase {
     // countTokens API
     let _: CountTokensResponse = try await genAI.countTokens("What color is the Sky?")
     #if canImport(UIKit)
-    let _: CountTokensResponse = try await genAI.countTokens(
-      "What color is the Sky?",
-      UIImage(),
-    )
-    let _: CountTokensResponse = try await genAI.countTokens([
-      ModelContent("What color is the Sky?", UIImage()),
-      ModelContent(UIImage(), "What color is the Sky?", UIImage()),
-    ])
+      let _: CountTokensResponse = try await genAI.countTokens(
+        "What color is the Sky?",
+        UIImage(),
+      )
+      let _: CountTokensResponse = try await genAI.countTokens([
+        ModelContent("What color is the Sky?", UIImage()),
+        ModelContent(UIImage(), "What color is the Sky?", UIImage()),
+      ])
     #endif
 
     // Chat
@@ -229,19 +221,19 @@ final class GoogleGenerativeAITests: XCTestCase {
                                  .text("Is it a cat?"),
                                  .png(pngData)
                                 ])]
-
-
+  
+  
    // Turns into...
-
-
+  
+  
    let contents = GenAIContent {
      Role("user") {
        Text("Is this a cat?")
        Image(png: pngData)
      }
    }
-
-
+  
+  
    GenAIContent {
      ForEach(myInput) { input in
        Role(input.role) {
@@ -249,8 +241,8 @@ final class GoogleGenerativeAITests: XCTestCase {
        }
      }
    }
-
-
+  
+  
    // Thoughts: this looks great from a code demo, but since I assume most content will be
    // user generated, the result builder may not be the best API.
    */
