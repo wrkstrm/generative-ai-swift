@@ -23,7 +23,7 @@ ConfigurationService.local.dependencies = [
 
 ConfigurationService.remote.dependencies = [
   .package(url: "https://github.com/wrkstrm/WrkstrmLog.git", from: "1.0.0"),
-  .package(url: "https://github.com/wrkstrm/WrkstrmFoundation.git", from: "1.0.0"),
+  .package(url: "https://github.com/wrkstrm/WrkstrmFoundation.git", from: "2.0.0"),
 ]
 
 let package = Package(
@@ -62,12 +62,12 @@ let package = Package(
       resources: [
         .process("GoogleAITests/CountTokenResponses"),
         .process("GoogleAITests/GenerateContentResponses"),
-      ],
+      ]
     ),
     .testTarget(
-      name: "CodeSnippetTests",
+      name: "LinuxDummyTests",
       dependencies: ["GoogleGenerativeAI"],
-      path: "samples",
+      path: "LinuxDummyTests"
     ),
   ],
 )

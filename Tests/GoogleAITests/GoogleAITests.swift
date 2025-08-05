@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if canImport(Darwin)
 import GoogleGenerativeAI
 import XCTest
 
@@ -247,3 +248,4 @@ final class GoogleGenerativeAITests: XCTestCase {
    // user generated, the result builder may not be the best API.
    */
 }
+#endif

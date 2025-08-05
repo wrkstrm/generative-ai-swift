@@ -95,6 +95,7 @@ public class Chat {
   /// and response will be added to the history. If unsuccessful, history will remain unchanged.
   /// - Parameter parts: The new content to send as a single chat message.
   /// - Returns: A stream containing the model's response or an error if an error occurred.
+  #if canImport(Darwin)
   @available(macOS 12.0, *)
   @MainActor
   public func sendMessageStream(_ parts: any ThrowingPartsRepresentable...)
@@ -160,6 +161,7 @@ public class Chat {
       }
     }
   }
+  #endif
 
   private func aggregatedChunks(_ chunks: [ModelContent]) -> ModelContent {
     var parts: [ModelContent.Part] = []
