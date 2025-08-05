@@ -12,15 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if canImport(CoreGraphics) && (canImport(UIKit) || canImport(AppKit))
 import CoreGraphics
 import CoreImage
 import GoogleGenerativeAI
 import XCTest
 
 #if canImport(UIKit)
-  import UIKit
+import UIKit
 #else
-  import AppKit
+import AppKit
 #endif
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
@@ -140,3 +141,4 @@ final class PartsRepresentableTests: XCTestCase {
     }
   #endif
 }
+#endif

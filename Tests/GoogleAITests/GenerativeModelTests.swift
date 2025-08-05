@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // swiftlint:disable file_length
+#if canImport(Darwin)
 import XCTest
 
 @testable import GoogleGenerativeAI
@@ -1285,3 +1286,4 @@ extension URLRequest {
 }
 
 // swiftlint:enable file_length
+#endif

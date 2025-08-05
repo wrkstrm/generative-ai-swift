@@ -13,19 +13,17 @@
 // limitations under the License.
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 import WrkstrmFoundation
 import WrkstrmLog
 import WrkstrmNetworking
 
 extension Log {
-  /// A non default
+  /// A non default logger used for network responses.
   static let network: Log =
-    if ProcessInfo.processInfo.arguments.contains(Logging.enableArgumentKey) {
-      .init(system: Logging.subsystem, category: "NetworkResponse")
-    } else {
-      // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
-      .disabled
-    }
+    .init(system: Logging.subsystem, category: "NetworkResponse")
 }
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
@@ -58,6 +56,7 @@ struct GenerativeAIService {
     return try await codableClient.send(request)
   }
 
+  #if canImport(Darwin)
   @available(macOS 12.0, *)
   func loadRequestStream<T: HTTP.CodableURLRequest>(request: T)
     -> AsyncThrowingStream<
@@ -159,6 +158,7 @@ struct GenerativeAIService {
       }
     }
   }
+  #endif
 
   // MARK: - Private Helpers
 
