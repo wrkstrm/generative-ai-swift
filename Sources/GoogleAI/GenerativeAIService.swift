@@ -77,9 +77,7 @@ struct GenerativeAIService {
           return
         }
 
-        #if DEBUG
-          CURL.printCURLCommand(from: urlRequest, in: self.environment)
-        #endif
+        CURL.printCURLCommand(from: urlRequest, in: self.environment)
 
         let stream: URLSession.AsyncBytes
         let rawResponse: URLResponse
