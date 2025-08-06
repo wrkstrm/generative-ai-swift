@@ -83,7 +83,7 @@ public class Chat {
     // Make sure we inject the role into the content received.
     let toAdd = ModelContent(role: "model", parts: reply.parts)
 
-    // Append the request and succssful result to history, then return the value.
+    // Append the request and successful result to history, then return the value.
     await MainActor.run {
       self.history.append(contentsOf: newContent)
       self.history.append(toAdd)
