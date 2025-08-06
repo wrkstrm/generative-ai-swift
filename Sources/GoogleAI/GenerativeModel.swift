@@ -42,7 +42,7 @@ public final class GenerativeModel: @unchecked Sendable {
 
   /// Instructions that direct the model to behave a certain way.
   /// NOTE: This is not optional in the latest releases.
-  /// TODO: Remove optional system intructions.
+  /// TODO: Remove optional system instructions.
   let systemInstruction: ModelContent?
 
   /// Configuration parameters for sending requests to the backend.
