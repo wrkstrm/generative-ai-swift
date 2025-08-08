@@ -13,12 +13,13 @@
 // limitations under the License.
 
 import Foundation
-#if canImport(FoundationNetworking)
-import FoundationNetworking
-#endif
 import WrkstrmFoundation
 import WrkstrmLog
 import WrkstrmNetworking
+
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
 
 extension Log {
   /// A non default logger used for network responses.
@@ -57,107 +58,107 @@ struct GenerativeAIService {
   }
 
   #if canImport(Darwin)
-  @available(macOS 12.0, *)
-  func loadRequestStream<T: HTTP.CodableURLRequest>(request: T)
-    -> AsyncThrowingStream<
-      T.ResponseType, Error
-    > where T.ResponseType: Sendable
-  {
-    AsyncThrowingStream { continuation in
-      Task {
-        let urlRequest: URLRequest
-        do {
-          urlRequest = try await request.asURLRequest(
-            with: environment,
-            encoder: self.codableClient.json.requestEncoder
-          )
-        } catch {
-          continuation.finish(throwing: error)
-          return
-        }
-
-        CURL.printCURLCommand(from: urlRequest, in: self.environment)
-
-        let stream: URLSession.AsyncBytes
-        let rawResponse: URLResponse
-        do {
-          (stream, rawResponse) = try await codableClient.session.bytes(
-            for: urlRequest
-          )
-        } catch {
-          continuation.finish(throwing: error)
-          return
-        }
-
-        // Verify the status code is 200
-        let response: HTTPURLResponse
-        do {
-          response = try httpResponse(urlResponse: rawResponse)
-        } catch {
-          continuation.finish(throwing: error)
-          return
-        }
-
-        // Verify the status code is 200
-        guard response.statusCode.isHTTPOKStatusRange else {
-          Log.network
-            .error(
-              "[GoogleGenerativeAI] The server responded with an error: \(response)"
+    @available(macOS 12.0, *)
+    func loadRequestStream<T: HTTP.CodableURLRequest>(request: T)
+      -> AsyncThrowingStream<
+        T.ResponseType, Error
+      > where T.ResponseType: Sendable
+    {
+      AsyncThrowingStream { continuation in
+        Task {
+          let urlRequest: URLRequest
+          do {
+            urlRequest = try await request.asURLRequest(
+              with: environment,
+              encoder: self.codableClient.json.requestEncoder
             )
-          var responseBody = ""
+          } catch {
+            continuation.finish(throwing: error)
+            return
+          }
+
+          CURL.printCURLCommand(from: urlRequest, in: self.environment)
+
+          let stream: URLSession.AsyncBytes
+          let rawResponse: URLResponse
+          do {
+            (stream, rawResponse) = try await codableClient.session.bytes(
+              for: urlRequest
+            )
+          } catch {
+            continuation.finish(throwing: error)
+            return
+          }
+
+          // Verify the status code is 200
+          let response: HTTPURLResponse
+          do {
+            response = try httpResponse(urlResponse: rawResponse)
+          } catch {
+            continuation.finish(throwing: error)
+            return
+          }
+
+          // Verify the status code is 200
+          guard response.statusCode.isHTTPOKStatusRange else {
+            Log.network
+              .error(
+                "[GoogleGenerativeAI] The server responded with an error: \(response)"
+              )
+            var responseBody = ""
+            for try await line in stream.lines {
+              responseBody += line + "\n"
+            }
+
+            Logging.default.error(
+              "[GoogleGenerativeAI] Response payload: \(responseBody)"
+            )
+            continuation.finish(throwing: parseError(responseBody: responseBody))
+
+            return
+          }
+
+          // Received lines that are not server-sent events (SSE); these are not prefixed with "data:"
+          var extraLines = ""
+
+          let decoder = JSONDecoder()
+          decoder.keyDecodingStrategy = .convertFromSnakeCase
           for try await line in stream.lines {
-            responseBody += line + "\n"
+            Log.network.verbose("[GoogleGenerativeAI] Stream response: \(line)")
+
+            if line.hasPrefix("data:") {
+              // We can assume 5 characters since it's utf-8 encoded, removing `data:`.
+              let jsonText = String(line.dropFirst(5))
+              let data: Data
+              do {
+                data = try jsonData(jsonText: jsonText)
+              } catch {
+                continuation.finish(throwing: error)
+                return
+              }
+
+              // Handle the content.
+              do {
+                let content = try parseResponse(T.ResponseType.self, from: data)
+                continuation.yield(content)
+              } catch {
+                continuation.finish(throwing: error)
+                return
+              }
+            } else {
+              extraLines += line
+            }
           }
 
-          Logging.default.error(
-            "[GoogleGenerativeAI] Response payload: \(responseBody)"
-          )
-          continuation.finish(throwing: parseError(responseBody: responseBody))
-
-          return
-        }
-
-        // Received lines that are not server-sent events (SSE); these are not prefixed with "data:"
-        var extraLines = ""
-
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        for try await line in stream.lines {
-          Log.network.verbose("[GoogleGenerativeAI] Stream response: \(line)")
-
-          if line.hasPrefix("data:") {
-            // We can assume 5 characters since it's utf-8 encoded, removing `data:`.
-            let jsonText = String(line.dropFirst(5))
-            let data: Data
-            do {
-              data = try jsonData(jsonText: jsonText)
-            } catch {
-              continuation.finish(throwing: error)
-              return
-            }
-
-            // Handle the content.
-            do {
-              let content = try parseResponse(T.ResponseType.self, from: data)
-              continuation.yield(content)
-            } catch {
-              continuation.finish(throwing: error)
-              return
-            }
-          } else {
-            extraLines += line
+          if !extraLines.isEmpty {
+            continuation.finish(throwing: parseError(responseBody: extraLines))
+            return
           }
-        }
 
-        if !extraLines.isEmpty {
-          continuation.finish(throwing: parseError(responseBody: extraLines))
-          return
+          continuation.finish(throwing: nil)
         }
-
-        continuation.finish(throwing: nil)
       }
     }
-  }
   #endif
 
   // MARK: - Private Helpers

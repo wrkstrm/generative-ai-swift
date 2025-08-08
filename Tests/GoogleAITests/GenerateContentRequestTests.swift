@@ -13,152 +13,152 @@
 // limitations under the License.
 
 #if canImport(Darwin)
-import Foundation
-import XCTest
+  import Foundation
+  import XCTest
 
-@testable import GoogleGenerativeAI
+  @testable import GoogleGenerativeAI
 
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-final class GenerateContentRequestTests: XCTestCase {
-  let encoder = JSONEncoder()
-  let role = "test-role"
-  let prompt = "test-prompt"
-  let modelName = "test-model-name"
+  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
+  final class GenerateContentRequestTests: XCTestCase {
+    let encoder = JSONEncoder()
+    let role = "test-role"
+    let prompt = "test-prompt"
+    let modelName = "test-model-name"
 
-  override func setUp() {
-    encoder.outputFormatting = .init(
-      arrayLiteral: .prettyPrinted, .sortedKeys, .withoutEscapingSlashes,
-    )
-  }
+    override func setUp() {
+      encoder.outputFormatting = .init(
+        arrayLiteral: .prettyPrinted, .sortedKeys, .withoutEscapingSlashes,
+      )
+    }
 
-  // MARK: GenerateContentRequest Encoding
+    // MARK: GenerateContentRequest Encoding
 
-  func testEncodeRequest_allFieldsIncluded() throws {
-    let content = [ModelContent(role: role, parts: prompt)]
-    let request = GenerateContentRequest(
-      model: modelName,
-      contents: content,
-      generationConfig: GenerationConfig(temperature: 0.5),
-      safetySettings: [
-        SafetySetting(
-          harmCategory: .dangerousContent,
-          threshold: .blockLowAndAbove,
-        )
-      ],
-      tools: [
-        Tool(functionDeclarations: [
-          FunctionDeclaration(
-            name: "test-function-name",
-            description: "test-function-description",
-            parameters: nil,
+    func testEncodeRequest_allFieldsIncluded() throws {
+      let content = [ModelContent(role: role, parts: prompt)]
+      let request = GenerateContentRequest(
+        model: modelName,
+        contents: content,
+        generationConfig: GenerationConfig(temperature: 0.5),
+        safetySettings: [
+          SafetySetting(
+            harmCategory: .dangerousContent,
+            threshold: .blockLowAndAbove,
           )
-        ]),
-        Tool(codeExecution: CodeExecution()),
-      ],
-      toolConfig: ToolConfig(functionCallingConfig: FunctionCallingConfig(mode: .auto)),
-      systemInstruction: ModelContent(role: "system", parts: "test-system-instruction"),
-      isStreaming: false,
-      options: RequestOptions(),
-    )
-
-    let jsonData = try encoder.encode(request)
-
-    let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(
-      json,
-      """
-      {
-        "contents" : [
-          {
-            "parts" : [
-              {
-                "text" : "\(prompt)"
-              }
-            ],
-            "role" : "\(role)"
-          }
         ],
-        "generationConfig" : {
-          "temperature" : 0.5
-        },
-        "model" : "\(modelName)",
-        "safetySettings" : [
-          {
-            "category" : "HARM_CATEGORY_DANGEROUS_CONTENT",
-            "threshold" : "BLOCK_LOW_AND_ABOVE"
-          }
+        tools: [
+          Tool(functionDeclarations: [
+            FunctionDeclaration(
+              name: "test-function-name",
+              description: "test-function-description",
+              parameters: nil,
+            )
+          ]),
+          Tool(codeExecution: CodeExecution()),
         ],
-        "systemInstruction" : {
-          "parts" : [
+        toolConfig: ToolConfig(functionCallingConfig: FunctionCallingConfig(mode: .auto)),
+        systemInstruction: ModelContent(role: "system", parts: "test-system-instruction"),
+        isStreaming: false,
+        options: RequestOptions(),
+      )
+
+      let jsonData = try encoder.encode(request)
+
+      let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
+      XCTAssertEqual(
+        json,
+        """
+        {
+          "contents" : [
             {
-              "text" : "test-system-instruction"
+              "parts" : [
+                {
+                  "text" : "\(prompt)"
+                }
+              ],
+              "role" : "\(role)"
             }
           ],
-          "role" : "system"
-        },
-        "toolConfig" : {
-          "functionCallingConfig" : {
-            "mode" : "AUTO"
-          }
-        },
-        "tools" : [
-          {
-            "functionDeclarations" : [
-              {
-                "description" : "test-function-description",
-                "name" : "test-function-name",
-                "parameters" : {
-                  "type" : "OBJECT"
-                }
-              }
-            ]
+          "generationConfig" : {
+            "temperature" : 0.5
           },
-          {
-            "codeExecution" : {
-
+          "model" : "\(modelName)",
+          "safetySettings" : [
+            {
+              "category" : "HARM_CATEGORY_DANGEROUS_CONTENT",
+              "threshold" : "BLOCK_LOW_AND_ABOVE"
             }
-          }
-        ]
-      }
-      """,
-    )
-  }
-
-  func testEncodeRequest_optionalFieldsOmitted() throws {
-    let content = [ModelContent(role: role, parts: prompt)]
-    let request = GenerateContentRequest(
-      model: modelName,
-      contents: content,
-      generationConfig: nil,
-      safetySettings: nil,
-      tools: nil,
-      toolConfig: nil,
-      systemInstruction: nil,
-      isStreaming: false,
-      options: RequestOptions(),
-    )
-
-    let jsonData = try encoder.encode(request)
-
-    let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
-    XCTAssertEqual(
-      json,
-      """
-      {
-        "contents" : [
-          {
+          ],
+          "systemInstruction" : {
             "parts" : [
               {
-                "text" : "\(prompt)"
+                "text" : "test-system-instruction"
               }
             ],
-            "role" : "\(role)"
-          }
-        ],
-        "model" : "\(modelName)"
-      }
-      """,
-    )
+            "role" : "system"
+          },
+          "toolConfig" : {
+            "functionCallingConfig" : {
+              "mode" : "AUTO"
+            }
+          },
+          "tools" : [
+            {
+              "functionDeclarations" : [
+                {
+                  "description" : "test-function-description",
+                  "name" : "test-function-name",
+                  "parameters" : {
+                    "type" : "OBJECT"
+                  }
+                }
+              ]
+            },
+            {
+              "codeExecution" : {
+
+              }
+            }
+          ]
+        }
+        """,
+      )
+    }
+
+    func testEncodeRequest_optionalFieldsOmitted() throws {
+      let content = [ModelContent(role: role, parts: prompt)]
+      let request = GenerateContentRequest(
+        model: modelName,
+        contents: content,
+        generationConfig: nil,
+        safetySettings: nil,
+        tools: nil,
+        toolConfig: nil,
+        systemInstruction: nil,
+        isStreaming: false,
+        options: RequestOptions(),
+      )
+
+      let jsonData = try encoder.encode(request)
+
+      let json = try XCTUnwrap(String(data: jsonData, encoding: .utf8))
+      XCTAssertEqual(
+        json,
+        """
+        {
+          "contents" : [
+            {
+              "parts" : [
+                {
+                  "text" : "\(prompt)"
+                }
+              ],
+              "role" : "\(role)"
+            }
+          ],
+          "model" : "\(modelName)"
+        }
+        """,
+      )
+    }
   }
-}
 #endif

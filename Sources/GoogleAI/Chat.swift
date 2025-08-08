@@ -96,71 +96,71 @@ public class Chat {
   /// - Parameter parts: The new content to send as a single chat message.
   /// - Returns: A stream containing the model's response or an error if an error occurred.
   #if canImport(Darwin)
-  @available(macOS 12.0, *)
-  @MainActor
-  public func sendMessageStream(_ parts: any ThrowingPartsRepresentable...)
-    -> AsyncThrowingStream<GenerateContentResponse, Error>
-  {
-    try! sendMessageStream([ModelContent(parts: parts)])
-  }
-
-  /// Sends a message using the existing history of this chat as context. If successful, the message
-  /// and response will be added to the history. If unsuccessful, history will remain unchanged.
-  /// - Parameter content: The new content to send as a single chat message.
-  /// - Returns: A stream containing the model's response or an error if an error occurred.
-  @available(macOS 12.0, *)
-  @MainActor
-  public func sendMessageStream(_ content: @autoclosure () throws -> [ModelContent])
-    -> AsyncThrowingStream<GenerateContentResponse, Error>
-  {
-    let newContent: [ModelContent]
-    let localRequest: [ModelContent]
-    do {
-      let resolvedContent = try content()
-      newContent = resolvedContent.map(populateContentRole(_:))
-      localRequest = history + newContent
-    } catch let underlying {
-      return AsyncThrowingStream { continuation in
-        let error: Error =
-          if let contentError = underlying as? ImageConversionError {
-            GenerateContentError.promptImageContentError(underlying: contentError)
-          } else {
-            GenerateContentError.internalError(underlying: underlying)
-          }
-        continuation.finish(throwing: error)
-      }
+    @available(macOS 12.0, *)
+    @MainActor
+    public func sendMessageStream(_ parts: any ThrowingPartsRepresentable...)
+      -> AsyncThrowingStream<GenerateContentResponse, Error>
+    {
+      try! sendMessageStream([ModelContent(parts: parts)])
     }
-    let localModel = model
 
-    return AsyncThrowingStream { continuation in
-      Task {
-        var localAggregatedContent: [ModelContent] = []
-        let stream = localModel.generateContentStream(localRequest)
-        do {
-          for try await chunk in stream {
-            if let chunkContent = chunk.candidates.first?.content {
-              localAggregatedContent.append(chunkContent)
+    /// Sends a message using the existing history of this chat as context. If successful, the message
+    /// and response will be added to the history. If unsuccessful, history will remain unchanged.
+    /// - Parameter content: The new content to send as a single chat message.
+    /// - Returns: A stream containing the model's response or an error if an error occurred.
+    @available(macOS 12.0, *)
+    @MainActor
+    public func sendMessageStream(_ content: @autoclosure () throws -> [ModelContent])
+      -> AsyncThrowingStream<GenerateContentResponse, Error>
+    {
+      let newContent: [ModelContent]
+      let localRequest: [ModelContent]
+      do {
+        let resolvedContent = try content()
+        newContent = resolvedContent.map(populateContentRole(_:))
+        localRequest = history + newContent
+      } catch let underlying {
+        return AsyncThrowingStream { continuation in
+          let error: Error =
+            if let contentError = underlying as? ImageConversionError {
+              GenerateContentError.promptImageContentError(underlying: contentError)
+            } else {
+              GenerateContentError.internalError(underlying: underlying)
             }
-            // Yield on MainActor to avoid data race with non-Sendable type
-            let safeChunk = chunk
-            _ = await MainActor.run {
-              continuation.yield(safeChunk)
-            }
-          }
-        } catch {
           continuation.finish(throwing: error)
-          return
         }
-        // Only now, after streaming completes, update the shared history.
-        await MainActor.run {
-          history.append(contentsOf: newContent)
-          let aggregated = aggregatedChunks(localAggregatedContent)
-          history.append(aggregated)
+      }
+      let localModel = model
+
+      return AsyncThrowingStream { continuation in
+        Task {
+          var localAggregatedContent: [ModelContent] = []
+          let stream = localModel.generateContentStream(localRequest)
+          do {
+            for try await chunk in stream {
+              if let chunkContent = chunk.candidates.first?.content {
+                localAggregatedContent.append(chunkContent)
+              }
+              // Yield on MainActor to avoid data race with non-Sendable type
+              let safeChunk = chunk
+              _ = await MainActor.run {
+                continuation.yield(safeChunk)
+              }
+            }
+          } catch {
+            continuation.finish(throwing: error)
+            return
+          }
+          // Only now, after streaming completes, update the shared history.
+          await MainActor.run {
+            history.append(contentsOf: newContent)
+            let aggregated = aggregatedChunks(localAggregatedContent)
+            history.append(aggregated)
+          }
+          continuation.finish()
         }
-        continuation.finish()
       }
     }
-  }
   #endif
 
   private func aggregatedChunks(_ chunks: [ModelContent]) -> ModelContent {
