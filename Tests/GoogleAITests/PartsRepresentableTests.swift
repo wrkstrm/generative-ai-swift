@@ -110,7 +110,7 @@
             return
           }
         }
-        XCTFail("Expected model content from invlaid image to error")
+        XCTFail("Expected model content from invalid image to error")
       }
 
       func testModelContentFromUIImageIsNotEmpty() throws {
@@ -168,7 +168,7 @@
             return
           }
         }
-        XCTFail("Expected model content from invlaid image to error")
+        XCTFail("Expected model content from invalid image to error")
       }
     #endif
   }
