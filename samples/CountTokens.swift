@@ -78,26 +78,26 @@ final class CountTokensSnippets: XCTestCase {
   }
 
   #if canImport(UIKit)
-    func testCountTokensMultimodalInline() async throws {
-      // [START tokens_multimodal_image_inline]
-      let generativeModel =
-        GenerativeModel(
-          // Specify a Gemini model appropriate for your use case
-          name: "gemini-1.5-flash",
-          // Access your API key from your on-demand resource .plist file (see "Set up your API key"
-          // above)
-          apiKey: APIKey.default,
-        )
+  func testCountTokensMultimodalInline() async throws {
+    // [START tokens_multimodal_image_inline]
+    let generativeModel =
+      GenerativeModel(
+        // Specify a Gemini model appropriate for your use case
+        name: "gemini-1.5-flash",
+        // Access your API key from your on-demand resource .plist file (see "Set up your API key"
+        // above)
+        apiKey: APIKey.default,
+      )
 
-      guard let image1 = UIImage(systemName: "cloud.sun") else { fatalError() }
-      guard let image2 = UIImage(systemName: "cloud.heavyrain") else { fatalError() }
+    guard let image1 = UIImage(systemName: "cloud.sun") else { fatalError() }
+    guard let image2 = UIImage(systemName: "cloud.heavyrain") else { fatalError() }
 
-      let prompt = "What's the difference between these pictures?"
+    let prompt = "What's the difference between these pictures?"
 
-      let response = try await generativeModel.countTokens(image1, image2, prompt)
-      print("Total Tokens: \(response.totalTokens)")
-      // [END tokens_multimodal_image_inline]
-    }
+    let response = try await generativeModel.countTokens(image1, image2, prompt)
+    print("Total Tokens: \(response.totalTokens)")
+    // [END tokens_multimodal_image_inline]
+  }
   #endif  // canImport(UIKit)
 
   func testCountTokensSystemInstruction() async throws {

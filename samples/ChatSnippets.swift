@@ -89,37 +89,37 @@ final class ChatSnippets: XCTestCase {
   }
 
   #if canImport(UIKit)
-    func testChatStreamingWithImages() async throws {
-      // [START chat_streaming_with_images]
-      let generativeModel =
-        GenerativeModel(
-          // Specify a Gemini model appropriate for your use case
-          name: "gemini-1.5-flash",
-          // Access your API key from your on-demand resource .plist file (see "Set up your API key"
-          // above)
-          apiKey: APIKey.default,
-        )
+  func testChatStreamingWithImages() async throws {
+    // [START chat_streaming_with_images]
+    let generativeModel =
+      GenerativeModel(
+        // Specify a Gemini model appropriate for your use case
+        name: "gemini-1.5-flash",
+        // Access your API key from your on-demand resource .plist file (see "Set up your API key"
+        // above)
+        apiKey: APIKey.default,
+      )
 
-      // Optionally specify existing chat history
-      let history = [
-        ModelContent(role: "user", parts: "I'm trying to remember a fable about two animals."),
-        ModelContent(role: "model", parts: "Do you remember what kind of animals were they?"),
-      ]
+    // Optionally specify existing chat history
+    let history = [
+      ModelContent(role: "user", parts: "I'm trying to remember a fable about two animals."),
+      ModelContent(role: "model", parts: "Do you remember what kind of animals were they?"),
+    ]
 
-      guard let image1 = UIImage(systemName: "tortoise") else { fatalError() }
-      guard let image2 = UIImage(systemName: "hare") else { fatalError() }
+    guard let image1 = UIImage(systemName: "tortoise") else { fatalError() }
+    guard let image2 = UIImage(systemName: "hare") else { fatalError() }
 
-      // Initialize the chat with optional chat history
-      let chat = generativeModel.startChat(history: history)
+    // Initialize the chat with optional chat history
+    let chat = generativeModel.startChat(history: history)
 
-      // To stream generated text output, call sendMessageStream and pass in the message
-      let contentStream = chat.sendMessageStream("The animals from these pictures.", image1, image2)
-      for try await chunk in contentStream {
-        if let text = chunk.text {
-          print(text)
-        }
+    // To stream generated text output, call sendMessageStream and pass in the message
+    let contentStream = chat.sendMessageStream("The animals from these pictures.", image1, image2)
+    for try await chunk in contentStream {
+      if let text = chunk.text {
+        print(text)
       }
-      // [END chat_streaming_with_images]
     }
+    // [END chat_streaming_with_images]
+  }
   #endif  // canImport(UIKit)
 }

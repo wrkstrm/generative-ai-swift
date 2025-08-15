@@ -15,7 +15,7 @@
 import Foundation
 
 #if canImport(OSLog)
-  import OSLog
+import OSLog
 #endif
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
@@ -30,26 +30,26 @@ enum Logging {
   static let enableArgumentKey = "-GoogleGenerativeAIDebugLogEnabled"
 
   #if canImport(OSLog)
-    /// The default logger that is visible for all users. Note: we shouldn't be using anything lower
-    /// than `.notice`.
-    static let `default` = Logger(subsystem: subsystem, category: defaultCategory)
+  /// The default logger that is visible for all users. Note: we shouldn't be using anything lower
+  /// than `.notice`.
+  static let `default` = Logger(subsystem: subsystem, category: defaultCategory)
 
-    /// Verbose logger enabled via launch argument.
-    static let verbose: Logger =
-      if ProcessInfo.processInfo.arguments.contains(enableArgumentKey) {
-        .init(subsystem: subsystem, category: defaultCategory)
-      } else {
-        // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
-        .init(.disabled)
-      }
-  #else
-    /// Fallback logger used when OSLog isn't available (e.g. Linux).
-    struct DummyLogger {
-      func debug(_ message: String) {}
-      func info(_ message: String) {}
-      func error(_ message: String) {}
+  /// Verbose logger enabled via launch argument.
+  static let verbose: Logger =
+    if ProcessInfo.processInfo.arguments.contains(enableArgumentKey) {
+      .init(subsystem: subsystem, category: defaultCategory)
+    } else {
+      // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
+      .init(.disabled)
     }
-    static let `default` = DummyLogger()
-    static let verbose = DummyLogger()
+  #else
+  /// Fallback logger used when OSLog isn't available (e.g. Linux).
+  struct DummyLogger {
+    func debug(_ message: String) {}
+    func info(_ message: String) {}
+    func error(_ message: String) {}
+  }
+  static let `default` = DummyLogger()
+  static let verbose = DummyLogger()
   #endif
 }
