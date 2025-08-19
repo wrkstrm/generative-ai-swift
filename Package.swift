@@ -30,8 +30,8 @@ let package = Package(
   name: "generative-ai-swift",
   platforms: [
     .iOS(.v17),
-    .macOS(.v13),
-    .macCatalyst(.v13),
+    .macOS(.v14),
+    .macCatalyst(.v14),
   ],
   products: [
     .library(
