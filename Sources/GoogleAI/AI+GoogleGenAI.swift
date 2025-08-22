@@ -30,7 +30,7 @@ enum AI {
       var clientVersion: String? = "0.5.6"
       var scheme: HTTP.Scheme = .https
       /// The Google AI backend endpoint URL.
-      var baseURLString: String = "generativelanguage.googleapis.com"
+      var host: String = "generativelanguage.googleapis.com"
       var apiVersion: String? = "v1beta"
       var apiKey: String?
 

@@ -9,7 +9,7 @@ struct EnvironmentConfigurationTests {
     let env = AI.GoogleGenAI.Environment(apiKey: "test-key")
     let headers = env.headers
 
-    #expect(env.baseURLString == "generativelanguage.googleapis.com")
+    #expect(env.host == "generativelanguage.googleapis.com")
     #expect(env.apiVersion == "v1beta")
     #expect(headers["x-goog-api-key"] == "test-key")
     #expect(
