@@ -12,25 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if canImport(SwiftUI)
 import Foundation
 
-enum Participant {
+public enum Participant {
   case system
   case user
 }
 
-struct ChatMessage: Identifiable, Equatable {
-  let id = UUID().uuidString
-  var message: String
-  let participant: Participant
-  var pending = false
+public struct ChatMessage: Identifiable, Equatable {
+  public let id = UUID().uuidString
+  public var message: String
+  public let participant: Participant
+  public var pending = false
 
-  static func pending(participant: Participant) -> ChatMessage {
+  public init(message: String, participant: Participant, pending: Bool = false) {
+    self.message = message
+    self.participant = participant
+    self.pending = pending
+  }
+
+  public static func pending(participant: Participant) -> ChatMessage {
     Self(message: "", participant: participant, pending: true)
   }
 }
 
-extension ChatMessage {
+public extension ChatMessage {
   static var samples: [ChatMessage] = [
     .init(message: "Hello. What can I do for you today?", participant: .system),
     .init(message: "Show me a simple loop in Swift.", participant: .user),
@@ -71,3 +78,5 @@ extension ChatMessage {
 
   static var sample = samples[0]
 }
+
+#endif

@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import GenerativeAIUIComponents
-import GoogleGenerativeAI
+#if canImport(SwiftUI)
 import SwiftUI
 
-struct ConversationScreen: View {
+public struct ConversationScreen: View {
   @EnvironmentObject
   var viewModel: ConversationViewModel
 
@@ -130,3 +129,5 @@ struct ConversationScreen_Previews: PreviewProvider {
     }
   }
 }
+
+#endif

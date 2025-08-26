@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if canImport(SwiftUI)
 import Foundation
+import SwiftUI
 import GoogleGenerativeAI
-import UIKit
 
 @MainActor
-class ConversationViewModel: ObservableObject {
+public class ConversationViewModel: ObservableObject {
   /// This array holds both the user's and the system's chat messages
-  @Published var messages: [ChatMessage] = []
+  @Published public var messages: [ChatMessage] = []
 
   /// Indicates we're waiting for the model to finish
-  @Published var busy = false
+  @Published public var busy = false
 
-  @Published var error: Error?
-  var hasError: Bool {
+  @Published public var error: Error?
+  public var hasError: Bool {
     error != nil
   }
 
@@ -35,12 +36,12 @@ class ConversationViewModel: ObservableObject {
 
   private var chatTask: Task<Void, Never>?
 
-  init() {
+  public init() {
     model = GenerativeModel(name: "gemini-1.5-flash-latest", apiKey: APIKey.default)
     chat = model.startChat()
   }
 
-  func sendMessage(_ text: String, streaming: Bool = true) async {
+  public func sendMessage(_ text: String, streaming: Bool = true) async {
     error = nil
     if streaming {
       await internalSendMessageStreaming(text)
@@ -49,14 +50,14 @@ class ConversationViewModel: ObservableObject {
     }
   }
 
-  func startNewChat() {
+  public func startNewChat() {
     stop()
     error = nil
     chat = model.startChat()
     messages.removeAll()
   }
 
-  func stop() {
+  public func stop() {
     chatTask?.cancel()
     error = nil
   }
@@ -128,3 +129,5 @@ class ConversationViewModel: ObservableObject {
     }
   }
 }
+
+#endif
