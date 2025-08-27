@@ -60,7 +60,9 @@ let package = Package(
       name: "GenChatUI",
       dependencies: [
         "GoogleGenerativeAI",
-        .product(name: "MarkdownUI", package: "MarkdownUI", condition: .when(platforms: [.iOS, .macOS, .macCatalyst]))
+        .product(
+          name: "MarkdownUI", package: "MarkdownUI",
+          condition: .when(platforms: [.iOS, .macOS, .macCatalyst])),
       ],
       path: "Sources/GenChatUI"
     ),

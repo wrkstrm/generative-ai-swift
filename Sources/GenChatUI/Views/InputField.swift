@@ -50,13 +50,13 @@ public struct InputField<Label>: View where Label: View {
             cornerRadius: 8,
             style: .continuous,
           )
-#if canImport(UIKit)
+          #if canImport(UIKit)
           .stroke(Color(uiColor: .systemFill), lineWidth: 1)
-#elseif canImport(AppKit)
+          #elseif canImport(AppKit)
           .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
-#else
+          #else
           .stroke(Color.secondary, lineWidth: 1)
-#endif
+          #endif
         }
 
         Button(action: submit, label: label)

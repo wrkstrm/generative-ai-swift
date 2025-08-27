@@ -37,8 +37,8 @@ public struct ChatMessage: Identifiable, Equatable {
   }
 }
 
-public extension ChatMessage {
-  static var samples: [ChatMessage] = [
+extension ChatMessage {
+  public static var samples: [ChatMessage] = [
     .init(message: "Hello. What can I do for you today?", participant: .system),
     .init(message: "Show me a simple loop in Swift.", participant: .user),
     .init(
@@ -76,7 +76,7 @@ public extension ChatMessage {
     ),
   ]
 
-  static var sample = samples[0]
+  public static var sample = samples[0]
 }
 
 #endif
