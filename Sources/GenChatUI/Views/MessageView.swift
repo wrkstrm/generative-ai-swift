@@ -12,28 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if canImport(SwiftUI)
 import MarkdownUI
 import SwiftUI
-
-struct RoundedCorner: Shape {
-  var radius: CGFloat = .infinity
-  var corners: UIRectCorner = .allCorners
-
-  func path(in rect: CGRect) -> Path {
-    let path = UIBezierPath(
-      roundedRect: rect,
-      byRoundingCorners: corners,
-      cornerRadii: CGSize(width: radius, height: radius),
-    )
-    return Path(path.cgPath)
-  }
-}
-
-extension View {
-  func roundedCorner(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-    clipShape(RoundedCorner(radius: radius, corners: corners))
-  }
-}
 
 struct MessageContentView: View {
   var message: ChatMessage
@@ -46,7 +27,7 @@ struct MessageContentView: View {
         .markdownTextStyle {
           FontFamilyVariant(.normal)
           FontSize(.em(0.85))
-          ForegroundColor(message.participant == .system ? Color(UIColor.label) : .white)
+          ForegroundColor(message.participant == .system ? Color.primary : .white)
         }
         .markdownBlockStyle(\.codeBlock) { configuration in
           configuration.label
@@ -54,10 +35,10 @@ struct MessageContentView: View {
             .markdownTextStyle {
               FontFamilyVariant(.monospaced)
               FontSize(.em(0.85))
-              ForegroundColor(Color(.label))
+              ForegroundColor(Color.primary)
             }
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .background(Color.secondary.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .markdownMargin(top: .zero, bottom: .em(0.8))
         }
@@ -65,7 +46,7 @@ struct MessageContentView: View {
   }
 }
 
-struct MessageView: View {
+public struct MessageView: View {
   var message: ChatMessage
 
   var body: some View {
@@ -77,8 +58,8 @@ struct MessageView: View {
         .padding(10)
         .background(
           message.participant == .system
-            ? Color(UIColor.systemFill)
-            : Color(UIColor.systemBlue),
+            ? Color.gray.opacity(0.2)
+            : Color.accentColor,
         )
         .roundedCorner(
           10,
@@ -110,3 +91,5 @@ struct MessageView_Previews: PreviewProvider {
     }
   }
 }
+
+#endif

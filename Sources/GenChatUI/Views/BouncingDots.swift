@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if canImport(SwiftUI)
 import SwiftUI
 
 struct BouncingDots: View {
@@ -75,3 +76,5 @@ struct BouncingDots_Previews: PreviewProvider {
       .roundedCorner(10, corners: [.allCorners])
   }
 }
+
+#endif

@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if canImport(SwiftUI)
 import GoogleGenerativeAI
 import SwiftUI
 
-struct ErrorView: View {
+public struct ErrorView: View {
   var error: Error
   @State private var isDetailsSheetPresented = false
   var body: some View {
@@ -71,3 +72,5 @@ struct ErrorView: View {
     .navigationTitle("Chat sample")
   }
 }
+
+#endif

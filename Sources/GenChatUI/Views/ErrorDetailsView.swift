@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if canImport(SwiftUI)
 import GoogleGenerativeAI
 import MarkdownUI
 import SwiftUI
@@ -85,7 +86,7 @@ private struct SafetyRatingsSection: View {
   }
 }
 
-struct ErrorDetailsView: View {
+public struct ErrorDetailsView: View {
   var error: Error
 
   var body: some View {
@@ -264,3 +265,5 @@ struct ErrorDetailsView: View {
 #Preview("Unsupported User Location") {
   ErrorDetailsView(error: GenerateContentError.unsupportedUserLocation)
 }
+
+#endif
