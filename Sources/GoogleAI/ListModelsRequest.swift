@@ -73,4 +73,3 @@ extension ListModels {
     public let supportedGenerationMethods: [String]?
   }
 }
-
