@@ -44,7 +44,7 @@ public enum ListModels {
       if let pageSize {
         items.append(.init(name: "page_size", value: String(pageSize)))
       }
-      if let pageToken {
+      if let pageToken, !pageToken.isEmpty {
         items.append(.init(name: "page_token", value: pageToken))
       }
       return items
