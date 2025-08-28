@@ -41,7 +41,7 @@ public enum ListModels {
 
     public var queryItems: [URLQueryItem] {
       var items: [URLQueryItem] = []
-      if let pageSize && pageSize > 0 {
+      if let pageSize, pageSize > 0 {
         items.append(.init(name: "page_size", value: String(pageSize)))
       }
       if let pageToken, !pageToken.isEmpty {
