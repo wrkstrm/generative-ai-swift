@@ -33,7 +33,7 @@ let package = Package(
   platforms: [
     .iOS(.v17),
     .macOS(.v15),
-    .macCatalyst(.v15),
+    .macCatalyst(.v17),
   ],
   products: [
     .library(

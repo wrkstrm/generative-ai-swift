@@ -6,6 +6,17 @@ import UIKit
 import AppKit
 #endif
 
+struct SubmitHandlerKey: EnvironmentKey {
+  nonisolated(unsafe) static let defaultValue: (() -> Void)? = nil
+}
+
+extension EnvironmentValues {
+  var submitHandler: (() -> Void)? {
+    get { self[SubmitHandlerKey.self] }
+    set { self[SubmitHandlerKey.self] = newValue }
+  }
+}
+
 public struct InputField<Label>: View where Label: View {
   @Binding
   private var text: String
@@ -13,8 +24,7 @@ public struct InputField<Label>: View where Label: View {
   private var title: String?
   private var label: () -> Label
 
-  @Environment(\.submitHandler)
-  var submitHandler
+  @Environment(\.submitHandler) private var submitHandler: (() -> Void)?
 
   private func submit() {
     if let submitHandler {
@@ -23,7 +33,8 @@ public struct InputField<Label>: View where Label: View {
   }
 
   public init(
-    _ title: String? = nil, text: Binding<String>,
+    _ title: String? = nil,
+    text: Binding<String>,
     @ViewBuilder label: @escaping () -> Label,
   ) {
     self.title = title

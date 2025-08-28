@@ -49,7 +49,7 @@ struct MessageContentView: View {
 public struct MessageView: View {
   var message: ChatMessage
 
-  var body: some View {
+  public var body: some View {
     HStack {
       if message.participant == .user {
         Spacer()

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import Foundation
+import WrkstrmLog
 import WrkstrmNetworking
 
 /// A type that represents a remote multimodal model (like Gemini), with the ability to generate
@@ -119,21 +120,13 @@ public final class GenerativeModel: @unchecked Sendable {
     self.toolConfig = toolConfig
     self.systemInstruction = systemInstruction
     self.requestOptions = requestOptions
-
-    #if canImport(OSLog)
-    Logging.default.info(
+    Log.verbose(
       """
-      [GoogleGenerativeAI] Model \(name, privacy: .public) initialized.
+      [GoogleGenerativeAI] Model \(name) initialized.
       To enable additional logging, add \
-      `\(Logging.enableArgumentKey, privacy: .public)` as a launch argument in Xcode.
+      `\(Logging.enableArgumentKey)` as a launch argument in Xcode.
       """,
     )
-    #else
-    Logging.default.info(
-      "[GoogleGenerativeAI] Model \(name) initialized."
-    )
-    #endif
-    Logging.verbose.debug("[GoogleGenerativeAI] Verbose logging enabled.")
   }
 
   /// Generates content from String and/or image inputs, given to the model as a prompt, that are

@@ -89,7 +89,7 @@ private struct SafetyRatingsSection: View {
 public struct ErrorDetailsView: View {
   var error: Error
 
-  var body: some View {
+  public var body: some View {
     NavigationView {
       Form {
         switch error {
@@ -215,14 +215,13 @@ public struct ErrorDetailsView: View {
           ],
           finishReason: FinishReason.maxTokens,
           citationMetadata: nil,
-          citationMetadata: nil,
         )
       ],
       promptFeedback: nil,
     ),
   )
 
-  return ErrorDetailsView(error: error)
+  ErrorDetailsView(error: error)
 }
 
 #Preview("Prompt Blocked") {
@@ -248,14 +247,13 @@ public struct ErrorDetailsView: View {
           ],
           finishReason: FinishReason.other,
           citationMetadata: nil,
-          citationMetadata: nil,
         )
       ],
       promptFeedback: nil,
     ),
   )
 
-  return ErrorDetailsView(error: error)
+  ErrorDetailsView(error: error)
 }
 
 #Preview("Invalid API Key") {

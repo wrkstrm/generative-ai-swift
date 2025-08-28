@@ -14,22 +14,23 @@
 
 #if canImport(SwiftUI)
 import SwiftUI
+import GoogleGenerativeAI
 
 public struct ConversationScreen: View {
+
   @EnvironmentObject
-  var viewModel: ConversationViewModel
+  public var viewModel: ConversationViewModel
 
-  @State
-  private var userPrompt = ""
+  @State private var userPrompt = ""
 
-  enum FocusedField: Hashable {
+  public enum FocusedField: Hashable {
     case message
   }
 
   @FocusState
-  var focusedField: FocusedField?
+  public var focusedField: FocusedField?
 
-  var body: some View {
+  public var body: some View {
     VStack {
       ScrollViewReader { scrollViewProxy in
         List {
@@ -42,41 +43,40 @@ public struct ConversationScreen: View {
           }
         }
         .listStyle(.plain)
-        .onChange(
-          of: viewModel.messages,
-          perform: { _ in
-            if viewModel.hasError {
-              // wait for a short moment to make sure we can actually scroll to the bottom
-              DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                withAnimation {
-                  scrollViewProxy.scrollTo("errorView", anchor: .bottom)
-                }
-                focusedField = .message
+        .onChange(of: viewModel.messages) {
+          if viewModel.hasError {
+            // wait for a short moment to make sure we can actually scroll to the bottom
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+              withAnimation {
+                scrollViewProxy.scrollTo("errorView", anchor: .bottom)
               }
-            } else {
-              guard let lastMessage = viewModel.messages.last else { return }
-
-              // wait for a short moment to make sure we can actually scroll to the bottom
-              DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                withAnimation {
-                  scrollViewProxy.scrollTo(lastMessage.id, anchor: .bottom)
-                }
-                focusedField = .message
-              }
+              focusedField = .message
             }
-          },
-        )
+          } else {
+            guard let lastMessage = viewModel.messages.last else { return }
+            // wait for a short moment to make sure we can actually scroll to the bottom
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+              withAnimation {
+                scrollViewProxy.scrollTo(lastMessage.id, anchor: .bottom)
+              }
+              focusedField = .message
+            }
+          }
+        }
       }
       InputField("Message...", text: $userPrompt) {
-        Image(systemName: viewModel.busy ? "stop.circle.fill" : "arrow.up.circle.fill")
-          .font(.title)
+        Image(
+          systemName: viewModel.busy
+            ? "stop.circle.fill" : "arrow.up.circle.fill"
+        )
+        .font(.title)
       }
       .focused($focusedField, equals: .message)
       .onSubmit { sendOrStop() }
     }
     .toolbar {
       ToolbarItem(placement: .primaryAction) {
-        Button(action: newChat) {
+        Button(action: sendMessage) {
           Image(systemName: "square.and.pencil")
         }
       }
@@ -86,6 +86,8 @@ public struct ConversationScreen: View {
       focusedField = .message
     }
   }
+
+  public init() {}
 
   private func sendMessage() {
     Task {
@@ -112,7 +114,7 @@ public struct ConversationScreen: View {
 
 struct ConversationScreen_Previews: PreviewProvider {
   struct ContainerView: View {
-    @StateObject var viewModel = ConversationViewModel()
+    @StateObject var viewModel = ConversationViewModel(apiKey: "")
 
     var body: some View {
       ConversationScreen()

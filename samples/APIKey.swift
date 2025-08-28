@@ -16,13 +16,13 @@ import Foundation
 import XCTest
 
 /// A private wrapper for `APIKey`, hiding it from test files.
-private enum APIKeyCodeSnippet {
+public enum APIKeyCodeSnippet {
   // The implementation of `APIKey` for use in documentation code snippets; shown in
   // https://ai.google.dev/gemini-api/docs/quickstart?lang=swift
   // [START setup_api_key]
-  enum APIKey {
+  public enum APIKey {
     // Fetch the API key from `GenerativeAI-Info.plist`
-    static var `default`: String {
+    public static var `default`: String {
       guard let filePath = Bundle.main.path(forResource: "GenerativeAI-Info", ofType: "plist")
       else {
         fatalError("Couldn't find file 'GenerativeAI-Info.plist'.")
