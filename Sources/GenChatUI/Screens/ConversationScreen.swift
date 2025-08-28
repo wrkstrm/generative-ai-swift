@@ -64,15 +64,21 @@ public struct ConversationScreen: View {
           }
         }
       }
-      InputField("Message...", text: $userPrompt) {
-        Image(
-          systemName: viewModel.busy
-            ? "stop.circle.fill" : "arrow.up.circle.fill"
-        )
-        .font(.title)
-      }
+      InputField(
+        "Message...",
+        text: $userPrompt,
+        onSubmit: {
+          sendOrStop()
+        },
+        label: {
+          Image(
+            systemName: viewModel.busy
+              ? "stop.circle.fill" : "arrow.up.circle.fill"
+          )
+          .font(.title)
+        }
+      )
       .focused($focusedField, equals: .message)
-      .onSubmit { sendOrStop() }
     }
     .toolbar {
       ToolbarItem(placement: .primaryAction) {

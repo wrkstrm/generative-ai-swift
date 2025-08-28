@@ -6,21 +6,21 @@ import UIKit
 import AppKit
 #endif
 
-public struct InputField<Label>: View where Label: View {
-  @Binding
-  private var text: String
-
-  private var title: String?
-  private var label: () -> Label
-  @Environment(\EnvironmentValues.submit) private var submitAction
+public struct InputField<Label: View>: View {
+  @Binding private var text: String
+  private let title: String?
+  private let onSubmit: () -> Void
+  private let label: () -> Label
 
   public init(
     _ title: String? = nil,
     text: Binding<String>,
-    @ViewBuilder label: @escaping () -> Label,
+    onSubmit: @escaping () -> Void,
+    @ViewBuilder label: @escaping () -> Label
   ) {
     self.title = title
     _text = text
+    self.onSubmit = onSubmit
     self.label = label
   }
 
@@ -34,13 +34,14 @@ public struct InputField<Label>: View where Label: View {
             axis: .vertical,
           )
           .padding(.vertical, 4)
-          .onSubmit { submitAction() }
+          .onSubmit { onSubmit() }
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
+        .padding(.bottom, 8)
         .overlay {
           RoundedRectangle(
-            cornerRadius: 8,
+            cornerRadius: 16,
             style: .continuous,
           )
           #if canImport(UIKit)
@@ -52,11 +53,15 @@ public struct InputField<Label>: View where Label: View {
           #endif
         }
 
-        Button(action: { submitAction() }, label: label)
+        Button(action: onSubmit, label: label)
           .padding(.bottom, 4)
       }
+      .padding(8)
+      .overlay(
+        RoundedRectangle(cornerRadius: 8, style: .continuous)
+          .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+      )
     }
-    .padding(8)
   }
 }
 
@@ -65,7 +70,11 @@ public struct InputField<Label>: View where Label: View {
     @State var userInput: String = ""
 
     var body: some View {
-      InputField("Message", text: $userInput) {
+      InputField(
+        "Message",
+        text: $userInput,
+        onSubmit: {}
+      ) {
         Image(systemName: "arrow.up.circle.fill")
           .font(.title)
       }
@@ -74,5 +83,4 @@ public struct InputField<Label>: View where Label: View {
 
   return Wrapper()
 }
-
 #endif
