@@ -15,28 +15,11 @@
 import PhotosUI
 import SwiftUI
 
-struct MultimodalInputFieldSubmitHandler: EnvironmentKey {
-  static var defaultValue: (() -> Void)?
-}
-
-extension EnvironmentValues {
-  var submitHandler: (() -> Void)? {
-    get { self[MultimodalInputFieldSubmitHandler.self] }
-    set { self[MultimodalInputFieldSubmitHandler.self] = newValue }
-  }
-}
-
-extension View {
-  public func onSubmit(submitHandler: @escaping () -> Void) -> some View {
-    environment(\.submitHandler, submitHandler)
-  }
-}
-
 public struct MultimodalInputField: View {
   @Binding public var text: String
   @Binding public var selection: [PhotosPickerItem]
 
-  @Environment(\.submitHandler) var submitHandler
+  @Environment(\.submit) private var submit
 
   @State private var selectedImages: [Image] = []
 
@@ -49,12 +32,6 @@ public struct MultimodalInputField: View {
 
   private func showAttachmentPicker() {
     isAttachmentPickerShowing.toggle()
-  }
-
-  private func submit() {
-    if let submitHandler {
-      submitHandler()
-    }
   }
 
   public init(
@@ -80,7 +57,7 @@ public struct MultimodalInputField: View {
             axis: .vertical,
           )
           .padding(.vertical, 4)
-          .onSubmit(submit)
+          .onSubmit { submit() }
 
           if !selectedImages.isEmpty {
             ScrollView(.horizontal) {
@@ -109,7 +86,7 @@ public struct MultimodalInputField: View {
           .stroke(Color(UIColor.systemFill), lineWidth: 1)
         }
 
-        Button(action: submit) {
+        Button(action: { submit() }) {
           Text("Go")
         }
         .padding(.top, 8)
