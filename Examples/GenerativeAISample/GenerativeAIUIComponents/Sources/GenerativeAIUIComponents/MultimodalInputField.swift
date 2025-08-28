@@ -19,7 +19,7 @@ public struct MultimodalInputField: View {
   @Binding public var text: String
   @Binding public var selection: [PhotosPickerItem]
 
-  @Environment(\.submit) private var submit
+  @Environment(\EnvironmentValues.submit) private var submitAction
 
   @State private var selectedImages: [Image] = []
 
@@ -57,7 +57,7 @@ public struct MultimodalInputField: View {
             axis: .vertical,
           )
           .padding(.vertical, 4)
-          .onSubmit { submit() }
+          .onSubmit { submitAction() }
 
           if !selectedImages.isEmpty {
             ScrollView(.horizontal) {
@@ -86,7 +86,7 @@ public struct MultimodalInputField: View {
           .stroke(Color(UIColor.systemFill), lineWidth: 1)
         }
 
-        Button(action: { submit() }) {
+        Button(action: { submitAction() }) {
           Text("Go")
         }
         .padding(.top, 8)

@@ -21,7 +21,7 @@ public struct InputField<Label>: View where Label: View {
   private var title: String?
   private var label: () -> Label
 
-  @Environment(\.submit) private var submit
+  @Environment(\EnvironmentValues.submit) private var submitAction
 
   public init(
     _ title: String? = nil, text: Binding<String>,
@@ -42,7 +42,7 @@ public struct InputField<Label>: View where Label: View {
             axis: .vertical,
           )
           .padding(.vertical, 4)
-          .onSubmit { submit() }
+          .onSubmit { submitAction() }
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
@@ -54,7 +54,7 @@ public struct InputField<Label>: View where Label: View {
           .stroke(Color(UIColor.systemFill), lineWidth: 1)
         }
 
-        Button(action: { submit() }, label: label)
+        Button(action: { submitAction() }, label: label)
           .padding(.bottom, 4)
       }
     }
