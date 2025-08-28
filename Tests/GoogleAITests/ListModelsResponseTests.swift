@@ -21,22 +21,22 @@ import XCTest
 final class ListModelsResponseTests: XCTestCase {
   func testDecodeResponse() throws {
     let json = """
-    {
-      "models": [
-        {
-          "name": "models/test-model",
-          "baseModelId": "base-model",
-          "version": "0.0.1",
-          "displayName": "Test Model",
-          "description": "Used for testing",
-          "inputTokenLimit": 1000,
-          "outputTokenLimit": 2000,
-          "supportedGenerationMethods": ["generateContent", "countTokens"]
-        }
-      ],
-      "nextPageToken": "token123"
-    }
-    """
+      {
+        "models": [
+          {
+            "name": "models/test-model",
+            "baseModelId": "base-model",
+            "version": "0.0.1",
+            "displayName": "Test Model",
+            "description": "Used for testing",
+            "inputTokenLimit": 1000,
+            "outputTokenLimit": 2000,
+            "supportedGenerationMethods": ["generateContent", "countTokens"]
+          }
+        ],
+        "nextPageToken": "token123"
+      }
+      """
 
     let data = try XCTUnwrap(json.data(using: .utf8))
     let decoder = JSONDecoder()
@@ -57,14 +57,14 @@ final class ListModelsResponseTests: XCTestCase {
 
   func testDecodeResponseWithMissingOptionalFields() throws {
     let json = """
-    {
-      "models": [
-        {
-          "name": "models/minimal"
-        }
-      ]
-    }
-    """
+      {
+        "models": [
+          {
+            "name": "models/minimal"
+          }
+        ]
+      }
+      """
 
     let data = try XCTUnwrap(json.data(using: .utf8))
     let decoder = JSONDecoder()
