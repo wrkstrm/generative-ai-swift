@@ -76,7 +76,7 @@ public struct ConversationScreen: View {
     }
     .toolbar {
       ToolbarItem(placement: .primaryAction) {
-        Button(action: sendMessage) {
+        Button(action: newChat) {
           Image(systemName: "square.and.pencil")
         }
       }
