@@ -148,44 +148,58 @@ struct GenerativeAIService {
           return
         }
 
-        // Received lines that are not server-sent events (SSE); these are not prefixed with "data:"
-        var extraLines = ""
-
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        for try await line in stream.lines {
-          Log.network.verbose("[GoogleGenerativeAI] Stream response: \(line)")
-
-          if line.hasPrefix("data:") {
-            // We can assume 5 characters since it's utf-8 encoded, removing `data:`.
-            let jsonText = String(line.dropFirst(5))
-            let data: Data
-            do {
-              data = try jsonData(jsonText: jsonText)
-            } catch {
-              continuation.finish(throwing: error)
-              return
-            }
-
-            // Handle the content.
-            do {
-              let content = try parseResponse(T.ResponseType.self, from: data)
-              continuation.yield(content)
-            } catch {
-              continuation.finish(throwing: error)
-              return
-            }
-          } else {
-            extraLines += line
-          }
-        }
-
-        if !extraLines.isEmpty {
-          continuation.finish(throwing: parseError(responseBody: extraLines))
+        var linesIterator = stream.lines.makeAsyncIterator()
+        guard let firstLine = try await linesIterator.next() else {
+          continuation.finish()
           return
         }
 
-        continuation.finish(throwing: nil)
+        Log.network.verbose("[GoogleGenerativeAI] Stream response: \(firstLine)")
+
+        if firstLine.hasPrefix("data:") {
+          // Server Sent Events (SSE) stream.
+          let decoder = JSONDecoder()
+          decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+          func handle(line: String) throws {
+            // We can assume 5 characters since it's utf-8 encoded, removing `data:`.
+            let jsonText = String(line.dropFirst(5))
+            let data = try jsonData(jsonText: jsonText)
+            let content = try parseResponse(T.ResponseType.self, from: data)
+            continuation.yield(content)
+          }
+
+          do {
+            try handle(line: firstLine)
+            while let line = try await linesIterator.next() {
+              Log.network.verbose("[GoogleGenerativeAI] Stream response: \(line)")
+              if line.hasPrefix("data:") {
+                try handle(line: line)
+              }
+            }
+            continuation.finish()
+          } catch {
+            continuation.finish(throwing: error)
+          }
+        } else {
+          // Some endpoints return a JSON array rather than SSE events.
+          var body = firstLine + "\n"
+          while let line = try await linesIterator.next() {
+            Log.network.verbose("[GoogleGenerativeAI] Stream response: \(line)")
+            body += line + "\n"
+          }
+
+          do {
+            let data = try jsonData(jsonText: body)
+            let items = try JSONDecoder().decode([T.ResponseType].self, from: data)
+            for item in items {
+              continuation.yield(item)
+            }
+            continuation.finish()
+          } catch {
+            continuation.finish(throwing: error)
+          }
+        }
       }
     }
   }
