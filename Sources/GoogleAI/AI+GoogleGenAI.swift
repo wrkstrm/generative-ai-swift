@@ -20,21 +20,21 @@ import WrkstrmNetworking
 
 /// Constants associated with the GenerativeAISwift SDK.
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-enum AI {
+public enum AI {
   public enum GoogleGenAI {
-    struct Environment: HTTP.Environment, Sendable {
-      static func betaEnv(with apiKey: String) -> Environment {
+    public struct Environment: HTTP.Environment, Sendable {
+      public static func betaEnv(with apiKey: String) -> Environment {
         .init(apiKey: apiKey)
       }
 
-      var clientVersion: String? = "0.5.6"
-      var scheme: HTTP.Scheme = .https
+      public var clientVersion: String? = "0.5.6"
+      public var scheme: HTTP.Scheme = .https
       /// The Google AI backend endpoint URL.
-      var host: String = "generativelanguage.googleapis.com"
-      var apiVersion: String? = "v1beta"
-      var apiKey: String?
+      public var host: String = "generativelanguage.googleapis.com"
+      public var apiVersion: String? = "v1beta"
+      public var apiKey: String?
 
-      var headers: HTTP.Client.Headers {
+      public var headers: HTTP.Client.Headers {
         [
           "x-goog-api-key": apiKey ?? "",
           "x-goog-api-client": "genai-swift/\(String(describing: clientVersion))",
