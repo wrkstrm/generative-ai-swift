@@ -2,11 +2,15 @@
 import SwiftUI
 
 public struct ChatScreen: View {
+  private let apiKey: String
   @State private var chats: [UUID] = [UUID()]
   @State private var selectedChat: UUID?
-  @StateObject private var viewModel = ConversationViewModel(apiKey: "")
+  @StateObject private var viewModel: ConversationViewModel
 
-  public init() {}
+  public init(apiKey: String) {
+    self.apiKey = apiKey
+    _viewModel = StateObject(wrappedValue: ConversationViewModel(apiKey: apiKey))
+  }
 
   public var body: some View {
     NavigationSplitView {
