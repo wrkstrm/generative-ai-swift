@@ -1,4 +1,4 @@
-// Copyright 2024 wrkstrm
+// Copyright 2025 wrkstrm
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,13 +13,14 @@
 // limitations under the License.
 
 import Foundation
-import XCTest
+import Testing
 
 @testable import GoogleGenerativeAI
 
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-final class ListModelsResponseTests: XCTestCase {
-  func testDecodeResponse() throws {
+@Suite("ListModels Response")
+struct ListModelsResponseTests {
+  @Test("decode response")
+  func decodeResponse() throws {
     let json = """
       {
         "models": [
@@ -38,24 +39,25 @@ final class ListModelsResponseTests: XCTestCase {
       }
       """
 
-    let data = try XCTUnwrap(json.data(using: .utf8))
+    let data = try #require(json.data(using: .utf8))
     let decoder = JSONDecoder()
     let response = try decoder.decode(ListModels.Response.self, from: data)
 
-    XCTAssertEqual(response.models.count, 1)
-    let model = try XCTUnwrap(response.models.first)
-    XCTAssertEqual(model.name, "models/test-model")
-    XCTAssertEqual(model.baseModelId, "base-model")
-    XCTAssertEqual(model.version, "0.0.1")
-    XCTAssertEqual(model.displayName, "Test Model")
-    XCTAssertEqual(model.description, "Used for testing")
-    XCTAssertEqual(model.inputTokenLimit, 1000)
-    XCTAssertEqual(model.outputTokenLimit, 2000)
-    XCTAssertEqual(model.supportedGenerationMethods, ["generateContent", "countTokens"])
-    XCTAssertEqual(response.nextPageToken, "token123")
+    #expect(response.models.count == 1)
+    let model = try #require(response.models.first)
+    #expect(model.name == "models/test-model")
+    #expect(model.baseModelId == "base-model")
+    #expect(model.version == "0.0.1")
+    #expect(model.displayName == "Test Model")
+    #expect(model.description == "Used for testing")
+    #expect(model.inputTokenLimit == 1000)
+    #expect(model.outputTokenLimit == 2000)
+    #expect(model.supportedGenerationMethods == ["generateContent", "countTokens"])
+    #expect(response.nextPageToken == "token123")
   }
 
-  func testDecodeResponseWithMissingOptionalFields() throws {
+  @Test("decode response with missing optional fields")
+  func decodeResponseWithMissingOptionalFields() throws {
     let json = """
       {
         "models": [
@@ -66,20 +68,20 @@ final class ListModelsResponseTests: XCTestCase {
       }
       """
 
-    let data = try XCTUnwrap(json.data(using: .utf8))
+    let data = try #require(json.data(using: .utf8))
     let decoder = JSONDecoder()
     let response = try decoder.decode(ListModels.Response.self, from: data)
 
-    XCTAssertEqual(response.models.count, 1)
-    let model = try XCTUnwrap(response.models.first)
-    XCTAssertEqual(model.name, "models/minimal")
-    XCTAssertNil(model.baseModelId)
-    XCTAssertNil(model.version)
-    XCTAssertNil(model.displayName)
-    XCTAssertNil(model.description)
-    XCTAssertNil(model.inputTokenLimit)
-    XCTAssertNil(model.outputTokenLimit)
-    XCTAssertNil(model.supportedGenerationMethods)
-    XCTAssertNil(response.nextPageToken)
+    #expect(response.models.count == 1)
+    let model = try #require(response.models.first)
+    #expect(model.name == "models/minimal")
+    #expect(model.baseModelId == nil)
+    #expect(model.version == nil)
+    #expect(model.displayName == nil)
+    #expect(model.description == nil)
+    #expect(model.inputTokenLimit == nil)
+    #expect(model.outputTokenLimit == nil)
+    #expect(model.supportedGenerationMethods == nil)
+    #expect(response.nextPageToken == nil)
   }
 }
