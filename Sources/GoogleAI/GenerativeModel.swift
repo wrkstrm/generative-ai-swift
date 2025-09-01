@@ -180,8 +180,12 @@ public final class GenerativeModel: @unchecked Sendable {
           systemInstruction: systemInstruction,
         ),
       )
+      Log.genAI.trace("generateContent request: \(generateContentRequest)")
       response = try await generativeAIService.loadRequest(
         request: generateContentRequest,
+      )
+      Log.genAI.trace(
+        "generateContent response: \(String(describing: response.candidates.first?.content))"
       )
     } catch {
       if let imageError = error as? ImageConversionError {
@@ -277,11 +281,13 @@ public final class GenerativeModel: @unchecked Sendable {
       request: generateContentRequest,
     )
     .makeAsyncIterator()
+    Log.genAI.trace("generateContentStream request: \(generateContentRequest)")
     return AsyncThrowingStream {
       let response: GenerateContentResponse?
       do {
         response = try await responseIterator.next()
       } catch {
+        Log.genAI.error("generateContentStream error: \(error.localizedDescription)")
         throw GenerativeModel.generateContentError(from: error)
       }
 
@@ -291,6 +297,9 @@ public final class GenerativeModel: @unchecked Sendable {
         return nil
       }
 
+      Log.genAI.trace(
+        "generateContentStream chunk: \(String(describing: response.candidates.first?.content))"
+      )
       // Check the prompt feedback to see if the prompt was blocked.
       if response.promptFeedback?.blockReason != nil {
         throw GenerateContentError.promptBlocked(response: response)

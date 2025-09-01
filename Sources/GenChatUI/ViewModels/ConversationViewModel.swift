@@ -16,6 +16,16 @@
 import Foundation
 import SwiftUI
 import GoogleGenerativeAI
+import WrkstrmLog
+
+extension Log {
+  /// Logger for GenChatUI conversation flow.
+  static let genChat = Log(
+    system: "GenChatUI",
+    category: "ConversationViewModel",
+    maxExposureLevel: .trace
+  )
+}
 
 @MainActor
 public class ConversationViewModel: ObservableObject {
@@ -46,6 +56,7 @@ public class ConversationViewModel: ObservableObject {
 
   public func sendMessage(_ text: String, streaming: Bool = true) async {
     error = nil
+    Log.genChat.trace("sendMessage streaming=\(streaming) text=\(text)")
     if streaming {
       await internalSendMessageStreaming(text)
     } else {
@@ -83,16 +94,18 @@ public class ConversationViewModel: ObservableObject {
       messages.append(systemMessage)
 
       do {
+        Log.genChat.trace("Sending streaming message: \(text)")
         let responseStream = chat.sendMessageStream(text)
         for try await chunk in responseStream {
           messages[messages.count - 1].pending = false
           if let text = chunk.text {
+            Log.genChat.trace("Received chunk text: \(text)")
             messages[messages.count - 1].message += text
           }
         }
       } catch {
         self.error = error
-        print(error.localizedDescription)
+        Log.genChat.error("Streaming error: \(error.localizedDescription)")
         messages.removeLast()
       }
     }
@@ -116,17 +129,19 @@ public class ConversationViewModel: ObservableObject {
       messages.append(systemMessage)
 
       do {
+        Log.genChat.trace("Sending message: \(text)")
         var response: GenerateContentResponse?
         response = try await chat.sendMessage(text)
 
         if let responseText = response?.text {
+          Log.genChat.trace("Received response text: \(responseText)")
           // replace pending message with backend response
           messages[messages.count - 1].message = responseText
           messages[messages.count - 1].pending = false
         }
       } catch {
         self.error = error
-        print(error.localizedDescription)
+        Log.genChat.error("Error: \(error.localizedDescription)")
         messages.removeLast()
       }
     }

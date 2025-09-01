@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import Foundation
+import WrkstrmLog
 
 #if canImport(OSLog)
 import OSLog
@@ -52,4 +53,13 @@ enum Logging {
   static let `default` = DummyLogger()
   static let verbose = DummyLogger()
   #endif
+}
+
+extension Log {
+  /// Logger for core GoogleGenerativeAI operations.
+  static let genAI = Log(
+    system: Logging.subsystem,
+    category: "GenerativeAI",
+    maxExposureLevel: .trace
+  )
 }
