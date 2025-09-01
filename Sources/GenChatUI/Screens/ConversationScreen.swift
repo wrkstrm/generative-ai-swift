@@ -81,6 +81,25 @@ public struct ConversationScreen: View {
       .focused($focusedField, equals: .message)
     }
     .toolbar {
+      ToolbarItem(placement: .navigationBarLeading) {
+        Menu {
+          Button(ConversationViewModel.fallbackModelDisplayName) {
+            viewModel.selectModel(ConversationViewModel.fallbackModelName)
+          }
+          ForEach(
+            viewModel.availableModels.filter {
+              $0.name != ConversationViewModel.fallbackModelName
+            },
+            id: \.name
+          ) { model in
+            Button(model.displayName ?? model.name) {
+              viewModel.selectModel(model.name)
+            }
+          }
+        } label: {
+          Text(viewModel.modelDisplayName)
+        }
+      }
       ToolbarItem(placement: .primaryAction) {
         Button(action: newChat) {
           Image(systemName: "square.and.pencil")
