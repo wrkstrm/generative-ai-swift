@@ -178,8 +178,10 @@ struct GenerativeAIService {
               }
             }
             continuation.finish()
+            return
           } catch {
             continuation.finish(throwing: error)
+            return
           }
         } else {
           // Some endpoints return a JSON array rather than SSE events.
@@ -196,10 +198,14 @@ struct GenerativeAIService {
               continuation.yield(item)
             }
             continuation.finish()
+            return
           } catch {
             continuation.finish(throwing: error)
+            return
           }
         }
+        // Fallback to ensure the continuation is always completed.
+        continuation.finish()
       }
     }
   }
