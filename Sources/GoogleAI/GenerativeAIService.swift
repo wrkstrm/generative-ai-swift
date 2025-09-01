@@ -23,8 +23,11 @@ import FoundationNetworking
 
 extension Log {
   /// A non default logger used for network responses.
-  static let network: Log =
-    .init(system: Logging.subsystem, category: "NetworkResponse")
+  static let network: Log = .init(
+    system: Logging.subsystem,
+    category: "NetworkResponse",
+    maxExposureLevel: .trace
+  )
 }
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
@@ -51,10 +54,25 @@ struct GenerativeAIService {
       encoder: codableClient.json.requestEncoder
     )
 
+    Log.network.trace(
+      "Sending request: \(urlRequest.httpMethod ?? "") \(urlRequest.url?.absoluteString ?? "")"
+    )
+    if let body = urlRequest.httpBody,
+      let bodyString = String(data: body, encoding: .utf8)
+    {
+      Log.network.trace("Request body: \(bodyString)")
+    }
     #if DEBUG
     CURL.printCURLCommand(from: urlRequest, in: self.environment)
     #endif
-    return try await codableClient.send(request)
+    do {
+      let response = try await codableClient.send(request)
+      Log.network.trace("Received response: \(String(describing: response))")
+      return response
+    } catch {
+      Log.network.trace("Request failed: \(error.localizedDescription)")
+      throw error
+    }
   }
 
   #if canImport(Darwin)
@@ -77,7 +95,17 @@ struct GenerativeAIService {
           return
         }
 
+        Log.network.trace(
+          "Streaming request: \(urlRequest.httpMethod ?? "") \(urlRequest.url?.absoluteString ?? "")"
+        )
+        if let body = urlRequest.httpBody,
+          let bodyString = String(data: body, encoding: .utf8)
+        {
+          Log.network.trace("Request body: \(bodyString)")
+        }
+        #if DEBUG
         CURL.printCURLCommand(from: urlRequest, in: self.environment)
+        #endif
 
         let stream: URLSession.AsyncBytes
         let rawResponse: URLResponse
@@ -86,6 +114,7 @@ struct GenerativeAIService {
             for: urlRequest
           )
         } catch {
+          Log.network.trace("Streaming request failed: \(error.localizedDescription)")
           continuation.finish(throwing: error)
           return
         }
@@ -101,6 +130,7 @@ struct GenerativeAIService {
 
         // Verify the status code is 200
         guard response.statusCode.isHTTPOKStatusRange else {
+          Log.network.trace("Streaming response status: \(response.statusCode)")
           Log.network
             .error(
               "[GoogleGenerativeAI] The server responded with an error: \(response)"
