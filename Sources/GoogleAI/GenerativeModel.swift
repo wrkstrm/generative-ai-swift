@@ -287,7 +287,7 @@ public final class GenerativeModel: @unchecked Sendable {
       do {
         response = try await responseIterator.next()
       } catch {
-        Log.genAI.trace("generateContentStream error: \(error.localizedDescription)")
+        Log.genAI.error("generateContentStream error: \(error.localizedDescription)")
         throw GenerativeModel.generateContentError(from: error)
       }
 

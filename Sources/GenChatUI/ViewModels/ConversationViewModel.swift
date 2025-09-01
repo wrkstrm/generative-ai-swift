@@ -105,7 +105,7 @@ public class ConversationViewModel: ObservableObject {
         }
       } catch {
         self.error = error
-        Log.genChat.trace("Streaming error: \(error.localizedDescription)")
+        Log.genChat.error("Streaming error: \(error.localizedDescription)")
         messages.removeLast()
       }
     }
@@ -141,7 +141,7 @@ public class ConversationViewModel: ObservableObject {
         }
       } catch {
         self.error = error
-        Log.genChat.trace("Error: \(error.localizedDescription)")
+        Log.genChat.error("Error: \(error.localizedDescription)")
         messages.removeLast()
       }
     }

@@ -70,7 +70,7 @@ struct GenerativeAIService {
       Log.network.trace("Received response: \(String(describing: response))")
       return response
     } catch {
-      Log.network.trace("Request failed: \(error.localizedDescription)")
+      Log.network.error("Request failed: \(error.localizedDescription)")
       throw error
     }
   }
@@ -114,7 +114,7 @@ struct GenerativeAIService {
             for: urlRequest
           )
         } catch {
-          Log.network.trace("Streaming request failed: \(error.localizedDescription)")
+          Log.network.error("Streaming request failed: \(error.localizedDescription)")
           continuation.finish(throwing: error)
           return
         }
@@ -130,7 +130,6 @@ struct GenerativeAIService {
 
         // Verify the status code is 200
         guard response.statusCode.isHTTPOKStatusRange else {
-          Log.network.trace("Streaming response status: \(response.statusCode)")
           Log.network
             .error(
               "[GoogleGenerativeAI] The server responded with an error: \(response)"
