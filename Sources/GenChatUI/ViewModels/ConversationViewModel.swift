@@ -50,7 +50,8 @@ public class ConversationViewModel: ObservableObject {
   private let apiKey: String
 
   @Published public var availableModels: [ListModels.Model] = []
-  @Published public private(set) var selectedModelName: String
+  @Published public private(set) var selectedModelName: String = ConversationViewModel
+    .fallbackModelName
 
   public static let fallbackModelName = "gemini-1.5-flash-latest"
   public static let fallbackModelDisplayName = "Gemini 1.5 Flash"
@@ -59,7 +60,7 @@ public class ConversationViewModel: ObservableObject {
     self.apiKey = apiKey
     selectedModelName = Self.fallbackModelName
     model = GenerativeModel(
-      name: selectedModelName,
+      name: ConversationViewModel.fallbackModelName,
       apiKey: apiKey,
       systemInstruction: "Have a nice chat."
     )
@@ -82,7 +83,8 @@ public class ConversationViewModel: ObservableObject {
     guard selectedModelName != name else { return }
     let chosenName: String
     if name == Self.fallbackModelName
-      || availableModels.contains(where: { $0.name == name }) {
+      || availableModels.contains(where: { $0.name == name })
+    {
       chosenName = name
     } else {
       chosenName = Self.fallbackModelName
