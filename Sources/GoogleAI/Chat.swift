@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import Foundation
+import WrkstrmLog
 
 /// An object that represents a back-and-forth chat with a model, capturing the history and saving
 /// the context in memory between each message sent.
@@ -63,11 +64,15 @@ public class Chat {
       }
       throw GenerateContentError.promptImageContentError(underlying: contentError)
     }
+    Log.genAI.trace("sendMessage request: \(newContent)")
     // Create local copies to avoid crossing actor boundaries with non-Sendable self.model
     let localModel = model
     let localRequest = request
 
     let result = try await localModel.generateContent(localRequest)
+    Log.genAI.trace(
+      "sendMessage response: \(String(describing: result.candidates.first?.content))"
+    )
 
     guard let reply = result.candidates.first?.content else {
       let error = NSError(
@@ -130,6 +135,7 @@ public class Chat {
         continuation.finish(throwing: error)
       }
     }
+    Log.genAI.trace("sendMessageStream request: \(newContent)")
     let localModel = model
 
     return AsyncThrowingStream { continuation in
@@ -140,6 +146,7 @@ public class Chat {
           for try await chunk in stream {
             if let chunkContent = chunk.candidates.first?.content {
               localAggregatedContent.append(chunkContent)
+              Log.genAI.trace("sendMessageStream chunk: \(chunkContent)")
             }
             // Yield on MainActor to avoid data race with non-Sendable type
             let safeChunk = chunk
@@ -148,6 +155,7 @@ public class Chat {
             }
           }
         } catch {
+          Log.genAI.trace("sendMessageStream error: \(error.localizedDescription)")
           continuation.finish(throwing: error)
           return
         }

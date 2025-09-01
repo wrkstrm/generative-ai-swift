@@ -826,6 +826,23 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
     XCTAssertEqual(responses, 1)
   }
 
+  func testGenerateContentStream_successJsonArray() async throws {
+    MockURLProtocol
+      .requestHandler = try httpRequestHandler(
+        forResource: "streaming-success-json-array-basic-reply",
+        withExtension: "json",
+      )
+
+    var responses = 0
+    let stream = model.generateContentStream("Hi")
+    for try await content in stream {
+      XCTAssertNotNil(content.text)
+      responses += 1
+    }
+
+    XCTAssertEqual(responses, 2)
+  }
+
   func testGenerateContentStream_successUnknownSafetyEnum() async throws {
     MockURLProtocol
       .requestHandler = try httpRequestHandler(

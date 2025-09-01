@@ -88,6 +88,7 @@ public struct ConversationScreen: View {
       }
     }
     .navigationTitle("Chat sample")
+    .navigationBarTitleDisplayMode(.inline)
     .onAppear {
       focusedField = .message
     }

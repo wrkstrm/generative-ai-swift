@@ -23,8 +23,11 @@ import FoundationNetworking
 
 extension Log {
   /// A non default logger used for network responses.
-  static let network: Log =
-    .init(system: Logging.subsystem, category: "NetworkResponse")
+  static let network: Log = .init(
+    system: Logging.subsystem,
+    category: "NetworkResponse",
+    maxExposureLevel: .trace
+  )
 }
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
@@ -51,10 +54,25 @@ struct GenerativeAIService {
       encoder: codableClient.json.requestEncoder
     )
 
+    Log.network.trace(
+      "Sending request: \(urlRequest.httpMethod ?? "") \(urlRequest.url?.absoluteString ?? "")"
+    )
+    if let body = urlRequest.httpBody,
+      let bodyString = String(data: body, encoding: .utf8)
+    {
+      Log.network.trace("Request body: \(bodyString)")
+    }
     #if DEBUG
     CURL.printCURLCommand(from: urlRequest, in: self.environment)
     #endif
-    return try await codableClient.send(request)
+    do {
+      let response = try await codableClient.send(request)
+      Log.network.trace("Received response: \(String(describing: response))")
+      return response
+    } catch {
+      Log.network.trace("Request failed: \(error.localizedDescription)")
+      throw error
+    }
   }
 
   #if canImport(Darwin)
@@ -77,7 +95,17 @@ struct GenerativeAIService {
           return
         }
 
+        Log.network.trace(
+          "Streaming request: \(urlRequest.httpMethod ?? "") \(urlRequest.url?.absoluteString ?? "")"
+        )
+        if let body = urlRequest.httpBody,
+          let bodyString = String(data: body, encoding: .utf8)
+        {
+          Log.network.trace("Request body: \(bodyString)")
+        }
+        #if DEBUG
         CURL.printCURLCommand(from: urlRequest, in: self.environment)
+        #endif
 
         let stream: URLSession.AsyncBytes
         let rawResponse: URLResponse
@@ -86,6 +114,7 @@ struct GenerativeAIService {
             for: urlRequest
           )
         } catch {
+          Log.network.trace("Streaming request failed: \(error.localizedDescription)")
           continuation.finish(throwing: error)
           return
         }
@@ -101,6 +130,7 @@ struct GenerativeAIService {
 
         // Verify the status code is 200
         guard response.statusCode.isHTTPOKStatusRange else {
+          Log.network.trace("Streaming response status: \(response.statusCode)")
           Log.network
             .error(
               "[GoogleGenerativeAI] The server responded with an error: \(response)"
@@ -118,44 +148,58 @@ struct GenerativeAIService {
           return
         }
 
-        // Received lines that are not server-sent events (SSE); these are not prefixed with "data:"
-        var extraLines = ""
-
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        for try await line in stream.lines {
-          Log.network.verbose("[GoogleGenerativeAI] Stream response: \(line)")
-
-          if line.hasPrefix("data:") {
-            // We can assume 5 characters since it's utf-8 encoded, removing `data:`.
-            let jsonText = String(line.dropFirst(5))
-            let data: Data
-            do {
-              data = try jsonData(jsonText: jsonText)
-            } catch {
-              continuation.finish(throwing: error)
-              return
-            }
-
-            // Handle the content.
-            do {
-              let content = try parseResponse(T.ResponseType.self, from: data)
-              continuation.yield(content)
-            } catch {
-              continuation.finish(throwing: error)
-              return
-            }
-          } else {
-            extraLines += line
-          }
-        }
-
-        if !extraLines.isEmpty {
-          continuation.finish(throwing: parseError(responseBody: extraLines))
+        var linesIterator = stream.lines.makeAsyncIterator()
+        guard let firstLine = try await linesIterator.next() else {
+          continuation.finish()
           return
         }
 
-        continuation.finish(throwing: nil)
+        Log.network.verbose("[GoogleGenerativeAI] Stream response: \(firstLine)")
+
+        if firstLine.hasPrefix("data:") {
+          // Server Sent Events (SSE) stream.
+          let decoder = JSONDecoder()
+          decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+          func handle(line: String) throws {
+            // We can assume 5 characters since it's utf-8 encoded, removing `data:`.
+            let jsonText = String(line.dropFirst(5))
+            let data = try jsonData(jsonText: jsonText)
+            let content = try parseResponse(T.ResponseType.self, from: data)
+            continuation.yield(content)
+          }
+
+          do {
+            try handle(line: firstLine)
+            while let line = try await linesIterator.next() {
+              Log.network.verbose("[GoogleGenerativeAI] Stream response: \(line)")
+              if line.hasPrefix("data:") {
+                try handle(line: line)
+              }
+            }
+            continuation.finish()
+          } catch {
+            continuation.finish(throwing: error)
+          }
+        } else {
+          // Some endpoints return a JSON array rather than SSE events.
+          var body = firstLine + "\n"
+          while let line = try await linesIterator.next() {
+            Log.network.verbose("[GoogleGenerativeAI] Stream response: \(line)")
+            body += line + "\n"
+          }
+
+          do {
+            let data = try jsonData(jsonText: body)
+            let items = try JSONDecoder().decode([T.ResponseType].self, from: data)
+            for item in items {
+              continuation.yield(item)
+            }
+            continuation.finish()
+          } catch {
+            continuation.finish(throwing: error)
+          }
+        }
       }
     }
   }
