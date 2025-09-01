@@ -17,6 +17,7 @@ import Foundation
 import SwiftUI
 import GoogleGenerativeAI
 import WrkstrmLog
+import WrkstrmNetworking
 
 extension Log {
   /// Logger for GenChatUI conversation flow.
@@ -46,12 +47,72 @@ public class ConversationViewModel: ObservableObject {
 
   private var chatTask: Task<Void, Never>?
 
+  private let apiKey: String
+
+  @Published public var availableModels: [ListModels.Model] = []
+  @Published public private(set) var selectedModelName: String = ConversationViewModel
+    .fallbackModelName
+
+  public static let fallbackModelName = "gemini-1.5-flash-latest"
+  public static let fallbackModelDisplayName = "Gemini 1.5 Flash"
+
   public init(apiKey: String) {
+    self.apiKey = apiKey
+    selectedModelName = Self.fallbackModelName
     model = GenerativeModel(
-      name: "gemini-1.5-flash-latest",
+      name: ConversationViewModel.fallbackModelName,
       apiKey: apiKey,
-      systemInstruction: "Have a nice chat.")
+      systemInstruction: "Have a nice chat."
+    )
     chat = model.startChat()
+
+    Task {
+      await loadModels()
+    }
+  }
+
+  public var modelDisplayName: String {
+    if selectedModelName == Self.fallbackModelName {
+      return Self.fallbackModelDisplayName
+    }
+    return availableModels.first { $0.name == selectedModelName }?.displayName
+      ?? selectedModelName
+  }
+
+  public func selectModel(_ name: String) {
+    guard selectedModelName != name else { return }
+    let chosenName: String
+    if name == Self.fallbackModelName
+      || availableModels.contains(where: { $0.name == name })
+    {
+      chosenName = name
+    } else {
+      chosenName = Self.fallbackModelName
+    }
+    selectedModelName = chosenName
+    model = GenerativeModel(
+      name: chosenName,
+      apiKey: apiKey,
+      systemInstruction: "Have a nice chat."
+    )
+    chat = model.startChat()
+    messages.removeAll()
+  }
+
+  private func loadModels() async {
+    do {
+      let environment = AI.GoogleGenAI.Environment.betaEnv(with: apiKey)
+      let client = HTTP.CodableClient(
+        environment: environment,
+        json: (.snakecase, .snakecase)
+      )
+      let response = try await client.send(
+        ListModels.Request(options: HTTP.Request.Options())
+      )
+      availableModels = response.models
+    } catch {
+      Log.genChat.error("Failed to load models: \(error.localizedDescription)")
+    }
   }
 
   public func sendMessage(_ text: String, streaming: Bool = true) async {
