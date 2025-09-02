@@ -101,9 +101,7 @@ public struct ConversationScreen: View {
         }
       }
       ToolbarItem(placement: .primaryAction) {
-        Button(action: newChat) {
-          Image(systemName: "square.and.pencil")
-        }
+        Button("Clear", action: clearChat)
       }
     }
     .navigationTitle("Chat sample")
@@ -133,7 +131,7 @@ public struct ConversationScreen: View {
     }
   }
 
-  private func newChat() {
+  private func clearChat() {
     viewModel.startNewChat()
   }
 }

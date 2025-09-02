@@ -16,6 +16,13 @@ public struct ChatScreen: View {
         }
       }
       .navigationTitle("Chats")
+      .toolbar {
+        ToolbarItem(placement: .primaryAction) {
+          Button(action: viewModel.newChat) {
+            Label("New Chat", systemImage: "square.and.pencil")
+          }
+        }
+      }
       .onAppear {
         if viewModel.selectedChat == nil {
           viewModel.selectedChat = viewModel.chats.first
@@ -27,13 +34,6 @@ public struct ChatScreen: View {
           .environmentObject(conversationViewModel)
       } else {
         Text("Select a chat")
-      }
-    }
-    .toolbar {
-      ToolbarItem(placement: .primaryAction) {
-        Button(action: viewModel.newChat) {
-          Label("New Chat", systemImage: "square.and.pencil")
-        }
       }
     }
   }
