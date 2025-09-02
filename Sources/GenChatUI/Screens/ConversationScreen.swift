@@ -22,6 +22,9 @@ public struct ConversationScreen: View {
   public var viewModel: ConversationViewModel
 
   @State private var userPrompt = ""
+  @State private var selectedModel = ConversationViewModel.fallbackModelName
+  @State private var pendingModel: String?
+  @State private var showModelSwitchConfirmation = false
 
   public enum FocusedField: Hashable {
     case message
@@ -81,29 +84,45 @@ public struct ConversationScreen: View {
       .focused($focusedField, equals: .message)
     }
     .toolbar {
-      ToolbarItem(placement: .navigationBarLeading) {
-        Menu {
-          Button(ConversationViewModel.fallbackModelDisplayName) {
-            viewModel.selectModel(ConversationViewModel.fallbackModelName)
-          }
+      ToolbarItem(placement: .navigationBarTrailing) {
+        Picker("Model", selection: $selectedModel) {
+          Text(ConversationViewModel.fallbackModelDisplayName)
+            .tag(ConversationViewModel.fallbackModelName)
           ForEach(
             viewModel.availableModels.filter {
               $0.name != ConversationViewModel.fallbackModelName
             },
             id: \.name
           ) { model in
-            Button(model.displayName ?? model.name) {
-              viewModel.selectModel(model.name)
-            }
+            Text(model.displayName ?? model.name)
+              .tag(model.name)
           }
-        } label: {
-          Text(viewModel.modelDisplayName)
+        }
+        .pickerStyle(.menu)
+        .onChange(of: selectedModel) { newValue in
+          guard newValue != viewModel.selectedModelName else { return }
+          pendingModel = newValue
+          showModelSwitchConfirmation = true
         }
       }
+    }
+    .alert("Switch model?", isPresented: $showModelSwitchConfirmation) {
+      Button("Switch", role: .destructive) {
+        if let pending = pendingModel {
+          viewModel.selectModel(pending)
+          selectedModel = pending
+        }
+      }
+      Button("Cancel", role: .cancel) {
+        selectedModel = viewModel.selectedModelName
+      }
+    } message: {
+      Text("Switching models clears the current chat.")
     }
     .navigationTitle("Chat sample")
     .navigationBarTitleDisplayMode(.inline)
     .onAppear {
+      selectedModel = viewModel.selectedModelName
       focusedField = .message
     }
   }
