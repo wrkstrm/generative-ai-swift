@@ -31,16 +31,25 @@ public final class ChatScreenViewModel: ObservableObject {
   }
 
   public func newChat() {
-    let chat = UUID()
-    let viewModel = ConversationViewModel(
-      apiKey: apiKey,
-      availableModels: availableModels,
-      selectedModelName: defaultModelName
-    )
-    conversationViewModels[chat] = viewModel
-    chats.append(chat)
-    sortChatsByCreationDate()
-    selectedChat = chat
+    Task { @MainActor in
+      if availableModels.isEmpty {
+        await loadModels()
+      }
+      guard !availableModels.isEmpty else {
+        Log.genChat.warning("Models not loaded; new chat aborted")
+        return
+      }
+      let chat = UUID()
+      let viewModel = ConversationViewModel(
+        apiKey: apiKey,
+        availableModels: availableModels,
+        selectedModelName: defaultModelName
+      )
+      conversationViewModels[chat] = viewModel
+      chats.append(chat)
+      sortChatsByCreationDate()
+      selectedChat = chat
+    }
   }
 
   public func deleteChats(at offsets: IndexSet) {

@@ -18,15 +18,6 @@ import SwiftUI
 import GoogleGenerativeAI
 import WrkstrmLog
 
-extension Log {
-  /// Logger for GenChatUI conversation flow.
-  static let genChat = Log(
-    system: "GenChatUI",
-    category: "ConversationViewModel",
-    maxExposureLevel: .trace
-  )
-}
-
 @MainActor
 public class ConversationViewModel: ObservableObject {
   /// This array holds both the user's and the system's chat messages

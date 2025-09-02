@@ -36,3 +36,11 @@ date: 2025-09-02
 status: complete
 ```
 Shifted model loading to the screen view model and allowed each chat to select its own model.
+
+```yaml
+id: 2025-09-02-model-loading-guard
+author: ChatGPT
+date: 2025-09-02
+status: complete
+```
+Guarded new chat creation until models load and centralized logging across GenChatUI.
