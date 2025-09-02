@@ -39,6 +39,7 @@ public struct ChatScreen: View {
       if let conversationViewModel = viewModel.currentConversationViewModel {
         ConversationScreen()
           .environmentObject(conversationViewModel)
+          .id(conversationViewModel.id)
       } else {
         Text("Select a chat")
       }

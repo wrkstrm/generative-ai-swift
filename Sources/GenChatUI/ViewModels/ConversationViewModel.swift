@@ -38,6 +38,7 @@ public class ConversationViewModel: ObservableObject {
   private var chatTask: Task<Void, Never>?
 
   private let apiKey: String
+  public let id = UUID()
   public let creationDate: Date
 
   @Published public var availableModels: [ListModels.Model] = []
