@@ -2,49 +2,40 @@
 import SwiftUI
 
 public struct ChatScreen: View {
-  private let apiKey: String
-  @State private var chats: [UUID] = [UUID()]
-  @State private var selectedChat: UUID?
-  @StateObject private var viewModel: ConversationViewModel
+  @StateObject private var viewModel: ChatScreenViewModel
 
   public init(apiKey: String) {
-    self.apiKey = apiKey
-    _viewModel = StateObject(wrappedValue: ConversationViewModel(apiKey: apiKey))
+    _viewModel = StateObject(wrappedValue: ChatScreenViewModel(apiKey: apiKey))
   }
 
   public var body: some View {
     NavigationSplitView {
-      List(chats, id: \.self, selection: $selectedChat) { chat in
-        if let index = chats.firstIndex(of: chat) {
+      List(viewModel.chats, id: \.self, selection: $viewModel.selectedChat) { chat in
+        if let index = viewModel.chats.firstIndex(of: chat) {
           Text("Chat \(index + 1)")
         }
       }
       .navigationTitle("Chats")
-      .toolbar {
-        Button(action: newChat) {
-          Label("New Chat", systemImage: "square.and.pencil")
-        }
-      }
       .onAppear {
-        if selectedChat == nil {
-          selectedChat = chats.first
+        if viewModel.selectedChat == nil {
+          viewModel.selectedChat = viewModel.chats.first
         }
       }
     } detail: {
-      if selectedChat != nil {
+      if let conversationViewModel = viewModel.currentConversationViewModel {
         ConversationScreen()
-          .environmentObject(viewModel)
+          .environmentObject(conversationViewModel)
       } else {
         Text("Select a chat")
       }
     }
-  }
-
-  private func newChat() {
-    let chat = UUID()
-    chats.append(chat)
-    selectedChat = chat
-    viewModel.startNewChat()
+    .toolbar {
+      ToolbarItem(placement: .primaryAction) {
+        Button(action: viewModel.newChat) {
+          Label("New Chat", systemImage: "square.and.pencil")
+        }
+      }
+    }
   }
 }
 
