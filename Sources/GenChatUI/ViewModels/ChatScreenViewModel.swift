@@ -23,6 +23,17 @@ public final class ChatScreenViewModel: ObservableObject {
     conversationViewModels[chat] = ConversationViewModel(apiKey: apiKey)
   }
 
+  public func deleteChats(at offsets: IndexSet) {
+    for index in offsets {
+      let chat = chats.remove(at: index)
+      conversationViewModels.removeValue(forKey: chat)
+    }
+
+    if let selected = selectedChat, !chats.contains(selected) {
+      selectedChat = chats.first
+    }
+  }
+
   public var currentConversationViewModel: ConversationViewModel? {
     selectedChat.flatMap { conversationViewModels[$0] }
   }
