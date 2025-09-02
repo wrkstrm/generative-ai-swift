@@ -28,3 +28,11 @@ status: complete
 ```
 
 Defined a unified standard for agency updates with YAML metadata blocks.
+
+```yaml
+id: 2025-09-02-model-ownership
+author: ChatGPT
+date: 2025-09-02
+status: complete
+```
+Shifted model loading to the screen view model and allowed each chat to select its own model.

@@ -1,11 +1,16 @@
 #if canImport(SwiftUI)
 import SwiftUI
+import GoogleGenerativeAI
+import WrkstrmLog
+import WrkstrmNetworking
 
 @MainActor
 public final class ChatScreenViewModel: ObservableObject {
   @Published public var chats: [UUID]
   @Published public var selectedChat: UUID?
   @Published public var conversationViewModels: [UUID: ConversationViewModel]
+  @Published public var availableModels: [ListModels.Model] = []
+  @Published public var defaultModelName: String = ConversationViewModel.fallbackModelName
   private let apiKey: String
 
   public init(apiKey: String) {
@@ -13,13 +18,25 @@ public final class ChatScreenViewModel: ObservableObject {
     let initialChat = UUID()
     chats = [initialChat]
     selectedChat = initialChat
-    let initialViewModel = ConversationViewModel(apiKey: apiKey)
+    let initialViewModel = ConversationViewModel(
+      apiKey: apiKey,
+      availableModels: availableModels,
+      selectedModelName: defaultModelName
+    )
     conversationViewModels = [initialChat: initialViewModel]
+
+    Task {
+      await loadModels()
+    }
   }
 
   public func newChat() {
     let chat = UUID()
-    let viewModel = ConversationViewModel(apiKey: apiKey)
+    let viewModel = ConversationViewModel(
+      apiKey: apiKey,
+      availableModels: availableModels,
+      selectedModelName: defaultModelName
+    )
     conversationViewModels[chat] = viewModel
     chats.append(chat)
     sortChatsByCreationDate()
@@ -48,6 +65,25 @@ public final class ChatScreenViewModel: ObservableObject {
 
   public var currentConversationViewModel: ConversationViewModel? {
     selectedChat.flatMap { conversationViewModels[$0] }
+  }
+
+  private func loadModels() async {
+    do {
+      let environment = AI.GoogleGenAI.Environment.betaEnv(with: apiKey)
+      let client = HTTP.CodableClient(
+        environment: environment,
+        json: (.snakecase, .snakecase)
+      )
+      let response = try await client.send(
+        ListModels.Request(options: HTTP.Request.Options())
+      )
+      availableModels = response.models
+      for viewModel in conversationViewModels.values {
+        viewModel.availableModels = availableModels
+      }
+    } catch {
+      Log.genChat.error("Failed to load models: \(error.localizedDescription)")
+    }
   }
 }
 #endif

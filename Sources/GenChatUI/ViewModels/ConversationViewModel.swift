@@ -17,7 +17,6 @@ import Foundation
 import SwiftUI
 import GoogleGenerativeAI
 import WrkstrmLog
-import WrkstrmNetworking
 
 extension Log {
   /// Logger for GenChatUI conversation flow.
@@ -58,20 +57,22 @@ public class ConversationViewModel: ObservableObject {
   public static let fallbackModelName = "gemini-1.5-flash-latest"
   public static let fallbackModelDisplayName = "Gemini 1.5 Flash"
 
-  public init(apiKey: String, creationDate: Date = Date()) {
+  public init(
+    apiKey: String,
+    availableModels: [ListModels.Model] = [],
+    selectedModelName: String = ConversationViewModel.fallbackModelName,
+    creationDate: Date = Date()
+  ) {
     self.apiKey = apiKey
     self.creationDate = creationDate
-    selectedModelName = Self.fallbackModelName
+    self.availableModels = availableModels
+    self.selectedModelName = selectedModelName
     model = GenerativeModel(
-      name: ConversationViewModel.fallbackModelName,
+      name: selectedModelName,
       apiKey: apiKey,
-      systemInstruction: "Have a nice chat."
+      systemInstruction: "Have a nice chat.",
     )
     chat = model.startChat()
-
-    Task {
-      await loadModels()
-    }
   }
 
   public var modelDisplayName: String {
@@ -102,21 +103,6 @@ public class ConversationViewModel: ObservableObject {
     messages.removeAll()
   }
 
-  private func loadModels() async {
-    do {
-      let environment = AI.GoogleGenAI.Environment.betaEnv(with: apiKey)
-      let client = HTTP.CodableClient(
-        environment: environment,
-        json: (.snakecase, .snakecase)
-      )
-      let response = try await client.send(
-        ListModels.Request(options: HTTP.Request.Options())
-      )
-      availableModels = response.models
-    } catch {
-      Log.genChat.error("Failed to load models: \(error.localizedDescription)")
-    }
-  }
 
   public func sendMessage(_ text: String, streaming: Bool = true) async {
     error = nil
