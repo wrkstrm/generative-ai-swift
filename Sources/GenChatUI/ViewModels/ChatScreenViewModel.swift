@@ -7,8 +7,8 @@ import WrkstrmNetworking
 @MainActor
 public final class ChatScreenViewModel: ObservableObject {
   @Published public var chats: [UUID]
-  @Published public var selectedChat: UUID?
-  @Published public var conversationViewModels: [UUID: ConversationViewModel]
+  @Published public var selectedChat: UUID? = nil
+  @Published public var conversationViewModels: [UUID: ConversationViewModel] = [:]
   @Published public var availableModels: [ListModels.Model] = []
   @Published public var defaultModelName: String = ConversationViewModel.fallbackModelName
   private let apiKey: String

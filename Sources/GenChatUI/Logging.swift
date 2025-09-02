@@ -31,4 +31,3 @@ extension Log {
     maxExposureLevel: .trace
   )
 }
-

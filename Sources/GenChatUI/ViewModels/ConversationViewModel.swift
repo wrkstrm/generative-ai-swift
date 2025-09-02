@@ -40,7 +40,6 @@ public class ConversationViewModel: ObservableObject {
   private let apiKey: String
   public let creationDate: Date
 
-
   @Published public var availableModels: [ListModels.Model] = []
   @Published public private(set) var selectedModelName: String = ConversationViewModel
     .fallbackModelName
@@ -93,7 +92,6 @@ public class ConversationViewModel: ObservableObject {
     chat = model.startChat()
     messages.removeAll()
   }
-
 
   public func sendMessage(_ text: String, streaming: Bool = true) async {
     error = nil
