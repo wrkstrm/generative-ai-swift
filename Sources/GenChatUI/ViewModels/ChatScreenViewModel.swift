@@ -7,31 +7,29 @@ public final class ChatScreenViewModel: ObservableObject {
   @Published public var selectedChat: UUID?
   @Published public var conversationViewModels: [UUID: ConversationViewModel]
   private let apiKey: String
-  private var chatCreationDates: [UUID: Date] = [:]
 
   public init(apiKey: String) {
     self.apiKey = apiKey
     let initialChat = UUID()
     chats = [initialChat]
     selectedChat = initialChat
-    conversationViewModels = [initialChat: ConversationViewModel(apiKey: apiKey)]
-    chatCreationDates[initialChat] = Date()
+    let initialViewModel = ConversationViewModel(apiKey: apiKey)
+    conversationViewModels = [initialChat: initialViewModel]
   }
 
   public func newChat() {
     let chat = UUID()
+    let viewModel = ConversationViewModel(apiKey: apiKey)
+    conversationViewModels[chat] = viewModel
     chats.append(chat)
-    chatCreationDates[chat] = Date()
     sortChatsByCreationDate()
     selectedChat = chat
-    conversationViewModels[chat] = ConversationViewModel(apiKey: apiKey)
   }
 
   public func deleteChats(at offsets: IndexSet) {
     for index in offsets.sorted(by: >) {
       let chat = chats.remove(at: index)
       conversationViewModels.removeValue(forKey: chat)
-      chatCreationDates.removeValue(forKey: chat)
     }
     sortChatsByCreationDate()
 
@@ -41,7 +39,11 @@ public final class ChatScreenViewModel: ObservableObject {
   }
 
   private func sortChatsByCreationDate() {
-    chats.sort { (chatCreationDates[$0] ?? .distantPast) < (chatCreationDates[$1] ?? .distantPast) }
+    chats.sort {
+      let date0 = conversationViewModels[$0]?.creationDate ?? .distantPast
+      let date1 = conversationViewModels[$1]?.creationDate ?? .distantPast
+      return date0 < date1
+    }
   }
 
   public var currentConversationViewModel: ConversationViewModel? {
