@@ -119,7 +119,7 @@ public struct ConversationScreen: View {
     } message: {
       Text("Switching models clears the current chat.")
     }
-    .navigationTitle("Chat sample")
+    .navigationTitle(viewModel.modelDisplayName)
     .navigationBarTitleDisplayMode(.inline)
     .onAppear {
       selectedModel = viewModel.selectedModelName

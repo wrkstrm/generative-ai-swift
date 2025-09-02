@@ -52,3 +52,11 @@ date: 2025-09-02
 status: complete
 ```
 Introduced a chat-level model picker with confirmation before changing models.
+
+```yaml
+id: 2025-09-02-chat-header-model-scope
+author: ChatGPT
+date: 2025-09-02
+status: complete
+```
+Removed duplicate chat titles from conversation headers and scoped model changes to the active chat.
