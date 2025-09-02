@@ -61,6 +61,7 @@ let package = Package(
       dependencies: [
         "GoogleGenerativeAI",
         .product(name: "WrkstrmNetworking", package: "WrkstrmFoundation"),
+        .product(name: "WrkstrmLog", package: "WrkstrmLog"),
         .product(
           name: "MarkdownUI", package: "MarkdownUI",
           condition: .when(platforms: [.iOS, .macOS, .macCatalyst])),
