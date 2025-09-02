@@ -44,3 +44,11 @@ date: 2025-09-02
 status: complete
 ```
 Guarded new chat creation until models load and centralized logging across GenChatUI.
+
+```yaml
+id: 2025-09-02-chat-model-picker
+author: ChatGPT
+date: 2025-09-02
+status: complete
+```
+Introduced a chat-level model picker with confirmation before changing models.
