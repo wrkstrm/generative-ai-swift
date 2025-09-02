@@ -48,6 +48,8 @@ public class ConversationViewModel: ObservableObject {
   private var chatTask: Task<Void, Never>?
 
   private let apiKey: String
+  public let creationDate: Date
+
 
   @Published public var availableModels: [ListModels.Model] = []
   @Published public private(set) var selectedModelName: String = ConversationViewModel
@@ -56,8 +58,9 @@ public class ConversationViewModel: ObservableObject {
   public static let fallbackModelName = "gemini-1.5-flash-latest"
   public static let fallbackModelDisplayName = "Gemini 1.5 Flash"
 
-  public init(apiKey: String) {
+  public init(apiKey: String, creationDate: Date = Date()) {
     self.apiKey = apiKey
+    self.creationDate = creationDate
     selectedModelName = Self.fallbackModelName
     model = GenerativeModel(
       name: ConversationViewModel.fallbackModelName,

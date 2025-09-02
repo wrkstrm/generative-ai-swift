@@ -3,6 +3,7 @@ import SwiftUI
 
 public struct ChatScreen: View {
   @StateObject private var viewModel: ChatScreenViewModel
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
   public init(apiKey: String) {
     _viewModel = StateObject(wrappedValue: ChatScreenViewModel(apiKey: apiKey))
@@ -10,16 +11,22 @@ public struct ChatScreen: View {
 
   public var body: some View {
     NavigationSplitView {
-      List(viewModel.chats, id: \.self, selection: $viewModel.selectedChat) { chat in
-        if let index = viewModel.chats.firstIndex(of: chat) {
-          Text("Chat \(index + 1)")
+      List(selection: $viewModel.selectedChat) {
+        ForEach(viewModel.chats, id: \.self) { chat in
+          if let index = viewModel.chats.firstIndex(of: chat) {
+            Text("Chat \(index + 1)")
+              .tag(chat)
+          }
         }
+        .onDelete(perform: viewModel.deleteChats)
       }
       .navigationTitle("Chats")
       .toolbar {
-        ToolbarItem(placement: .primaryAction) {
-          Button(action: viewModel.newChat) {
-            Label("New Chat", systemImage: "square.and.pencil")
+        if horizontalSizeClass != .compact {
+          ToolbarItem(placement: .primaryAction) {
+            Button(action: viewModel.newChat) {
+              Label("New Chat", systemImage: "square.and.pencil")
+            }
           }
         }
       }
@@ -34,6 +41,15 @@ public struct ChatScreen: View {
           .environmentObject(conversationViewModel)
       } else {
         Text("Select a chat")
+      }
+    }
+    .toolbar {
+      if horizontalSizeClass == .compact {
+        ToolbarItem(placement: .primaryAction) {
+          Button(action: viewModel.newChat) {
+            Label("New Chat", systemImage: "square.and.pencil")
+          }
+        }
       }
     }
   }

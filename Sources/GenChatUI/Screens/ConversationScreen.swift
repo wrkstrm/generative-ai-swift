@@ -100,9 +100,6 @@ public struct ConversationScreen: View {
           Text(viewModel.modelDisplayName)
         }
       }
-      ToolbarItem(placement: .primaryAction) {
-        Button("Clear", action: clearChat)
-      }
     }
     .navigationTitle("Chat sample")
     .navigationBarTitleDisplayMode(.inline)
@@ -131,9 +128,6 @@ public struct ConversationScreen: View {
     }
   }
 
-  private func clearChat() {
-    viewModel.startNewChat()
-  }
 }
 
 struct ConversationScreen_Previews: PreviewProvider {
