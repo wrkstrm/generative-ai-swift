@@ -44,7 +44,7 @@ public final class GenerativeModel: @unchecked Sendable {
   /// Instructions that direct the model to behave a certain way.
   /// NOTE: This is not optional in the latest releases.
   /// TODO: Remove optional system instructions.
-  let systemInstruction: ModelContent?
+  var systemInstruction: ModelContent = try! ModelContent.init(role: "system", "Have a nice chat.")
 
   /// Configuration parameters for sending requests to the backend.
   let requestOptions: HTTP.Request.Options
@@ -109,7 +109,7 @@ public final class GenerativeModel: @unchecked Sendable {
     safetySettings: [SafetySetting]? = nil,
     tools: [Tool]? = nil,
     toolConfig: ToolConfig? = nil,
-    systemInstruction: ModelContent? = nil,
+    systemInstruction: ModelContent,
     requestOptions: HTTP.Request.Options = HTTP.Request.Options(),
   ) {
     modelResourceName = GenerativeModel.modelResourceName(name: name)

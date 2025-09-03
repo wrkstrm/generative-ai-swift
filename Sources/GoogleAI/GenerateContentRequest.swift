@@ -36,6 +36,18 @@ public enum GenerateContent {
     public let isStreaming: Bool
     public let options: HTTP.Request.Options
     public var body: GenerateContent.Request.Body?
+
+    public init(
+      queryItems: [URLQueryItem] = [],
+      isStreaming: Bool,
+      options: HTTP.Request.Options,
+      body: GenerateContent.Request.Body? = nil
+    ) {
+      self.queryItems = queryItems
+      self.isStreaming = isStreaming
+      self.options = options
+      self.body = body
+    }
   }
 }
 
@@ -48,5 +60,23 @@ extension GenerateContent.Request {
     public let tools: [Tool]?
     public let toolConfig: ToolConfig?
     public let systemInstruction: ModelContent?
+
+    public init(
+      model: String,
+      contents: [ModelContent],
+      generationConfig: GenerationConfig?,
+      safetySettings: [SafetySetting]? = nil,
+      tools: [Tool]? = nil,
+      toolConfig: ToolConfig? = nil,
+      systemInstruction: ModelContent,
+    ) {
+      self.model = model
+      self.contents = contents
+      self.generationConfig = generationConfig
+      self.safetySettings = safetySettings
+      self.tools = tools
+      self.toolConfig = toolConfig
+      self.systemInstruction = systemInstruction
+    }
   }
 }
