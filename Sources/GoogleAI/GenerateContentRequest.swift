@@ -38,12 +38,10 @@ public enum GenerateContent {
     public var body: GenerateContent.Request.Body?
 
     public init(
-      queryItems: [URLQueryItem] = [],
       isStreaming: Bool,
       options: HTTP.Request.Options,
       body: GenerateContent.Request.Body? = nil
     ) {
-      self.queryItems = queryItems
       self.isStreaming = isStreaming
       self.options = options
       self.body = body
