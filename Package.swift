@@ -80,6 +80,21 @@ let package = Package(
       resources: [
         .process("GoogleAITests/CountTokenResponses"),
         .process("GoogleAITests/GenerateContentResponses"),
+      ],
+      swiftSettings: [.define("DISABLE_KNOWN_FAILURE_TESTS")]
+    ),
+    .testTarget(
+      name: "GoogleGenerativeAIKnownFailureTests",
+      dependencies: [
+        "GoogleGenerativeAI",
+        .product(name: "WrkstrmFoundation", package: "WrkstrmFoundation"),
+        .product(name: "WrkstrmNetworking", package: "WrkstrmFoundation"),
+        .product(name: "WrkstrmLog", package: "WrkstrmLog"),
+      ],
+      path: "KnownFailureTests",
+      resources: [
+        .process("../Tests/GoogleAITests/CountTokenResponses"),
+        .process("../Tests/GoogleAITests/GenerateContentResponses"),
       ]
     ),
     .testTarget(

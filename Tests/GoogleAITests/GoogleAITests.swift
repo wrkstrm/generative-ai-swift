@@ -197,8 +197,8 @@ final class GoogleGenerativeAITests: XCTestCase {
     #endif
 
     // Chat
-    _ = genAI.startChat()
-    _ = genAI.startChat(history: [ModelContent(parts: "abc")])
+    _ = await MainActor.run { genAI.startChat() }
+    _ = await MainActor.run { genAI.startChat(history: [ModelContent(parts: "abc")]) }
   }
 
   // Public API tests for GenerateContentResponse.

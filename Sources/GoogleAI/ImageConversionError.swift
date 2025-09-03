@@ -9,5 +9,5 @@ public enum ImageConversionError: Error {
   case couldNotAllocateDestination
 
   /// JPEG image data conversion failed.
-  case couldNotConvertToJPEG
+  case couldNotConvertToJPEG(Any)
 }

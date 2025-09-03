@@ -13,18 +13,12 @@
 // limitations under the License.
 
 #if canImport(Darwin)
-import Foundation
-import XCTest
+@preconcurrency import Foundation
+@preconcurrency import XCTest
 
 @available(iOS 15.0, macOS 12.0, macCatalyst 15.0, *)
 class MockURLProtocol: URLProtocol {
-  static var requestHandler:
-    (
-      (URLRequest) throws -> (
-        URLResponse,
-        AsyncLineSequence<URL.AsyncBytes>?
-      )
-    )?
+  nonisolated(unsafe) static var requestHandler: ((URLRequest) -> (URLResponse, [String]))?
 
   override class func canInit(with _: URLRequest) -> Bool { true }
 
@@ -34,34 +28,18 @@ class MockURLProtocol: URLProtocol {
     guard let requestHandler = MockURLProtocol.requestHandler else {
       fatalError("`requestHandler` is nil.")
     }
-    guard let client else {
-      fatalError("`client` is nil.")
-    }
-
-    Task {
-      guard let (response, stream) = try? requestHandler(self.request) else {
-        fatalError("`requestHandler` returned nil.")
+    let req = self.request
+    guard let client = self.client else { fatalError("`client` is nil.") }
+    let (response, lines) = requestHandler(req)
+    client.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+    for line in lines {
+      guard let data = line.data(using: .utf8) else {
+        fatalError("Failed to convert \"\(line)\" to UTF8 data.")
       }
-      client.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-      if let stream {
-        do {
-          for try await line in stream {
-            guard let data = line.data(using: .utf8) else {
-              fatalError("Failed to convert \"\(line)\" to UTF8 data.")
-            }
-            client.urlProtocol(self, didLoad: data)
-            // Add a newline character since AsyncLineSequence strips them when reading line by
-            // line;
-            // without the following, the whole file is delivered as a single line.
-            client.urlProtocol(self, didLoad: "\n".data(using: .utf8)!)
-          }
-        } catch {
-          client.urlProtocol(self, didFailWithError: error)
-          XCTFail("Unexpected failure reading lines from stream: \(error.localizedDescription)")
-        }
-      }
-      client.urlProtocolDidFinishLoading(self)
+      client.urlProtocol(self, didLoad: data)
+      client.urlProtocol(self, didLoad: "\n".data(using: .utf8)!)
     }
+    client.urlProtocolDidFinishLoading(self)
   }
 
   override func stopLoading() {}

@@ -46,26 +46,33 @@ final class ChatTests: XCTestCase {
         httpVersion: nil,
         headerFields: nil,
       )!
-      return (response, fileURL.lines)
+      let contents = (try? String(contentsOf: fileURL)) ?? ""
+      let lines = contents.split(separator: "\n", omittingEmptySubsequences: false)
+        .map(String.init)
+      return (response, lines)
     }
 
     let model = GenerativeModel(name: "my-model", apiKey: "API_KEY", urlSession: urlSession)
-    let chat = Chat(model: model, history: [])
+    let chat = await MainActor.run { Chat(model: model, history: []) }
     let input = "Test input"
-    let stream = chat.sendMessageStream(input)
+    let stream = await MainActor.run { chat.sendMessageStream(input) }
 
     // Ensure the values are parsed correctly
     for try await value in stream {
       XCTAssertNotNil(value.text)
     }
 
-    XCTAssertEqual(chat.history.count, 2)
-    XCTAssertEqual(chat.history[0].parts[0].text, input)
+    await MainActor.run {
+      XCTAssertEqual(chat.history.count, 2)
+      XCTAssertEqual(chat.history[0].parts[0].text, input)
+    }
 
     let finalText = "1 2 3 4 5 6 7 8 9 10"
     let assembledExpectation = ModelContent(role: "model", parts: finalText)
-    XCTAssertEqual(chat.history[0].parts[0].text, input)
-    XCTAssertEqual(chat.history[1], assembledExpectation)
+    await MainActor.run {
+      XCTAssertEqual(chat.history[0].parts[0].text, input)
+      XCTAssertEqual(chat.history[1], assembledExpectation)
+    }
   }
 }
 #endif

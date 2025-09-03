@@ -83,19 +83,18 @@ public struct ConversationScreen: View {
       )
       .focused($focusedField, equals: .message)
     }
+    #if canImport(UIKit)
     .toolbar {
       ToolbarItem(placement: .navigationBarTrailing) {
         Picker("Model", selection: $selectedModel) {
           Text(ConversationViewModel.fallbackModelDisplayName)
-            .tag(ConversationViewModel.fallbackModelName)
+          .tag(ConversationViewModel.fallbackModelName)
           ForEach(
-            viewModel.availableModels.filter {
-              $0.name != ConversationViewModel.fallbackModelName
-            },
+            viewModel.availableModels.filter { $0.name != ConversationViewModel.fallbackModelName },
             id: \.name
           ) { model in
             Text(model.displayName ?? model.name)
-              .tag(model.name)
+            .tag(model.name)
           }
         }
         .pickerStyle(.menu)
@@ -106,6 +105,29 @@ public struct ConversationScreen: View {
         }
       }
     }
+    #else
+    .toolbar {
+      ToolbarItem(placement: .automatic) {
+        Picker("Model", selection: $selectedModel) {
+          Text(ConversationViewModel.fallbackModelDisplayName)
+          .tag(ConversationViewModel.fallbackModelName)
+          ForEach(
+            viewModel.availableModels.filter { $0.name != ConversationViewModel.fallbackModelName },
+            id: \.name
+          ) { model in
+            Text(model.displayName ?? model.name)
+            .tag(model.name)
+          }
+        }
+        .pickerStyle(.menu)
+        .onChange(of: selectedModel) { newValue in
+          guard newValue != viewModel.selectedModelName else { return }
+          pendingModel = newValue
+          showModelSwitchConfirmation = true
+        }
+      }
+    }
+    #endif
     .alert("Switch model?", isPresented: $showModelSwitchConfirmation) {
       Button("Switch", role: .destructive) {
         if let pending = pendingModel {
@@ -120,7 +142,9 @@ public struct ConversationScreen: View {
       Text("Switching models clears the current chat.")
     }
     .navigationTitle(viewModel.modelDisplayName)
+    #if canImport(UIKit)
     .navigationBarTitleDisplayMode(.inline)
+    #endif
     .onAppear {
       selectedModel = viewModel.selectedModelName
       focusedField = .message

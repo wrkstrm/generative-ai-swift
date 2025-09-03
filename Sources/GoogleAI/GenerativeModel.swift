@@ -27,7 +27,7 @@ public final class GenerativeModel: @unchecked Sendable {
   let modelResourceName: String
 
   /// The backing service responsible for sending and receiving model requests to the backend.
-  let generativeAIService: GenerativeAIService
+  var generativeAIService: GenerativeAIService
 
   /// Configuration parameters used for the MultiModalModel.
   let generationConfig: GenerationConfig?
@@ -102,7 +102,7 @@ public final class GenerativeModel: @unchecked Sendable {
   ///     `ModelContent(role: "system", parts: "You are a cat. Your name is Neko.")`.
   ///   - toolConfig: Tool configuration for any `Tool` specified in the request.
   ///   - requestOptions Configuration parameters for sending requests to the backend.
-  init(
+  public init(
     name: String,
     apiKey: String,
     generationConfig: GenerationConfig? = nil,
@@ -127,6 +127,42 @@ public final class GenerativeModel: @unchecked Sendable {
       `\(Logging.enableArgumentKey)` as a launch argument in Xcode.
       """,
     )
+  }
+
+  /// Convenience initializer allowing a custom URLSession backend (e.g., with URLProtocol).
+  public convenience init(
+    name: String,
+    apiKey: String,
+    generationConfig: GenerationConfig? = nil,
+    safetySettings: [SafetySetting]? = nil,
+    tools: [Tool]? = nil,
+    toolConfig: ToolConfig? = nil,
+    systemInstruction: String...,
+    requestOptions: HTTP.Request.Options = HTTP.Request.Options(),
+    urlSession: URLSession
+  ) {
+    self.init(
+      name: name,
+      apiKey: apiKey,
+      generationConfig: generationConfig,
+      safetySettings: safetySettings,
+      tools: tools,
+      toolConfig: toolConfig,
+      systemInstruction: ModelContent(
+        role: "system",
+        parts: systemInstruction.map { ModelContent.Part.text($0) },
+      ),
+      requestOptions: requestOptions
+    )
+    // Replace service with one configured to use the provided session
+    let env = AI.GoogleGenAI.Environment.betaEnv(with: apiKey)
+    let transport = HTTP.URLSessionTransport(session: urlSession)
+    let client = HTTP.CodableClient(
+      environment: env,
+      json: (.snakecase, .snakecase),
+      transport: transport
+    )
+    self.generativeAIService = GenerativeAIService(environment: env, client: client)
   }
 
   /// Generates content from String and/or image inputs, given to the model as a prompt, that are

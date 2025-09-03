@@ -186,7 +186,9 @@ public struct ErrorDetailsView: View {
         }
       }
       .navigationTitle("Error details")
+      #if canImport(UIKit)
       .navigationBarTitleDisplayMode(.inline)
+      #endif
     }
   }
 }
