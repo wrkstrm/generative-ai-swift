@@ -35,6 +35,7 @@ author: ChatGPT
 date: 2025-09-02
 status: complete
 ```
+
 Shifted model loading to the screen view model and allowed each chat to select its own model.
 
 ```yaml
@@ -43,6 +44,7 @@ author: ChatGPT
 date: 2025-09-02
 status: complete
 ```
+
 Guarded new chat creation until models load and centralized logging across GenChatUI.
 
 ```yaml
@@ -51,6 +53,7 @@ author: ChatGPT
 date: 2025-09-02
 status: complete
 ```
+
 Introduced a chat-level model picker with confirmation before changing models.
 
 ```yaml
@@ -59,4 +62,5 @@ author: ChatGPT
 date: 2025-09-02
 status: complete
 ```
+
 Removed duplicate chat titles from conversation headers and scoped model changes to the active chat.

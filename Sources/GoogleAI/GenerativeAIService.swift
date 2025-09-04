@@ -35,7 +35,7 @@ struct GenerativeAIService {
   var codableClient: HTTP.CodableClient
 
   var environment: any WrkstrmNetworking.HTTP.Environment
-  private let streamExecutor: HTTP.StreamExecutor
+  private let sseExecutor: HTTP.SSEExecutor
 
   init(environment: AI.GoogleGenAI.Environment) {
     self.environment = environment
@@ -43,15 +43,15 @@ struct GenerativeAIService {
     configuration.httpAdditionalHeaders = environment.headers
     codableClient = HTTP.CodableClient(
       environment: environment,
-      json: (.snakecase, .snakecase)
+      json: (.commonDateFormatting, .commonDateParsing)
     )
-    streamExecutor = HTTP.StreamExecutor(environment: environment, session: codableClient.session)
+    sseExecutor = HTTP.SSEExecutor(environment: environment, session: codableClient.session)
   }
 
   init(environment: AI.GoogleGenAI.Environment, client: HTTP.CodableClient) {
     self.environment = environment
     self.codableClient = client
-    self.streamExecutor = HTTP.StreamExecutor(environment: environment, session: client.session)
+    self.sseExecutor = HTTP.SSEExecutor(environment: environment, session: client.session)
   }
 
   func loadRequest<T: HTTP.CodableURLRequest>(request: T) async throws
@@ -135,7 +135,7 @@ struct GenerativeAIService {
 
         let decoder = await self.codableClient.json.responseDecoder
         let stream: AsyncThrowingStream<T.ResponseType, Error> =
-          self.streamExecutor.sseJSONStream(request: urlRequest, decoder: decoder)
+          self.sseExecutor.sseJSONStream(request: urlRequest, decoder: decoder)
 
         do {
           for try await item in stream { continuation.yield(item) }
@@ -195,7 +195,7 @@ struct GenerativeAIService {
 
   private func parseError(responseData: Data) -> Error {
     do {
-      return try JSONDecoder().decode(RPCError.self, from: responseData)
+      return try JSONDecoder.commonDateParsing.decode(RPCError.self, from: responseData)
     } catch {
       // TODO: Return an error about an unrecognized error payload with the response body
       return error
@@ -206,7 +206,7 @@ struct GenerativeAIService {
     throws -> T
   {
     do {
-      return try JSONDecoder().decode(type, from: data)
+      return try JSONDecoder.commonDateParsing.decode(type, from: data)
     } catch {
       if let json = String(data: data, encoding: .utf8) {
         Log.network.error("[GoogleGenerativeAI] JSON response: \(json)")

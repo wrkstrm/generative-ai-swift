@@ -76,5 +76,7 @@ extension GenerateContent.Request {
       self.toolConfig = toolConfig
       self.systemInstruction = systemInstruction
     }
+
+    // Default camelCase keys match API expectations; no custom CodingKeys needed.
   }
 }

@@ -14,7 +14,7 @@
 
 #if canImport(SwiftUI)
 import SwiftUI
-import GoogleGenerativeAI
+import CommonAI
 
 public struct ConversationScreen: View {
 
@@ -93,8 +93,7 @@ public struct ConversationScreen: View {
             viewModel.availableModels.filter { $0.name != ConversationViewModel.fallbackModelName },
             id: \.name
           ) { model in
-            Text(model.displayName ?? model.name)
-            .tag(model.name)
+            Text(model.displayName ?? model.name).tag(model.name)
           }
         }
         .pickerStyle(.menu)
@@ -115,8 +114,7 @@ public struct ConversationScreen: View {
             viewModel.availableModels.filter { $0.name != ConversationViewModel.fallbackModelName },
             id: \.name
           ) { model in
-            Text(model.displayName ?? model.name)
-            .tag(model.name)
+            Text(model.displayName ?? model.name).tag(model.name)
           }
         }
         .pickerStyle(.menu)
@@ -175,7 +173,7 @@ public struct ConversationScreen: View {
 
 struct ConversationScreen_Previews: PreviewProvider {
   struct ContainerView: View {
-    @StateObject var viewModel = ConversationViewModel(apiKey: "")
+    @StateObject var viewModel = ConversationViewModel(service: GoogleCommonAIService(apiKey: ""))
 
     var body: some View {
       ConversationScreen()

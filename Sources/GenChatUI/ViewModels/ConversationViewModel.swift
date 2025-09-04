@@ -15,7 +15,7 @@
 #if canImport(SwiftUI)
 import Foundation
 import SwiftUI
-import GoogleGenerativeAI
+import CommonAI
 import WrkstrmLog
 
 @MainActor
@@ -31,17 +31,17 @@ public class ConversationViewModel: ObservableObject {
     error != nil
   }
 
-  private var model: GenerativeModel
-  private var chat: Chat
+  private var model: (any CommonAIModel)
+  private var chat: (any CommonAIChat)
   private var stopGenerating = false
 
   private var chatTask: Task<Void, Never>?
 
-  private let apiKey: String
+  private let service: any CommonAIService
   public let id = UUID()
   public let creationDate: Date
 
-  @Published public var availableModels: [ListModels.Model] = []
+  @Published public var availableModels: [CAIModelInfo] = []
   @Published public private(set) var selectedModelName: String = ConversationViewModel
     .fallbackModelName
 
@@ -49,21 +49,33 @@ public class ConversationViewModel: ObservableObject {
   public static let fallbackModelDisplayName = "Gemini 1.5 Flash"
 
   public init(
-    apiKey: String,
-    availableModels: [ListModels.Model] = [],
+    service: any CommonAIService,
+    availableModels: [CAIModelInfo] = [],
     selectedModelName: String = ConversationViewModel.fallbackModelName,
     creationDate: Date = Date()
   ) {
-    self.apiKey = apiKey
+    self.service = service
     self.creationDate = creationDate
     self.availableModels = availableModels
     self.selectedModelName = selectedModelName
-    model = GenerativeModel(
-      name: selectedModelName,
-      apiKey: apiKey,
-      systemInstruction: "Have a nice chat.",
+    model = service.model(named: selectedModelName)
+    chat = model.startChat(history: [.system("Have a nice chat.")])
+  }
+
+  // Convenience: construct with a Google API Key without exposing CommonAI in app code
+  public convenience init(
+    googleAPIKey: String,
+    availableModels: [CAIModelInfo] = [],
+    selectedModelName: String = ConversationViewModel.fallbackModelName,
+    creationDate: Date = Date()
+  ) {
+    let service = GoogleCommonAIService(apiKey: googleAPIKey)
+    self.init(
+      service: service,
+      availableModels: availableModels,
+      selectedModelName: selectedModelName,
+      creationDate: creationDate
     )
-    chat = model.startChat()
   }
 
   public var modelDisplayName: String {
@@ -85,12 +97,8 @@ public class ConversationViewModel: ObservableObject {
       chosenName = Self.fallbackModelName
     }
     selectedModelName = chosenName
-    model = GenerativeModel(
-      name: chosenName,
-      apiKey: apiKey,
-      systemInstruction: "Have a nice chat."
-    )
-    chat = model.startChat()
+    model = service.model(named: chosenName)
+    chat = model.startChat(history: [.system("Have a nice chat.")])
     messages.removeAll()
   }
 
@@ -107,7 +115,7 @@ public class ConversationViewModel: ObservableObject {
   public func startNewChat() {
     stop()
     error = nil
-    chat = model.startChat()
+    chat = model.startChat(history: [.system("Have a nice chat.")])
     messages.removeAll()
   }
 
@@ -135,14 +143,18 @@ public class ConversationViewModel: ObservableObject {
 
       do {
         Log.genChat.trace("Sending streaming message: \(text)")
-        let responseStream = chat.sendMessageStream(text)
+        #if canImport(Darwin)
+        let responseStream = chat.sendStream([.user(text)])
         for try await chunk in responseStream {
           messages[messages.count - 1].pending = false
-          if let text = chunk.text {
-            Log.genChat.trace("Received chunk text: \(text)")
-            messages[messages.count - 1].message += text
-          }
+          Log.genChat.trace("Received chunk text: \(chunk.text)")
+          messages[messages.count - 1].message += chunk.text
         }
+        #else
+        let msg = try await chat.send([.user(text)])
+        messages[messages.count - 1].pending = false
+        messages[messages.count - 1].message = msg.text
+        #endif
       } catch {
         self.error = error
         Log.genChat.error("Streaming error: \(error.localizedDescription)")
@@ -170,15 +182,11 @@ public class ConversationViewModel: ObservableObject {
 
       do {
         Log.genChat.trace("Sending message: \(text)")
-        var response: GenerateContentResponse?
-        response = try await chat.sendMessage(text)
-
-        if let responseText = response?.text {
-          Log.genChat.trace("Received response text: \(responseText)")
-          // replace pending message with backend response
-          messages[messages.count - 1].message = responseText
-          messages[messages.count - 1].pending = false
-        }
+        let response = try await chat.send([.user(text)])
+        Log.genChat.trace("Received response text: \(response.text)")
+        // replace pending message with backend response
+        messages[messages.count - 1].message = response.text
+        messages[messages.count - 1].pending = false
       } catch {
         self.error = error
         Log.genChat.error("Error: \(error.localizedDescription)")

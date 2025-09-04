@@ -448,6 +448,24 @@ public final class GenerativeModel: @unchecked Sendable {
       error.isUnsupportedUserLocationError()
     {
       return GenerateContentError.unsupportedUserLocation
+    } else if let clientError = error as? HTTP.ClientError {
+      switch clientError {
+      case .networkError(let underlying):
+        // If the underlying error carries a JSON payload in its description, attempt to decode it
+        if let data = underlying.localizedDescription.data(using: .utf8),
+          let rpc = try? JSONDecoder().decode(RPCError.self, from: data)
+        {
+          if rpc.isInvalidAPIKeyError() {
+            return .invalidAPIKey(message: rpc.message)
+          }
+          if rpc.isUnsupportedUserLocationError() {
+            return .unsupportedUserLocation
+          }
+        }
+        return .internalError(underlying: underlying)
+      default:
+        return .internalError(underlying: clientError)
+      }
     }
     return GenerateContentError.internalError(underlying: error)
   }

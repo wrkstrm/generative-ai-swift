@@ -19,13 +19,11 @@ import PackageDescription
 ConfigurationService.local.dependencies = [
   .package(name: "WrkstrmLog", path: "../WrkstrmLog"),
   .package(name: "WrkstrmFoundation", path: "../WrkstrmFoundation"),
-  .package(url: "https://github.com/gonzalezreal/MarkdownUI.git", from: "2.4.0"),
 ]
 
 ConfigurationService.remote.dependencies = [
   .package(url: "https://github.com/wrkstrm/WrkstrmLog.git", from: "2.0.0"),
   .package(url: "https://github.com/wrkstrm/WrkstrmFoundation.git", from: "2.0.0"),
-  .package(url: "https://github.com/gonzalezreal/MarkdownUI.git", from: "2.4.0"),
 ]
 
 let package = Package(
@@ -39,11 +37,7 @@ let package = Package(
     .library(
       name: "GoogleGenerativeAI",
       targets: ["GoogleGenerativeAI"],
-    ),
-    .library(
-      name: "GenChatUI",
-      targets: ["GenChatUI"],
-    ),
+    )
   ],
   dependencies: ConfigurationService.inject.dependencies,
   targets: [
@@ -55,18 +49,6 @@ let package = Package(
         .product(name: "WrkstrmLog", package: "WrkstrmLog"),
       ],
       path: "Sources/GoogleAI",
-    ),
-    .target(
-      name: "GenChatUI",
-      dependencies: [
-        "GoogleGenerativeAI",
-        .product(name: "WrkstrmNetworking", package: "WrkstrmFoundation"),
-        .product(name: "WrkstrmLog", package: "WrkstrmLog"),
-        .product(
-          name: "MarkdownUI", package: "MarkdownUI",
-          condition: .when(platforms: [.iOS, .macOS, .macCatalyst])),
-      ],
-      path: "Sources/GenChatUI"
     ),
     .testTarget(
       name: "GoogleGenerativeAITests",

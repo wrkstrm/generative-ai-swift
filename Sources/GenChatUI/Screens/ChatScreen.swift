@@ -1,12 +1,17 @@
 #if canImport(SwiftUI)
 import SwiftUI
+import CommonAI
 
 public struct ChatScreen: View {
   @StateObject private var viewModel: ChatScreenViewModel
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
-  public init(apiKey: String) {
-    _viewModel = StateObject(wrappedValue: ChatScreenViewModel(apiKey: apiKey))
+  public init(service: any CommonAIService) {
+    _viewModel = StateObject(wrappedValue: ChatScreenViewModel(service: service))
+  }
+
+  public init(googleAPIKey: String) {
+    self.init(service: GoogleCommonAIService(apiKey: googleAPIKey))
   }
 
   public var body: some View {

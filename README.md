@@ -1,13 +1,9 @@
-# Google AI SDK for Swift
+# Generative AI (Swift) — Slimmed Model SDK
 
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fgoogle-gemini%2Fgenerative-ai-swift%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/google-gemini/generative-ai-swift)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fgoogle-gemini%2Fgenerative-ai-swift%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/google-gemini/generative-ai-swift)
 
-The Google AI SDK for Swift is the easiest way for Swift developers to build with the Gemini API. The
-Gemini API gives you access to Gemini [models](https://ai.google.dev/models/gemini) created by
-[Google DeepMind](https://deepmind.google/technologies/gemini/#introduction). Gemini models are
-built from the ground up to be multimodal, so you can reason seamlessly across text, images, and
-code.
+This repository is a slimmed-down fork focused on model access only. UI layers have been removed and now live under our cross-app Gen UI package. This package exposes the Google Generative AI client (models) without UI.
 
 > [!CAUTION] **The Google AI SDK for Swift is recommended for prototyping only.** If you plan to
 > enable billing, we strongly recommend that you use a backend SDK to access the Google AI Gemini
@@ -30,39 +26,15 @@ code.
    [Swift SDK tutorial](https://ai.google.dev/tutorials/swift_quickstart) on
    [ai.google.dev](https://ai.google.dev).
 
-## Usage example
-
-1. Add [`generative-ai-swift`](https://github.com/google/generative-ai-swift) to your Xcode project
-   using Swift Package Manager.
-
-2. Import the `GoogleGenerativeAI` module
+## Usage
 
 ```swift
 import GoogleGenerativeAI
+
+let model = GenerativeModel(name: "gemini-1.5-flash-latest", apiKey: "<API_KEY>")
+let response = try await model.generateContent("Hello!")
+print(response.text ?? "")
 ```
-
-1. Initialize the model
-
-```swift
-let model = GenerativeModel(name: "gemini-1.5-flash-latest", apiKey: "YOUR_API_KEY")
-```
-
-1. Run a prompt
-
-```swift
-let cookieImage = UIImage(...)
-let prompt = "Do these look store-bought or homemade?"
-
-let response = try await model.generateContent(prompt, cookieImage)
-```
-
-For detailed instructions, you can find a
-[quickstart](https://ai.google.dev/tutorials/swift_quickstart) for the Google AI SDK for Swift in
-the Google documentation.
-
-This quickstart describes how to add your API key and the Swift package to your app, initialize the
-model, and then call the API to access the model. It also describes some additional use cases and
-features, like streaming, counting tokens, and controlling responses.
 
 ## Logging
 
@@ -70,19 +42,20 @@ To enable additional logging in the Xcode console, including a cURL command and 
 for each model request, add `-GoogleGenerativeAIDebugLogEnabled` as `Arguments Passed On Launch` in
 the Xcode scheme.
 
-## Command Line Tool
-
-A command line tool is available to experiment with Gemini model requests via Xcode or the command
-line:
-
-1. `open Examples/GenerativeAICLI/Package.swift`
-1. Run in Xcode and examine the console to see the options.
-1. Edit the scheme's `Arguments Passed On Launch` with the desired options.
 
 ## Documentation
 
 See the [Gemini API Cookbook](https://github.com/google-gemini/gemini-api-cookbook/) or
 [ai.google.dev](https://ai.google.dev) for complete documentation.
+
+## Testing
+
+Tests use the Swift Testing library (`import Testing`) instead of XCTest. Run with `swift test` from
+the package root.
+
+## Scope
+
+- Models and APIs only (GoogleGenerativeAI). No UI or provider-neutral layers here.
 
 ## Contributing
 
