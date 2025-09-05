@@ -42,7 +42,6 @@ To enable additional logging in the Xcode console, including a cURL command and 
 for each model request, add `-GoogleGenerativeAIDebugLogEnabled` as `Arguments Passed On Launch` in
 the Xcode scheme.
 
-
 ## Documentation
 
 See the [Gemini API Cookbook](https://github.com/google-gemini/gemini-api-cookbook/) or
