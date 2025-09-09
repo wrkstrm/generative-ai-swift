@@ -20,7 +20,7 @@ import UIKit
 #endif
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-private func jpegData(from cgImage: CGImage) throws -> Data {
+private func cgImageToJPEGData(_ cgImage: CGImage) throws -> Data {
   #if canImport(ImageIO)
   let data = NSMutableData()
   guard
@@ -49,7 +49,7 @@ private func jpegData(from cgImage: CGImage) throws -> Data {
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 extension CGImage: ThrowingPartsRepresentable {
   public func tryPartsValue() throws -> [ModelContent.Part] {
-    let data = try jpegData(from: self)
+    let data = try cgImageToJPEGData(self)
     return [.jpeg(data)]
   }
 }
@@ -65,7 +65,7 @@ extension CIImage: ThrowingPartsRepresentable {
     guard let cg = context.createCGImage(self, from: extent) else {
       throw ImageConversionError.couldNotConvertToJPEG(self)
     }
-    let data = try jpegData(from: cg)
+    let data = try cgImageToJPEGData(cg)
     return [.jpeg(data)]
   }
 }
@@ -80,7 +80,7 @@ extension NSImage: ThrowingPartsRepresentable {
     // Prefer CGImage extraction
     var rect = CGRect(origin: .zero, size: size)
     if let cg = self.cgImage(forProposedRect: &rect, context: nil, hints: nil) {
-      let data = try jpegData(from: cg)
+      let data = try cgImageToJPEGData(cg)
       return [.jpeg(data)]
     }
     // Validate bitmap reps for empty images
@@ -90,7 +90,7 @@ extension NSImage: ThrowingPartsRepresentable {
     else {
       throw ImageConversionError.invalidUnderlyingImage
     }
-    let data = try jpegData(from: cg)
+    let data = try cgImageToJPEGData(cg)
     return [.jpeg(data)]
   }
 }
@@ -110,7 +110,7 @@ extension UIImage: ThrowingPartsRepresentable {
     else {
       throw ImageConversionError.couldNotConvertToJPEG(self)
     }
-    let data = try jpegData(from: cg)
+    let data = try cgImageToJPEGData(cg)
     return [.jpeg(data)]
   }
 }
