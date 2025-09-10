@@ -60,8 +60,8 @@ let package = Package(
       ],
       path: "Tests",
       resources: [
-        .process("GoogleAITests/CountTokenResponses"),
-        .process("GoogleAITests/GenerateContentResponses"),
+        .process("GoogleAITests/Resources/CountTokenResponses"),
+        .process("GoogleAITests/Resources/GenerateContentResponses"),
       ],
       swiftSettings: [.define("DISABLE_KNOWN_FAILURE_TESTS")]
     ),
@@ -75,8 +75,8 @@ let package = Package(
       ],
       path: "KnownFailureTests",
       resources: [
-        .process("../Tests/GoogleAITests/CountTokenResponses"),
-        .process("../Tests/GoogleAITests/GenerateContentResponses"),
+        .process("../Tests/GoogleAITests/Resources/CountTokenResponses"),
+        .process("../Tests/GoogleAITests/Resources/GenerateContentResponses"),
       ]
     ),
     .testTarget(
