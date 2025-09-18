@@ -159,7 +159,7 @@ public final class GenerativeModel: @unchecked Sendable {
     let transport = HTTP.URLSessionTransport(session: urlSession)
     let client = HTTP.CodableClient(
       environment: env,
-      json: (.snakecase, .snakecase),
+      json: (.commonDateFormatting, .commonDateParsing),
       transport: transport
     )
     self.generativeAIService = GenerativeAIService(environment: env, client: client)

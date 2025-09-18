@@ -59,7 +59,7 @@ struct GenerativeAIService {
   {
     let urlRequest = try await request.asURLRequest(
       with: environment,
-      encoder: codableClient.json.requestEncoder
+      encoder: codableClient.jsonCoding.requestEncoder
     )
 
     Log.network.trace(
@@ -114,7 +114,7 @@ struct GenerativeAIService {
         do {
           urlRequest = try await request.asURLRequest(
             with: environment,
-            encoder: self.codableClient.json.requestEncoder
+            encoder: self.codableClient.jsonCoding.requestEncoder
           )
         } catch {
           continuation.finish(throwing: error)
@@ -133,7 +133,8 @@ struct GenerativeAIService {
         CURL.printCURLCommand(from: urlRequest, in: self.environment)
         #endif
 
-        let decoder = await self.codableClient.json.responseDecoder
+        // Use shared decoder preset for stream decoding
+        let decoder: JSONDecoder = .commonDateParsing
         let stream: AsyncThrowingStream<T.ResponseType, Error> =
           self.sseExecutor.sseJSONStream(request: urlRequest, decoder: decoder)
 
