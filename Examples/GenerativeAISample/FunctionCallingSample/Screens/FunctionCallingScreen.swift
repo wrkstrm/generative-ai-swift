@@ -35,7 +35,7 @@ struct FunctionCallingScreen: View {
       ScrollViewReader { scrollViewProxy in
         List {
           Text(
-            "Interact with a currency conversion API using function calling in Gemini."
+            "Interact with a currency conversion API using function calling in Gemini.",
           )
           ForEach(viewModel.messages) { message in
             MessageView(message: message)
@@ -80,10 +80,10 @@ struct FunctionCallingScreen: View {
         {
           Image(
             systemName: viewModel.busy
-              ? "stop.circle.fill" : "arrow.up.circle.fill"
+              ? "stop.circle.fill" : "arrow.up.circle.fill",
           )
           .font(.title)
-        }
+        },
       )
       .focused($focusedField, equals: .message)
     }

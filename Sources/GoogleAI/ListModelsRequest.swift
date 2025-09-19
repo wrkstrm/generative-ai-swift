@@ -17,8 +17,8 @@ import WrkstrmNetworking
 
 /// Request and response types for the `models.list` endpoint.
 public enum ListModels {
-  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
   /// A request for the list of available models.
+  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
   public struct Request: HTTP.CodableURLRequest, Sendable {
     public typealias ResponseType = ListModels.Response
 
@@ -30,7 +30,7 @@ public enum ListModels {
     public init(
       options: HTTP.Request.Options,
       pageSize: Int? = nil,
-      pageToken: String? = nil
+      pageToken: String? = nil,
     ) {
       self.options = options
       self.pageSize = pageSize
@@ -53,15 +53,15 @@ public enum ListModels {
 }
 
 extension ListModels {
-  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
   /// The response body containing model metadata.
+  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
   public struct Response: Decodable, Sendable {
     public let models: [Model]
     public let nextPageToken: String?
   }
 
-  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
   /// Metadata describing a model returned by `ListModels`.
+  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
   public struct Model: Decodable, Sendable {
     public let name: String
     public let baseModelId: String?

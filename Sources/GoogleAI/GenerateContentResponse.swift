@@ -49,6 +49,7 @@ public struct GenerateContentResponse: Sendable {
       switch part {
       case .text(let text):
         return text
+
       case .executableCode(let executableCode):
         let codeBlockLanguage: String =
           if executableCode.language == "LANGUAGE_UNSPECIFIED" {
@@ -57,11 +58,13 @@ public struct GenerateContentResponse: Sendable {
             executableCode.language.lowercased()
           }
         return "```\(codeBlockLanguage)\n\(executableCode.code)\n```"
+
       case .codeExecutionResult(let codeExecutionResult):
         if codeExecutionResult.output.isEmpty {
           return nil
         }
         return "```\n\(codeExecutionResult.output)\n```"
+
       case .data, .fileData, .functionCall, .functionResponse:
         return nil
       }

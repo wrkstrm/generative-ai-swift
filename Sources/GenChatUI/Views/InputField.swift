@@ -16,7 +16,7 @@ public struct InputField<Label: View>: View {
     _ title: String? = nil,
     text: Binding<String>,
     onSubmit: @escaping () -> Void,
-    @ViewBuilder label: @escaping () -> Label
+    @ViewBuilder label: @escaping () -> Label,
   ) {
     self.title = title
     _text = text
@@ -59,7 +59,7 @@ public struct InputField<Label: View>: View {
       .padding(8)
       .overlay(
         RoundedRectangle(cornerRadius: 8, style: .continuous)
-          .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+          .stroke(Color.secondary.opacity(0.3), lineWidth: 1),
       )
     }
   }
@@ -73,7 +73,7 @@ public struct InputField<Label: View>: View {
       InputField(
         "Message",
         text: $userInput,
-        onSubmit: {}
+        onSubmit: {},
       ) {
         Image(systemName: "arrow.up.circle.fill")
           .font(.title)

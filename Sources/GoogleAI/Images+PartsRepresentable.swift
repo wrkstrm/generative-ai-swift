@@ -26,9 +26,9 @@ private func cgImageToJPEGData(_ cgImage: CGImage) throws -> Data {
   guard
     let dest = CGImageDestinationCreateWithData(
       data as CFMutableData,
-      ((UTType.jpeg.identifier as CFString)),
+      UTType.jpeg.identifier as CFString,
       1,
-      nil
+      nil,
     )
   else {
     throw ImageConversionError.couldNotAllocateDestination
@@ -79,7 +79,7 @@ extension NSImage: ThrowingPartsRepresentable {
   public func tryPartsValue() throws -> [ModelContent.Part] {
     // Prefer CGImage extraction
     var rect = CGRect(origin: .zero, size: size)
-    if let cg = self.cgImage(forProposedRect: &rect, context: nil, hints: nil) {
+    if let cg = cgImage(forProposedRect: &rect, context: nil, hints: nil) {
       let data = try cgImageToJPEGData(cg)
       return [.jpeg(data)]
     }
@@ -104,9 +104,10 @@ extension UIImage: ThrowingPartsRepresentable {
   public func tryPartsValue() throws -> [ModelContent.Part] {
     // If the image cannot produce JPEG data, propagate conversion error with source image
     guard
-      let cg = self.cgImage
+      let cg = cgImage
         ?? CIContext().createCGImage(
-          CIImage(image: self) ?? CIImage(), from: CGRect(origin: .zero, size: size))
+          CIImage(image: self) ?? CIImage(), from: CGRect(origin: .zero, size: size),
+        )
     else {
       throw ImageConversionError.couldNotConvertToJPEG(self)
     }

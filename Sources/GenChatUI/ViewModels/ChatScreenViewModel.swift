@@ -1,12 +1,12 @@
 #if canImport(SwiftUI)
-import SwiftUI
 import CommonAI
+import SwiftUI
 import WrkstrmLog
 
 @MainActor
 public final class ChatScreenViewModel: ObservableObject {
   @Published public var chats: [UUID]
-  @Published public var selectedChat: UUID? = nil
+  @Published public var selectedChat: UUID?
   @Published public var conversationViewModels: [UUID: ConversationViewModel] = [:]
   @Published public var availableModels: [CAIModelInfo] = []
   @Published public var defaultModelName: String = ConversationViewModel.fallbackModelName
@@ -20,7 +20,7 @@ public final class ChatScreenViewModel: ObservableObject {
     let initialViewModel = ConversationViewModel(
       service: service,
       availableModels: availableModels,
-      selectedModelName: defaultModelName
+      selectedModelName: defaultModelName,
     )
     conversationViewModels = [initialChat: initialViewModel]
 
@@ -42,7 +42,7 @@ public final class ChatScreenViewModel: ObservableObject {
       let viewModel = ConversationViewModel(
         service: service,
         availableModels: availableModels,
-        selectedModelName: defaultModelName
+        selectedModelName: defaultModelName,
       )
       conversationViewModels[chat] = viewModel
       chats.append(chat)

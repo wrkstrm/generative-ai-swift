@@ -25,7 +25,7 @@ final class GenerativeModelKnownFailureTests: XCTestCase {
     MockURLProtocol.requestHandler = try httpRequestHandler(
       forResource: "unary-failure-invalid-api-key",
       withExtension: "json",
-      statusCode: 401
+      statusCode: 401,
     )
     do {
       _ = try await model.generateContent("Hello")
@@ -40,7 +40,7 @@ final class GenerativeModelKnownFailureTests: XCTestCase {
     MockURLProtocol.requestHandler = try httpRequestHandler(
       forResource: "unary-failure-unknown-model",
       withExtension: "json",
-      statusCode: 404
+      statusCode: 404,
     )
     await assertFailsGenerate()
   }
@@ -49,7 +49,7 @@ final class GenerativeModelKnownFailureTests: XCTestCase {
     MockURLProtocol.requestHandler = try httpRequestHandler(
       forResource: "unary-failure-unsupported-user-location",
       withExtension: "json",
-      statusCode: 400
+      statusCode: 400,
     )
     await assertFailsGenerate()
   }
@@ -58,7 +58,7 @@ final class GenerativeModelKnownFailureTests: XCTestCase {
     MockURLProtocol.requestHandler = try httpRequestHandler(
       forResource: "unary-failure-image-rejected",
       withExtension: "json",
-      statusCode: 400
+      statusCode: 400,
     )
     await assertFailsGenerate()
   }
@@ -72,7 +72,7 @@ final class GenerativeModelKnownFailureTests: XCTestCase {
     MockURLProtocol.requestHandler = try httpRequestHandler(
       forResource: "streaming-failure-invalid-api-key",
       withExtension: "txt",
-      statusCode: 400
+      statusCode: 400,
     )
     var seenError = false
     let stream = model.generateContentStream("Hello")
@@ -88,7 +88,7 @@ final class GenerativeModelKnownFailureTests: XCTestCase {
     MockURLProtocol.requestHandler = try httpRequestHandler(
       forResource: "streaming-failure-error-mid-stream",
       withExtension: "txt",
-      statusCode: 200
+      statusCode: 200,
     )
     var seenError = false
     let stream = model.generateContentStream("Hello")
@@ -117,7 +117,7 @@ final class GenerativeModelKnownFailureTests: XCTestCase {
         url: request.url!,
         mimeType: nil,
         expectedContentLength: 0,
-        textEncodingName: nil
+        textEncodingName: nil,
       )
       return (response, [])
     }
@@ -127,7 +127,7 @@ final class GenerativeModelKnownFailureTests: XCTestCase {
     forResource name: String,
     withExtension ext: String,
     statusCode: Int = 200,
-    timeout: TimeInterval = RequestOptions().timeout
+    timeout: TimeInterval = RequestOptions().timeout,
   ) throws -> ((URLRequest) -> (URLResponse, [String])) {
     let fileURL = try XCTUnwrap(Bundle.module.url(forResource: name, withExtension: ext))
     return { request in
@@ -138,7 +138,7 @@ final class GenerativeModelKnownFailureTests: XCTestCase {
           url: requestURL,
           statusCode: statusCode,
           httpVersion: nil,
-          headerFields: nil
+          headerFields: nil,
         )! as URLResponse
       let contents = (try? String(contentsOf: fileURL, encoding: .utf8)) ?? ""
       let lines = contents.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
@@ -159,8 +159,8 @@ class MockURLProtocol: URLProtocol {
     guard let requestHandler = Self.requestHandler else {
       fatalError("`requestHandler` is nil.")
     }
-    guard let client = self.client else { fatalError("`client` is nil.") }
-    let (response, lines) = requestHandler(self.request)
+    guard let client else { fatalError("`client` is nil.") }
+    let (response, lines) = requestHandler(request)
     client.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
     for line in lines {
       client.urlProtocol(self, didLoad: line.data(using: .utf8)!)

@@ -1289,7 +1289,7 @@ final class GenerativeModelTests: XCTestCase {  // swiftlint:disable:this type_b
           url: requestURL,
           statusCode: statusCode,
           httpVersion: nil,
-          headerFields: nil
+          headerFields: nil,
         )! as URLResponse
       let contents = (try? String(contentsOf: fileURL, encoding: .utf8)) ?? ""
       let lines = contents.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)

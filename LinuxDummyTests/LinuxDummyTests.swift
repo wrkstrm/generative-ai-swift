@@ -1,6 +1,6 @@
 #if os(Linux)
-import Testing
 @testable import GoogleGenerativeAI
+import Testing
 
 @Suite("Environment Configuration")
 struct EnvironmentConfigurationTests {
@@ -13,7 +13,7 @@ struct EnvironmentConfigurationTests {
     #expect(env.apiVersion == "v1beta")
     #expect(headers["x-goog-api-key"] == "test-key")
     #expect(
-      headers["x-goog-api-client"] == "genai-swift/\(String(describing: env.clientVersion))"
+      headers["x-goog-api-client"] == "genai-swift/\(String(describing: env.clientVersion))",
     )
     #expect(headers["Content-Type"] == "application/json")
   }

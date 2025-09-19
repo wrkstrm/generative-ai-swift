@@ -24,7 +24,7 @@ public struct GenerateContentRequest: Encodable, Sendable {
     toolConfig: ToolConfig?,
     systemInstruction: ModelContent?,
     isStreaming: Bool,
-    options: RequestOptions
+    options: RequestOptions,
   ) {
     self.model = model
     self.contents = contents

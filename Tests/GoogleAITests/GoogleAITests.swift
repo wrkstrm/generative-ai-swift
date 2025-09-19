@@ -223,9 +223,7 @@ final class GoogleGenerativeAITests: XCTestCase {
                                  .png(pngData)
                                 ])]
   
-  
    // Turns into...
-  
   
    let contents = GenAIContent {
      Role("user") {
@@ -234,7 +232,6 @@ final class GoogleGenerativeAITests: XCTestCase {
      }
    }
   
-  
    GenAIContent {
      ForEach(myInput) { input in
        Role(input.role) {
@@ -242,7 +239,6 @@ final class GoogleGenerativeAITests: XCTestCase {
        }
      }
    }
-  
   
    // Thoughts: this looks great from a code demo, but since I assume most content will be
    // user generated, the result builder may not be the best API.

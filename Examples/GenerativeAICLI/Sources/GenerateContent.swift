@@ -68,8 +68,10 @@ struct GenerateContent: AsyncParsableCommand {
         switch imageURL.pathExtension {
         case "jpg", "jpeg":
           mimeType = "image/jpeg"
+
         case "png":
           mimeType = "image/png"
+
         default:
           throw CLIError.unsupportedImageType
         }

@@ -45,19 +45,19 @@ final class PartsRepresentableTests: XCTestCase {
     let modelContent = try image.tryPartsValue()
     XCTAssert(
       !modelContent.isEmpty,
-      "Expected non-empty model content for CGImage: \(image)"
+      "Expected non-empty model content for CGImage: \(image)",
     )
   }
 
   func testModelContentFromCIImageIsNotEmpty() throws {
     let image = CIImage(color: CIColor.red)
       .cropped(
-        to: CGRect(origin: CGPoint.zero, size: CGSize(width: 16, height: 16))
+        to: CGRect(origin: CGPoint.zero, size: CGSize(width: 16, height: 16)),
       )
     let modelContent = try image.tryPartsValue()
     XCTAssert(
       !modelContent.isEmpty,
-      "Expected non-empty model content for CGImage: \(image)"
+      "Expected non-empty model content for CGImage: \(image)",
     )
   }
 
@@ -99,13 +99,13 @@ final class PartsRepresentableTests: XCTestCase {
         // String(describing:) works around a type error.
         XCTAssertEqual(
           String(describing: source),
-          String(describing: image)
+          String(describing: image),
         )
         return
 
       case _:
         XCTFail(
-          "Expected image conversion error, got \(imageError) instead"
+          "Expected image conversion error, got \(imageError) instead",
         )
         return
       }
@@ -118,14 +118,14 @@ final class PartsRepresentableTests: XCTestCase {
       .cropped(
         to: CGRect(
           origin: CGPoint.zero,
-          size: CGSize(width: 16, height: 16)
-        )
+          size: CGSize(width: 16, height: 16),
+        ),
       )
     let image = UIImage(ciImage: coreImage)
     let modelContent = try image.tryPartsValue()
     XCTAssert(
       !modelContent.isEmpty,
-      "Expected non-empty model content for UIImage: \(image)"
+      "Expected non-empty model content for UIImage: \(image)",
     )
   }
   #else
@@ -134,8 +134,8 @@ final class PartsRepresentableTests: XCTestCase {
       .cropped(
         to: CGRect(
           origin: CGPoint.zero,
-          size: CGSize(width: 16, height: 16)
-        )
+          size: CGSize(width: 16, height: 16),
+        ),
       )
     let rep = NSCIImageRep(ciImage: coreImage)
     let image = NSImage(size: rep.size)
@@ -143,7 +143,7 @@ final class PartsRepresentableTests: XCTestCase {
     let modelContent = try image.tryPartsValue()
     XCTAssert(
       !modelContent.isEmpty,
-      "Expected non-empty model content for NSImage: \(image)"
+      "Expected non-empty model content for NSImage: \(image)",
     )
   }
 
@@ -163,7 +163,7 @@ final class PartsRepresentableTests: XCTestCase {
 
       case _:
         XCTFail(
-          "Expected image conversion error, got \(imageError) instead"
+          "Expected image conversion error, got \(imageError) instead",
         )
         return
       }

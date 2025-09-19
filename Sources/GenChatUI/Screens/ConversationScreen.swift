@@ -13,11 +13,10 @@
 // limitations under the License.
 
 #if canImport(SwiftUI)
-import SwiftUI
 import CommonAI
+import SwiftUI
 
 public struct ConversationScreen: View {
-
   @EnvironmentObject
   public var viewModel: ConversationViewModel
 
@@ -76,10 +75,10 @@ public struct ConversationScreen: View {
         label: {
           Image(
             systemName: viewModel.busy
-              ? "stop.circle.fill" : "arrow.up.circle.fill"
+              ? "stop.circle.fill" : "arrow.up.circle.fill",
           )
           .font(.title)
-        }
+        },
       )
       .focused($focusedField, equals: .message)
     }
@@ -91,7 +90,7 @@ public struct ConversationScreen: View {
           .tag(ConversationViewModel.fallbackModelName)
           ForEach(
             viewModel.availableModels.filter { $0.name != ConversationViewModel.fallbackModelName },
-            id: \.name
+            id: \.name,
           ) { model in
             Text(model.displayName ?? model.name).tag(model.name)
           }
@@ -112,7 +111,7 @@ public struct ConversationScreen: View {
           .tag(ConversationViewModel.fallbackModelName)
           ForEach(
             viewModel.availableModels.filter { $0.name != ConversationViewModel.fallbackModelName },
-            id: \.name
+            id: \.name,
           ) { model in
             Text(model.displayName ?? model.name).tag(model.name)
           }
@@ -168,7 +167,6 @@ public struct ConversationScreen: View {
       sendMessage()
     }
   }
-
 }
 
 struct ConversationScreen_Previews: PreviewProvider {

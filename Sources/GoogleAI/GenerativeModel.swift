@@ -44,7 +44,7 @@ public final class GenerativeModel: @unchecked Sendable {
   /// Instructions that direct the model to behave a certain way.
   /// NOTE: This is not optional in the latest releases.
   /// TODO: Remove optional system instructions.
-  var systemInstruction: ModelContent = try! ModelContent.init(role: "system", "Have a nice chat.")
+  var systemInstruction: ModelContent = try! ModelContent(role: "system", "Have a nice chat.")
 
   /// Configuration parameters for sending requests to the backend.
   let requestOptions: HTTP.Request.Options
@@ -139,7 +139,7 @@ public final class GenerativeModel: @unchecked Sendable {
     toolConfig: ToolConfig? = nil,
     systemInstruction: String...,
     requestOptions: HTTP.Request.Options = HTTP.Request.Options(),
-    urlSession: URLSession
+    urlSession: URLSession,
   ) {
     self.init(
       name: name,
@@ -152,7 +152,7 @@ public final class GenerativeModel: @unchecked Sendable {
         role: "system",
         parts: systemInstruction.map { ModelContent.Part.text($0) },
       ),
-      requestOptions: requestOptions
+      requestOptions: requestOptions,
     )
     // Replace service with one configured to use the provided session
     let env = AI.GoogleGenAI.Environment.betaEnv(with: apiKey)
@@ -160,9 +160,9 @@ public final class GenerativeModel: @unchecked Sendable {
     let client = HTTP.CodableClient(
       environment: env,
       json: (.commonDateFormatting, .commonDateParsing),
-      transport: transport
+      transport: transport,
     )
-    self.generativeAIService = GenerativeAIService(environment: env, client: client)
+    generativeAIService = GenerativeAIService(environment: env, client: client)
   }
 
   /// Generates content from String and/or image inputs, given to the model as a prompt, that are
@@ -221,7 +221,7 @@ public final class GenerativeModel: @unchecked Sendable {
         request: generateContentRequest,
       )
       Log.genAI.trace(
-        "generateContent response: \(String(describing: response.candidates.first?.content))"
+        "generateContent response: \(String(describing: response.candidates.first?.content))",
       )
     } catch {
       if let imageError = error as? ImageConversionError {
@@ -334,7 +334,7 @@ public final class GenerativeModel: @unchecked Sendable {
       }
 
       Log.genAI.trace(
-        "generateContentStream chunk: \(String(describing: response.candidates.first?.content))"
+        "generateContentStream chunk: \(String(describing: response.candidates.first?.content))",
       )
       // Check the prompt feedback to see if the prompt was blocked.
       if response.promptFeedback?.blockReason != nil {
@@ -463,6 +463,7 @@ public final class GenerativeModel: @unchecked Sendable {
           }
         }
         return .internalError(underlying: underlying)
+
       default:
         return .internalError(underlying: clientError)
       }

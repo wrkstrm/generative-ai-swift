@@ -63,7 +63,7 @@ let package = Package(
         .process("GoogleAITests/Resources/CountTokenResponses"),
         .process("GoogleAITests/Resources/GenerateContentResponses"),
       ],
-      swiftSettings: [.define("DISABLE_KNOWN_FAILURE_TESTS")]
+      swiftSettings: [.define("DISABLE_KNOWN_FAILURE_TESTS")],
     ),
     .testTarget(
       name: "GoogleGenerativeAIKnownFailureTests",
@@ -77,12 +77,12 @@ let package = Package(
       resources: [
         .process("../Tests/GoogleAITests/Resources/CountTokenResponses"),
         .process("../Tests/GoogleAITests/Resources/GenerateContentResponses"),
-      ]
+      ],
     ),
     .testTarget(
       name: "LinuxDummyTests",
       dependencies: ["GoogleGenerativeAI"],
-      path: "LinuxDummyTests"
+      path: "LinuxDummyTests",
     ),
   ],
 )

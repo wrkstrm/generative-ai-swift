@@ -1,6 +1,6 @@
 #if canImport(SwiftUI)
-import SwiftUI
 import CommonAI
+import SwiftUI
 
 public struct ChatScreen: View {
   @StateObject private var viewModel: ChatScreenViewModel

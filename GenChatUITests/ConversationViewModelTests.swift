@@ -60,7 +60,7 @@ struct DummyService: CommonAIService {
 @Test
 func ConversationVM_SendMessage_AppendsAndReplacesPending() async {
   let vm = await MainActor.run { ConversationViewModel(service: DummyService()) }
-  #expect(vm.messages.count == 0)
+  #expect(vm.messages.isEmpty)
 
   await vm.sendMessage("hello", streaming: false)
   // Expect two messages: user + model

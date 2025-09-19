@@ -13,9 +13,9 @@
 // limitations under the License.
 
 #if canImport(SwiftUI)
+import CommonAI
 import Foundation
 import SwiftUI
-import CommonAI
 import WrkstrmLog
 
 @MainActor
@@ -31,8 +31,8 @@ public class ConversationViewModel: ObservableObject {
     error != nil
   }
 
-  private var model: (any CommonAIModel)
-  private var chat: (any CommonAIChat)
+  private var model: any CommonAIModel
+  private var chat: any CommonAIChat
   private var stopGenerating = false
 
   private var chatTask: Task<Void, Never>?
@@ -52,7 +52,7 @@ public class ConversationViewModel: ObservableObject {
     service: any CommonAIService,
     availableModels: [CAIModelInfo] = [],
     selectedModelName: String = ConversationViewModel.fallbackModelName,
-    creationDate: Date = Date()
+    creationDate: Date = Date(),
   ) {
     self.service = service
     self.creationDate = creationDate
@@ -67,14 +67,14 @@ public class ConversationViewModel: ObservableObject {
     googleAPIKey: String,
     availableModels: [CAIModelInfo] = [],
     selectedModelName: String = ConversationViewModel.fallbackModelName,
-    creationDate: Date = Date()
+    creationDate: Date = Date(),
   ) {
     let service = GoogleCommonAIService(apiKey: googleAPIKey)
     self.init(
       service: service,
       availableModels: availableModels,
       selectedModelName: selectedModelName,
-      creationDate: creationDate
+      creationDate: creationDate,
     )
   }
 
@@ -88,14 +88,14 @@ public class ConversationViewModel: ObservableObject {
 
   public func selectModel(_ name: String) {
     guard selectedModelName != name else { return }
-    let chosenName: String
-    if name == Self.fallbackModelName
-      || availableModels.contains(where: { $0.name == name })
-    {
-      chosenName = name
-    } else {
-      chosenName = Self.fallbackModelName
-    }
+    let chosenName: String =
+      if name == Self.fallbackModelName
+        || availableModels.contains(where: { $0.name == name })
+      {
+        name
+      } else {
+        Self.fallbackModelName
+      }
     selectedModelName = chosenName
     model = service.model(named: chosenName)
     chat = model.startChat(history: [.system("Have a nice chat.")])

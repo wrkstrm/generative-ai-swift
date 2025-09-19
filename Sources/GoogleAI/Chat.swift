@@ -71,7 +71,7 @@ public class Chat {
 
     let result = try await localModel.generateContent(localRequest)
     Log.genAI.trace(
-      "sendMessage response: \(String(describing: result.candidates.first?.content))"
+      "sendMessage response: \(String(describing: result.candidates.first?.content))",
     )
 
     guard let reply = result.candidates.first?.content else {

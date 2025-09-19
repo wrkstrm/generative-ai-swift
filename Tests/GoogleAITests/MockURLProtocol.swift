@@ -28,8 +28,8 @@ class MockURLProtocol: URLProtocol {
     guard let requestHandler = MockURLProtocol.requestHandler else {
       fatalError("`requestHandler` is nil.")
     }
-    let req = self.request
-    guard let client = self.client else { fatalError("`client` is nil.") }
+    let req = request
+    guard let client else { fatalError("`client` is nil.") }
     let (response, lines) = requestHandler(req)
     client.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
     for line in lines {

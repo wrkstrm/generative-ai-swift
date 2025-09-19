@@ -50,6 +50,7 @@ enum Logging {
     func info(_ message: String) {}
     func error(_ message: String) {}
   }
+
   static let `default` = DummyLogger()
   static let verbose = DummyLogger()
   #endif
@@ -60,6 +61,6 @@ extension Log {
   static let genAI = Log(
     system: Logging.subsystem,
     category: "GenerativeAI",
-    maxExposureLevel: .trace
+    maxExposureLevel: .trace,
   )
 }

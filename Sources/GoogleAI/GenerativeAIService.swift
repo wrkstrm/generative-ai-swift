@@ -26,7 +26,7 @@ extension Log {
   static let network: Log = .init(
     system: Logging.subsystem,
     category: "NetworkResponse",
-    maxExposureLevel: .trace
+    maxExposureLevel: .trace,
   )
 }
 
@@ -43,15 +43,15 @@ struct GenerativeAIService {
     configuration.httpAdditionalHeaders = environment.headers
     codableClient = HTTP.CodableClient(
       environment: environment,
-      json: (.commonDateFormatting, .commonDateParsing)
+      json: (.commonDateFormatting, .commonDateParsing),
     )
     sseExecutor = HTTP.SSEExecutor(environment: environment, session: codableClient.session)
   }
 
   init(environment: AI.GoogleGenAI.Environment, client: HTTP.CodableClient) {
     self.environment = environment
-    self.codableClient = client
-    self.sseExecutor = HTTP.SSEExecutor(environment: environment, session: client.session)
+    codableClient = client
+    sseExecutor = HTTP.SSEExecutor(environment: environment, session: client.session)
   }
 
   func loadRequest<T: HTTP.CodableURLRequest>(request: T) async throws
@@ -59,11 +59,11 @@ struct GenerativeAIService {
   {
     let urlRequest = try await request.asURLRequest(
       with: environment,
-      encoder: codableClient.jsonCoding.requestEncoder
+      encoder: codableClient.jsonCoding.requestEncoder,
     )
 
     Log.network.trace(
-      "Sending request: \(urlRequest.httpMethod ?? "") \(urlRequest.url?.absoluteString ?? "")"
+      "Sending request: \(urlRequest.httpMethod ?? "") \(urlRequest.url?.absoluteString ?? "")",
     )
     if let body = urlRequest.httpBody,
       let bodyString = String(data: body, encoding: .utf8)
@@ -71,7 +71,7 @@ struct GenerativeAIService {
       Log.network.trace("Request body: \(bodyString)")
     }
     #if DEBUG
-    CURL.printCURLCommand(from: urlRequest, in: self.environment)
+    CURL.printCURLCommand(from: urlRequest, in: environment)
     #endif
 
     let (data, response): (Data, URLResponse)
@@ -86,14 +86,14 @@ struct GenerativeAIService {
       throw NSError(
         domain: "com.google.generative-ai",
         code: -1,
-        userInfo: [NSLocalizedDescriptionKey: "Response was not an HTTP response."]
+        userInfo: [NSLocalizedDescriptionKey: "Response was not an HTTP response."],
       )
     }
 
     guard httpResponse.statusCode.isHTTPOKStatusRange else {
       Log.network
         .error(
-          "[GoogleGenerativeAI] The server responded with an error: \(httpResponse)"
+          "[GoogleGenerativeAI] The server responded with an error: \(httpResponse)",
         )
       throw parseError(responseData: data)
     }
@@ -114,7 +114,7 @@ struct GenerativeAIService {
         do {
           urlRequest = try await request.asURLRequest(
             with: environment,
-            encoder: self.codableClient.jsonCoding.requestEncoder
+            encoder: codableClient.jsonCoding.requestEncoder,
           )
         } catch {
           continuation.finish(throwing: error)
@@ -122,7 +122,7 @@ struct GenerativeAIService {
         }
 
         Log.network.trace(
-          "Streaming request: \(urlRequest.httpMethod ?? "") \(urlRequest.url?.absoluteString ?? "")"
+          "Streaming request: \(urlRequest.httpMethod ?? "") \(urlRequest.url?.absoluteString ?? "")",
         )
         if let body = urlRequest.httpBody,
           let bodyString = String(data: body, encoding: .utf8)
@@ -130,16 +130,18 @@ struct GenerativeAIService {
           Log.network.trace("Request body: \(bodyString)")
         }
         #if DEBUG
-        CURL.printCURLCommand(from: urlRequest, in: self.environment)
+        CURL.printCURLCommand(from: urlRequest, in: environment)
         #endif
 
         // Use shared decoder preset for stream decoding
         let decoder: JSONDecoder = .commonDateParsing
         let stream: AsyncThrowingStream<T.ResponseType, Error> =
-          self.sseExecutor.sseJSONStream(request: urlRequest, decoder: decoder)
+          sseExecutor.sseJSONStream(request: urlRequest, decoder: decoder)
 
         do {
-          for try await item in stream { continuation.yield(item) }
+          for try await item in stream {
+            continuation.yield(item)
+          }
           continuation.finish()
         } catch {
           continuation.finish(throwing: error)
@@ -213,7 +215,7 @@ struct GenerativeAIService {
         Log.network.error("[GoogleGenerativeAI] JSON response: \(json)")
       }
       Log.shared.error(
-        "[GoogleGenerativeAI] Error decoding server JSON: \(error)"
+        "[GoogleGenerativeAI] Error decoding server JSON: \(error)",
       )
       throw error
     }

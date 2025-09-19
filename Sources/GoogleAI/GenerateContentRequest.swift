@@ -40,7 +40,7 @@ public enum GenerateContent {
     public init(
       isStreaming: Bool,
       options: HTTP.Request.Options,
-      body: GenerateContent.Request.Body? = nil
+      body: GenerateContent.Request.Body? = nil,
     ) {
       self.isStreaming = isStreaming
       self.options = options
