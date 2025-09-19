@@ -1,4 +1,5 @@
 import CommonAI
+import Foundation
 import GenChatUI
 import Testing
 
@@ -40,9 +41,20 @@ extension DummyChat: @unchecked Sendable {}
 
 struct DummyModel: CommonAIModel {
   let name: String
-  func generateText(_ text: String) async throws -> CAIMessage { .init(role: .model, text: text) }
-  func generate(_ content: [CAIContent]) async throws -> CAIMessage {
-    .init(role: .model, text: "ok")
+  func complete(_ content: [CAIContent]) async throws -> CAICompletion {
+    let text = content.compactMap { item -> String? in
+      guard case .text(let t) = item.parts.first else { return nil }
+      return t
+    }.joined(separator: "\n")
+    let choice = CAIChoice(index: 0, message: CAIMessage(role: .model, text: text), finishReason: "stop")
+    return CAICompletion(
+      id: "cai-dummy",
+      created: Int(Date().timeIntervalSince1970),
+      model: name,
+      choices: [choice],
+      usage: nil,
+      metadata: ["provider": "dummy"]
+    )
   }
   @MainActor func startChat(history: [CAIContent]) -> any CommonAIChat {
     DummyChat(history: history)
