@@ -16,9 +16,6 @@ import SwiftUI
 
 struct ContentView: View {
   @StateObject
-  var viewModel = ConversationViewModel()
-
-  @StateObject
   var functionCallingViewModel = FunctionCallingViewModel()
 
   var body: some View {
@@ -35,15 +32,19 @@ struct ContentView: View {
           Label("Multi-modal", systemImage: "doc.richtext")
         }
         NavigationLink {
-          ConversationScreen()
-            .environmentObject(viewModel)
-        } label: {
-          Label("Chat", systemImage: "ellipsis.message.fill")
-        }
-        NavigationLink {
           FunctionCallingScreen().environmentObject(functionCallingViewModel)
         } label: {
           Label("Function Calling", systemImage: "function")
+        }
+        Section("Chat UI") {
+          Label("Bring your own UI", systemImage: "ellipsis.message")
+            .foregroundStyle(.secondary)
+          Text(
+            "Use GoogleGenerativeAI (or CommonAI adapters) with a presentation layer of your choice."
+          )
+          .font(.footnote)
+          .foregroundStyle(.secondary)
+          .textCase(nil)
         }
       }
       .navigationTitle("Generative AI Samples")

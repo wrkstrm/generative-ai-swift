@@ -23,7 +23,7 @@ final class GenerativeModelKnownFailureTests: XCTestCase {
 
   func testGenerateContent_failure_invalidAPIKey() async throws {
     MockURLProtocol.requestHandler = try httpRequestHandler(
-      forResource: "unary-failure-invalid-api-key",
+      forResource: "unary-failure-api-key",
       withExtension: "json",
       statusCode: 401,
     )
@@ -129,7 +129,7 @@ final class GenerativeModelKnownFailureTests: XCTestCase {
     statusCode: Int = 200,
     timeout: TimeInterval = RequestOptions().timeout,
   ) throws -> ((URLRequest) -> (URLResponse, [String])) {
-    let fileURL = try XCTUnwrap(Bundle.module.url(forResource: name, withExtension: ext))
+    let fileURL = try resourceURL(forResource: name, withExtension: ext)
     return { request in
       let requestURL = try! XCTUnwrap(request.url)
       XCTAssertEqual(request.timeoutInterval, timeout)
@@ -170,6 +170,26 @@ class MockURLProtocol: URLProtocol {
   }
 
   override func stopLoading() {}
+}
+
+extension GenerativeModelKnownFailureTests {
+  fileprivate func resourceURL(forResource name: String, withExtension ext: String) throws -> URL {
+    if let directMatch = Bundle.module.url(forResource: name, withExtension: ext) {
+      return directMatch
+    }
+    let subdirectories = ["GenerateContentResponses", "CountTokenResponses"]
+    for subdirectory in subdirectories {
+      if let match = Bundle.module.url(
+        forResource: name,
+        withExtension: ext,
+        subdirectory: subdirectory
+      ) {
+        return match
+      }
+    }
+    XCTFail("Missing resource \(name).\(ext) in KnownFailureTests bundle")
+    throw NSError(domain: "KnownFailureTests", code: 1)
+  }
 }
 
 #endif

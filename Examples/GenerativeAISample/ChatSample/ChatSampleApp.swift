@@ -12,14 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import GenChatUI
 import SwiftUI
 
 @main
 struct ChatSampleApp: App {
   var body: some Scene {
     WindowGroup {
-      ChatScreen()
+      ChatSamplePlaceholderView()
     }
+  }
+}
+
+private struct ChatSamplePlaceholderView: View {
+  var body: some View {
+    VStack(spacing: 16) {
+      Text("Chat sample removed")
+        .font(.title2)
+      Text(
+        "This package no longer bundles a chat UI. Integrate your preferred presentation layer "
+          + "with GoogleGenerativeAI or the CommonAI adapters."
+      )
+      .multilineTextAlignment(.center)
+      .foregroundStyle(.secondary)
+    }
+    .padding()
   }
 }

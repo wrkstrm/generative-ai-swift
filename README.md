@@ -3,7 +3,7 @@
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fgoogle-gemini%2Fgenerative-ai-swift%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/google-gemini/generative-ai-swift)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fgoogle-gemini%2Fgenerative-ai-swift%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/google-gemini/generative-ai-swift)
 
-This repository is a slimmed-down fork focused on model access only. UI layers have been removed and now live under our cross-app Gen UI package. This package exposes the Google Generative AI client (models) without UI.
+This repository is a slimmed-down fork focused on model access only. UI layers have been removed and now live under our cross-app Gen UI package. This package exposes the Google Generative AI client (models) without UI, and bundled chat demos have been decommissioned to keep the surface area headless.
 
 > [!CAUTION] **The Google AI SDK for Swift is recommended for prototyping only.** If you plan to
 > enable billing, we strongly recommend that you use a backend SDK to access the Google AI Gemini
